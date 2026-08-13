@@ -1,0 +1,8 @@
+# Ignorar pastas de binários locais e banco de dados local
+bin/
+
+# Arquivos de logs e temporários
+*.log
+tmp/
+.vscode/
+.idea/
