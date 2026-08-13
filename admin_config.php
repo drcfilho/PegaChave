@@ -304,7 +304,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']) && $_POST['
             </li>
         </ul>
         <div class="sidebar-footer">
-            <a href="/index.html" class="btn-kiosk">🖥️ Voltar ao Quiosque</a>
+            <a href="/index.php" class="btn-kiosk">🖥️ Voltar ao Quiosque</a>
         </div>
     </aside>
 
