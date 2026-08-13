@@ -62,3 +62,8 @@ Acompanhamento do desenvolvimento e implantação do **Sistema de Controle de Ch
 - [x] Adicionar filtros e seleção individual na geração de etiquetas QR Code
 - [x] Criar log de auditoria administrativa no banco de dados
 - [x] Criar sistema de notificações de chaves atrasadas (Alerta em tela ou integração)
+
+### **Fase 6: Refatoração & Limpeza**
+- [x] Identificar e remover variáveis e estados órfãos (como `currentMode` no JS)
+- [x] Remover rotas/códigos mortos no backend (antigo tratamento de arrays de seleção em PHP)
+- [x] Limpar códigos e comentários obsoletos ou de rascunhos antigos
