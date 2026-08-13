@@ -1,5 +1,9 @@
 <?php
-// admin_config.php
+session_start();
+if (!isset($_SESSION['admin_logged_in']) || $_SESSION['admin_logged_in'] !== true) {
+    header("Location: admin_login.php");
+    exit;
+}
 require_once __DIR__ . '/api/db.php';
 
 $message = '';
@@ -301,6 +305,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']) && $_POST['
             </li>
             <li class="sidebar-item active">
                 <a href="/admin_config.php">⚙️ Configurações</a>
+            </li>
+            <li class="sidebar-item">
+                <a href="/admin_logout.php" style="color: #ef4444;">🚪 Sair</a>
             </li>
         </ul>
         <div class="sidebar-footer">

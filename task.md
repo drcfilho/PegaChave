@@ -56,3 +56,9 @@ Acompanhamento do desenvolvimento e implantação do **Sistema de Controle de Ch
 - [ ] Instalar suporte físico e tablet na portaria da escola
 - [ ] Gerar, imprimir e fixar as etiquetas QR Code nos chaveiros e crachás
 - [ ] Treinar a equipe operacional e iniciar operações
+
+### **Fase 5: Melhorias de Segurança & Funcionalidades**
+- [x] Implementar autenticação segura para o Painel Admin (login, sessão e hash de senha)
+- [x] Adicionar filtros e seleção individual na geração de etiquetas QR Code
+- [ ] Criar log de auditoria administrativa no banco de dados
+- [ ] Criar sistema de notificações de chaves atrasadas (Alerta em tela ou integração)
