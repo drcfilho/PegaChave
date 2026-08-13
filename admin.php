@@ -16,6 +16,7 @@ try {
             u.nome AS usuario_nome,
             p.nome AS usuario_perfil,
             DATE_FORMAT(m.data_retirada, '%H:%i') AS desde,
+            IF(m.data_retirada < DATE_SUB(NOW(), INTERVAL 8 HOUR), 1, 0) AS atrasada,
             m.id AS movimentacao_id
         FROM chaves c
         JOIN movimentacoes m ON c.id = m.chave_id AND m.data_devolucao IS NULL
@@ -338,6 +339,17 @@ try {
             </div>
         </div>
 
+        <?php if ($pendentesCount > 0): ?>
+            <div class="alert-banner" style="background-color: #fee2e2; border: 1px solid #ef4444; border-left: 6px solid #ef4444; color: #991b1b; padding: 16px; border-radius: 8px; margin-bottom: 25px; display: flex; align-items: center; justify-content: space-between; font-size: 14px; font-weight: 600;">
+                <div style="display: flex; align-items: center; gap: 10px;">
+                    <span style="font-size: 20px;">⚠️</span>
+                    <div>
+                        Atenção: Existem <?php echo $pendentesCount; ?> chaves com atraso de devolução (em uso há mais de 8 horas)!
+                    </div>
+                </div>
+            </div>
+        <?php endif; ?>
+
         <!-- Estatísticas Rápidas -->
         <div class="stats-grid">
             <div class="stat-card">
@@ -400,13 +412,18 @@ try {
                             </tr>
                         <?php else: ?>
                             <?php foreach ($chavesEmUso as $c): ?>
-                                <tr>
-                                    <td><strong><?php echo htmlspecialchars($c['nome_sala']); ?></strong> (<?php echo htmlspecialchars($c['codigo_sala']); ?>)</td>
-                                    <td><?php echo htmlspecialchars($c['usuario_nome']); ?></td>
-                                    <td><?php echo htmlspecialchars($c['usuario_perfil']); ?></td>
-                                    <td><?php echo htmlspecialchars($c['desde']); ?></td>
-                                    <td><a class="action-link" style="color: var(--error);" onclick="devolverChave(<?php echo $c['chave_id']; ?>)">Devolver Manual</a></td>
-                                </tr>
+                                 <tr <?php echo $c['atrasada'] ? 'style="background-color: #fee2e2;"' : ''; ?>>
+                                     <td><strong><?php echo htmlspecialchars($c['nome_sala']); ?></strong> (<?php echo htmlspecialchars($c['codigo_sala']); ?>)</td>
+                                     <td><?php echo htmlspecialchars($c['usuario_nome']); ?></td>
+                                     <td><?php echo htmlspecialchars($c['usuario_perfil']); ?></td>
+                                     <td>
+                                         <?php echo htmlspecialchars($c['desde']); ?>
+                                         <?php if ($c['atrasada']): ?>
+                                             <span style="background-color: #ef4444; color: white; font-size: 10px; font-weight: 800; padding: 2px 6px; border-radius: 4px; margin-left: 6px; display: inline-block;">ATRASADA ⚠️</span>
+                                         <?php endif; ?>
+                                     </td>
+                                     <td><a class="action-link" style="color: var(--error);" onclick="devolverChave(<?php echo $c['chave_id']; ?>)">Devolver Manual</a></td>
+                                 </tr>
                             <?php endforeach; ?>
                         <?php endif; ?>
                     </tbody>

@@ -61,4 +61,4 @@ Acompanhamento do desenvolvimento e implantação do **Sistema de Controle de Ch
 - [x] Implementar autenticação segura para o Painel Admin (login, sessão e hash de senha)
 - [x] Adicionar filtros e seleção individual na geração de etiquetas QR Code
 - [x] Criar log de auditoria administrativa no banco de dados
-- [ ] Criar sistema de notificações de chaves atrasadas (Alerta em tela ou integração)
+- [x] Criar sistema de notificações de chaves atrasadas (Alerta em tela ou integração)
