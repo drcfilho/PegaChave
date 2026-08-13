@@ -363,6 +363,9 @@ try {
             <li class="sidebar-item">
                 <a href="/admin_gerar_qr.php">🖨️ Gerar QR Codes</a>
             </li>
+            <li class="sidebar-item">
+                <a href="/admin_consulta.php">🔍 Consultar Disponibilidade</a>
+            </li>
             <li class="sidebar-item active">
                 <a href="/admin_relatorio.php">📝 Relatório Geral</a>
             </li>
