@@ -502,13 +502,11 @@ require_once __DIR__ . '/api/db.php';
         updateClock();
 
         // Estado do Quiosque
-        let currentMode = 'smart'; // 'smart', 'retirar', 'devolver'
         let html5QrcodeScanner;
         let isProcessing = false;
         let lastScannedCode = "";
 
         function setMode(mode) {
-            currentMode = mode;
             const titleEl = document.getElementById('quiosque-title');
             if (mode === 'retirar') {
                 titleEl.textContent = "Modo Retirada: Aproxime o Crachá do Usuário";
@@ -519,7 +517,6 @@ require_once __DIR__ . '/api/db.php';
             // Feedback rápido nos botões
             setTimeout(() => {
                 titleEl.textContent = "Aproxime o QR Code do Crachá ou da Chave";
-                currentMode = 'smart';
             }, 10000);
         }
 
