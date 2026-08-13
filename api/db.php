@@ -38,3 +38,13 @@ try {
      echo json_encode(["status" => "error", "message" => "Erro na conexão com o banco de dados: " . $e->getMessage()]);
      exit;
 }
+
+function registrar_log($pdo, $acao, $detalhes) {
+    $admin_id = $_SESSION['admin_user_id'] ?? null;
+    try {
+        $stmt = $pdo->prepare("INSERT INTO logs_auditoria (admin_id, acao, detalhes) VALUES (?, ?, ?)");
+        $stmt->execute([$admin_id, $acao, $detalhes]);
+    } catch (\Exception $e) {
+        // Silencioso para não quebrar a aplicação caso ocorra erro
+    }
+}

@@ -21,6 +21,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
 
             $stmt = $pdo->prepare("INSERT INTO chaves (nome_sala, codigo_sala, qr_code_hash, descricao) VALUES (?, ?, ?, ?)");
             $stmt->execute([$nome_sala, $codigo_sala, $qr_code_hash, $descricao]);
+            registrar_log($pdo, 'Cadastro de Chave', "Chave '$nome_sala' ($codigo_sala) cadastrada.");
             $message = "Chave '$nome_sala' cadastrada com sucesso!";
             $messageType = "success";
         } 
@@ -34,17 +35,25 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
 
             $stmt = $pdo->prepare("UPDATE chaves SET nome_sala = ?, codigo_sala = ?, qr_code_hash = ?, descricao = ? WHERE id = ?");
             $stmt->execute([$nome_sala, $codigo_sala, $qr_code_hash, $descricao, $id]);
+            registrar_log($pdo, 'Edição de Chave', "Chave ID $id atualizada para '$nome_sala' ($codigo_sala).");
             $message = "Chave atualizada com sucesso!";
             $messageType = "success";
         } 
         
         elseif ($action === 'delete_chave') {
             $id = $_POST['id'] ?? '';
+            // Obter nome antes de deletar
+            $stmtChave = $pdo->prepare("SELECT nome_sala, codigo_sala FROM chaves WHERE id = ?");
+            $stmtChave->execute([$id]);
+            $chaveInfo = $stmtChave->fetch();
+            $nomeExcluido = $chaveInfo ? $chaveInfo['nome_sala'] . ' (' . $chaveInfo['codigo_sala'] . ')' : "ID $id";
+
             // Limpar movimentações associadas primeiro
             $pdo->prepare("DELETE FROM movimentacoes WHERE chave_id = ?")->execute([$id]);
             
             $stmt = $pdo->prepare("DELETE FROM chaves WHERE id = ?");
             $stmt->execute([$id]);
+            registrar_log($pdo, 'Remoção de Chave', "Chave '$nomeExcluido' e seu histórico foram removidos.");
             $message = "Chave removida.";
             $messageType = "success";
         }
@@ -405,6 +414,9 @@ try {
             </li>
             <li class="sidebar-item">
                 <a href="/admin_relatorio.php">📝 Relatório Geral</a>
+            </li>
+            <li class="sidebar-item">
+                <a href="/admin_logs.php">📋 Logs de Auditoria</a>
             </li>
             <li class="sidebar-item">
                 <a href="/admin_config.php">⚙️ Configurações</a>

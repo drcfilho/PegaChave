@@ -22,6 +22,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
 
             $stmt = $pdo->prepare("INSERT INTO usuarios (nome, email, matricula, perfil_id, qr_code_hash) VALUES (?, ?, ?, ?, ?)");
             $stmt->execute([$nome, $email, $matricula, $perfil_id, $qr_code_hash]);
+            registrar_log($pdo, 'Cadastro de Usuário', "Usuário '$nome' (Matrícula: $matricula) cadastrado.");
             $message = "Usuário '$nome' cadastrado com sucesso!";
             $messageType = "success";
         }
@@ -37,17 +38,25 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
 
             $stmt = $pdo->prepare("UPDATE usuarios SET nome = ?, email = ?, matricula = ?, perfil_id = ?, qr_code_hash = ?, ativo = ? WHERE id = ?");
             $stmt->execute([$nome, $email, $matricula, $perfil_id, $qr_code_hash, $ativo, $id]);
+            registrar_log($pdo, 'Edição de Usuário', "Usuário ID $id atualizado para '$nome' (Matrícula: $matricula). Ativo: $ativo.");
             $message = "Usuário '$nome' atualizado com sucesso!";
             $messageType = "success";
         }
 
         elseif ($action === 'delete_usuario') {
             $id = $_POST['id'] ?? '';
+            // Obter nome antes de excluir
+            $stmtUser = $pdo->prepare("SELECT nome, matricula FROM usuarios WHERE id = ?");
+            $stmtUser->execute([$id]);
+            $userInfo = $stmtUser->fetch();
+            $nomeExcluido = $userInfo ? $userInfo['nome'] . ' (Matrícula: ' . $userInfo['matricula'] . ')' : "ID $id";
+
             // Remover dependências de movimentações
             $pdo->prepare("DELETE FROM movimentacoes WHERE usuario_id = ?")->execute([$id]);
             
             $stmt = $pdo->prepare("DELETE FROM usuarios WHERE id = ?");
             $stmt->execute([$id]);
+            registrar_log($pdo, 'Remoção de Usuário', "Usuário '$nomeExcluido' e seu histórico foram removidos.");
             $message = "Usuário removido.";
             $messageType = "success";
         }
@@ -415,6 +424,9 @@ try {
             </li>
             <li class="sidebar-item">
                 <a href="/admin_relatorio.php">📝 Relatório Geral</a>
+            </li>
+            <li class="sidebar-item">
+                <a href="/admin_logs.php">📋 Logs de Auditoria</a>
             </li>
             <li class="sidebar-item">
                 <a href="/admin_config.php">⚙️ Configurações</a>

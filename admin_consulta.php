@@ -310,6 +310,9 @@ try {
                 <a href="/admin_relatorio.php">📝 Relatório Geral</a>
             </li>
             <li class="sidebar-item">
+                <a href="/admin_logs.php">📋 Logs de Auditoria</a>
+            </li>
+            <li class="sidebar-item">
                 <a href="/admin_config.php">⚙️ Configurações</a>
             </li>
             <li class="sidebar-item">

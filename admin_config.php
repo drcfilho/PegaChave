@@ -24,6 +24,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']) && $_POST['
         $stmt3 = $pdo->prepare("INSERT INTO configuracoes (chave, valor) VALUES ('cor_secundaria', ?) ON DUPLICATE KEY UPDATE valor = VALUES(valor)");
         $stmt3->execute([$cor_s_input]);
 
+        registrar_log($pdo, 'Alteração de Configuração', "Nome da Escola: '$nome_input', Cor Primária: '$cor_p_input', Cor Secundária: '$cor_s_input'.");
+
         $message = "Configurações e cores atualizadas com sucesso!";
         $messageType = "success";
 
@@ -302,6 +304,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']) && $_POST['
             </li>
             <li class="sidebar-item">
                 <a href="/admin_relatorio.php">📝 Relatório Geral</a>
+            </li>
+            <li class="sidebar-item">
+                <a href="/admin_logs.php">📋 Logs de Auditoria</a>
             </li>
             <li class="sidebar-item active">
                 <a href="/admin_config.php">⚙️ Configurações</a>
