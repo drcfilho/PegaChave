@@ -71,10 +71,10 @@ try {
             --bg-color: #f1f5f9;
             --text-color: #1e293b;
             --sidebar-bg: #0f172a;
-            --sidebar-active: #0284c7;
+            --sidebar-active: <?php echo $cor_primaria; ?>;
             --card-bg: #ffffff;
             --border-color: #e2e8f0;
-            --primary: #0284c7;
+            --primary: <?php echo $cor_primaria; ?>;
             --success: #22c55e;
             --error: #ef4444;
         }
@@ -402,9 +402,12 @@ try {
             <li class="sidebar-item">
                 <a href="/admin_relatorio.php">📝 Relatório Geral</a>
             </li>
+            <li class="sidebar-item">
+                <a href="/admin_config.php">⚙️ Configurações</a>
+            </li>
         </ul>
         <div class="sidebar-footer">
-            <a href="/index.html" class="btn-kiosk">🖥️ Voltar ao Quiosque</a>
+            <a href="/index.php" class="btn-kiosk">🖥️ Voltar ao Quiosque</a>
         </div>
     </aside>
 

@@ -55,7 +55,7 @@ try {
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Dashboard - Administrador Lumiar</title>
+    <title>Dashboard - Administrador <?php echo htmlspecialchars($nome_escola); ?></title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
@@ -64,10 +64,10 @@ try {
             --bg-color: #f1f5f9;
             --text-color: #1e293b;
             --sidebar-bg: #0f172a;
-            --sidebar-active: #0284c7;
+            --sidebar-active: <?php echo $cor_primaria; ?>;
             --card-bg: #ffffff;
             --border-color: #e2e8f0;
-            --primary: #0284c7;
+            --primary: <?php echo $cor_primaria; ?>;
             --success: #22c55e;
             --error: #ef4444;
         }
@@ -310,9 +310,12 @@ try {
             <li class="sidebar-item">
                 <a href="/admin_relatorio.php">📝 Relatório Geral</a>
             </li>
+            <li class="sidebar-item">
+                <a href="/admin_config.php">⚙️ Configurações</a>
+            </li>
         </ul>
         <div class="sidebar-footer">
-            <a href="/index.html" class="btn-kiosk">🖥️ Voltar ao Quiosque</a>
+            <a href="/index.php" class="btn-kiosk">🖥️ Voltar ao Quiosque</a>
         </div>
     </aside>
 

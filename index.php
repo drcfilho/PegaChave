@@ -1,9 +1,12 @@
+<?php
+require_once __DIR__ . '/api/db.php';
+?>
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Quiosque - Escola Lumiar</title>
+    <title>Quiosque - <?php echo htmlspecialchars($nome_escola); ?></title>
     <!-- Google Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -14,9 +17,9 @@
             --text-color: #1e293b;
             --primary-green: #22c55e;
             --primary-green-hover: #16a34a;
-            --primary-blue: #0284c7;
+            --primary-blue: <?php echo $cor_primaria; ?>;
             --primary-blue-hover: #0369a1;
-            --header-bg: #0f172a;
+            --header-bg: <?php echo $cor_secundaria; ?>;
             --card-bg: #ffffff;
             --border-color: #e2e8f0;
         }
@@ -361,11 +364,11 @@
         }
 
         .btn-success-action.other {
-            background-color: #0284c7;
+            background-color: var(--primary-blue);
         }
 
         .btn-success-action.other:hover {
-            background-color: #0369a1;
+            background-color: var(--primary-blue-hover);
         }
 
         /* Estilo temporário para alternar telas */
@@ -373,7 +376,7 @@
             position: fixed;
             bottom: 20px;
             right: 20px;
-            background-color: var(--header-bg);
+            background-color: #0f172a;
             color: white;
             padding: 10px 18px;
             border-radius: 30px;
@@ -398,7 +401,7 @@
     <!-- Header Quiosque -->
     <header>
         <div class="header-left">
-            <span>Escola Lumiar</span>
+            <span><?php echo htmlspecialchars($nome_escola); ?></span>
         </div>
         <div class="header-right">
             <button onclick="window.location.href='/consulta.php'" style="background: rgba(255,255,255,0.1); border: 1px solid rgba(255,255,255,0.2); color: white; padding: 6px 12px; border-radius: 6px; font-weight: 600; cursor: pointer; margin-right: 15px; font-size: 13px;">🔍 Consultar Chaves</button>
@@ -439,7 +442,7 @@
                 <div class="input-code-wrapper">
                     <input type="text" id="manual-code" class="input-code" placeholder="Digitar Código (Sala)" onkeydown="checkEnter(event)">
                 </div>
-                <button class="btn-help" onclick="window.location.href='/regras.html'">
+                <button class="btn-help" onclick="window.location.href='/regras.php'">
                     <span>❓</span> Ajuda
                 </button>
             </div>

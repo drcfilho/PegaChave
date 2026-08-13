@@ -34,7 +34,7 @@ try {
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Consulta de Chaves - Escola Lumiar</title>
+    <title>Consulta de Chaves - <?php echo htmlspecialchars($nome_escola); ?></title>
     <!-- Google Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -43,7 +43,7 @@ try {
         :root {
             --bg-color: #f8fafc;
             --text-color: #0f172a;
-            --primary: #0284c7;
+            --primary: <?php echo $cor_primaria; ?>;
             --success: #22c55e;
             --error: #ef4444;
             --border-color: #e2e8f0;
@@ -283,7 +283,7 @@ try {
         <?php endforeach; ?>
     </div>
 
-    <a href="/index.html" class="btn-back">
+    <a href="/index.php" class="btn-back">
         <span>↩</span> Voltar ao Quiosque
     </a>
 

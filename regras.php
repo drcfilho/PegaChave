@@ -1,9 +1,12 @@
+<?php
+require_once __DIR__ . '/api/db.php';
+?>
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Regras e Instruções - PegaChave</title>
+    <title>Regras e Instruções - <?php echo htmlspecialchars($nome_escola); ?></title>
     <!-- Google Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -12,7 +15,7 @@
         :root {
             --bg-color: #f1f5f9;
             --text-color: #1e293b;
-            --primary-blue: #0284c7;
+            --primary-blue: <?php echo $cor_primaria; ?>;
             --card-bg: #ffffff;
             --border-color: #e2e8f0;
         }
@@ -106,7 +109,7 @@
             display: inline-flex;
             align-items: center;
             gap: 8px;
-            background-color: #0284c7;
+            background-color: var(--primary-blue);
             color: white;
             text-decoration: none;
             padding: 12px 24px;
@@ -118,7 +121,7 @@
         }
 
         .btn-back:hover {
-            background-color: #0369a1;
+            filter: brightness(0.9);
         }
     </style>
 </head>
@@ -129,7 +132,7 @@
             <span class="logo-icon">🔑</span>
             <div>
                 <h1>Regras de Uso do PegaChave</h1>
-                <p style="margin: 0; font-size: 13px; color: #64748b;">Instruções e boas práticas para controle de chaves da Escola Lumiar.</p>
+                <p style="margin: 0; font-size: 13px; color: #64748b;">Instruções e boas práticas para controle de chaves da <?php echo htmlspecialchars($nome_escola); ?>.</p>
             </div>
         </div>
 
@@ -156,7 +159,7 @@
         <h2>⏳ Horários e Prazos</h2>
         <p>As chaves devem ser devolvidas ao final do expediente de cada turno ou assim que o ambiente correspondente não estiver mais em uso. O sistema emitirá alertas automáticos no painel do administrador para chaves que ficarem em uso por mais de 8 horas consecutivas.</p>
 
-        <a href="/index.html" class="btn-back">
+        <a href="/index.php" class="btn-back">
             <span>↩</span> Voltar ao Quiosque
         </a>
     </div>
