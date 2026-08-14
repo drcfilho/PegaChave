@@ -1,6 +1,7 @@
 # Ignorar pastas de binários locais e banco de dados local
 bin/*
 !bin/install.php
+!bin/alertar_atrasos.php
 !bin/mysql/
 bin/mysql/*
 !bin/mysql/schema.sql

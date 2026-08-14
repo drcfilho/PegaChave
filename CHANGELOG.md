@@ -31,6 +31,10 @@ Este arquivo registra todo o histórico de desenvolvimento e as melhorias aplica
 * **Exportação de Movimentações (CSV)**: Botão na tela de relatórios gerais (`admin_relatorio.php`) para baixar o histórico atual filtrado em formato `.csv` (com suporte a UTF-8/BOM para Excel).
 * **Exportação de Logs de Auditoria (CSV)**: Botão na tela de logs administrativos (`admin_logs.php`) para baixar os registros de auditoria em formato `.csv`.
 
+### 📧 5. Alertas de Atraso por E-mail
+* **Script de Varredura Automatizada**: Script `bin/alertar_atrasos.php` que varre o banco localizando retiradas ativas de chaves com mais de 8 horas de duração.
+* **Notificação e Simulação**: Envio automático de e-mail ao usuário atrasado e logs de depuração detalhados em `tmp/email_alerts.log`, integrado ao fluxo de logs de auditoria do banco.
+
 ---
 
 ## 📜 Histórico de Commits (Git Log Atualizado)
