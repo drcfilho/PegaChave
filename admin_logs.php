@@ -22,6 +22,37 @@ try {
         LIMIT 100
     ";
     $logs = $pdo->query($query)->fetchAll();
+
+    // Exportação para CSV se solicitado
+    if (isset($_GET['export']) && $_GET['export'] === 'csv') {
+        if (ob_get_level()) {
+            ob_end_clean();
+        }
+        
+        header('Content-Type: text/csv; charset=UTF-8');
+        header('Content-Disposition: attachment; filename="logs_auditoria_' . date('Ymd_His') . '.csv"');
+        
+        $output = fopen('php://output', 'w');
+        
+        // UTF-8 BOM
+        fprintf($output, chr(0xEF).chr(0xBB).chr(0xBF));
+        
+        // Cabeçalhos
+        fputcsv($output, ['ID', 'Ação', 'Administrador', 'Data/Hora', 'Detalhes'], ';');
+        
+        foreach ($logs as $row) {
+            fputcsv($output, [
+                $row['id'],
+                $row['acao'],
+                $row['admin_nome'] ?: 'Sistema/Desconhecido',
+                $row['data_formatada'],
+                $row['detalhes']
+            ], ';');
+        }
+        
+        fclose($output);
+        exit;
+    }
 } catch (\PDOException $e) {
     echo "Erro de Banco de Dados: " . $e->getMessage();
     exit;
@@ -258,6 +289,9 @@ try {
                 <h1>Logs de Auditoria</h1>
                 <p>Histórico completo de ações administrativas e alterações realizadas no sistema.</p>
             </div>
+            <button onclick="exportarCSV()" style="background-color: var(--primary); border: 1px solid var(--primary); color: white; padding: 10px 20px; border-radius: 8px; font-weight: 600; cursor: pointer; font-size: 14px; transition: opacity 0.2s;">
+                📊 Exportar CSV
+            </button>
         </div>
 
         <div class="content-card">
@@ -302,6 +336,13 @@ try {
         </div>
     </main>
 
+    <script>
+        function exportarCSV() {
+            const urlParams = new URLSearchParams(window.location.search);
+            urlParams.set('export', 'csv');
+            window.location.href = window.location.pathname + '?' + urlParams.toString();
+        }
+    </script>
     <script src="/api/admin_responsive.js"></script>
 </body>
 </html>

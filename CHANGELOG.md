@@ -27,6 +27,10 @@ Este arquivo registra todo o histórico de desenvolvimento e as melhorias aplica
 * **Sistema de Migrações Automáticas**: O instalador `bin/install.php` agora possui controle de versões para aplicar alterações de estrutura (como novas colunas e tabelas) de forma incremental e sem perda de dados.
 * **Validação Estrita de Dados**: Sanitização e validações avançadas (incluindo tipo, e-mail e expressões regulares de segurança) de todas as entradas do painel para cadastros e edições.
 
+### 📊 4. Relatórios e Exportações
+* **Exportação de Movimentações (CSV)**: Botão na tela de relatórios gerais (`admin_relatorio.php`) para baixar o histórico atual filtrado em formato `.csv` (com suporte a UTF-8/BOM para Excel).
+* **Exportação de Logs de Auditoria (CSV)**: Botão na tela de logs administrativos (`admin_logs.php`) para baixar os registros de auditoria em formato `.csv`.
+
 ---
 
 ## 📜 Histórico de Commits (Git Log Atualizado)

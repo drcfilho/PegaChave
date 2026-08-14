@@ -19,6 +19,7 @@ O **PegaChave** é uma aplicação web moderna e inteligente projetada para auto
 * **Gerenciamento Completo (CRUD) com Soft Delete:** Cadastro, edição e desativação de Salas/Chaves e Usuários.
 * **Arquivamento e Auditoria Protegida:** A exclusão de usuários realiza exclusão lógica (soft delete) mantendo o histórico de chaves seguras no banco de dados. Os dados dos usuários arquivados são visualizados em uma aba especial protegida por senha de administrador.
 * **Logs de Auditoria Administrativa:** Registro detalhado de todas as ações tomadas pelos administradores.
+* **Exportação para CSV**: Possibilidade de exportar relatórios de movimentações e logs de auditoria administrativa diretamente para arquivos CSV (compatíveis com Excel).
 * **Segurança CSRF:** Proteção ativa em todos os formulários administrativos contra falsificação de requisições.
 
 ### 🔍 3. Consulta Pública de Disponibilidade

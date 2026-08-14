@@ -61,6 +61,43 @@ try {
     $stmt->execute($params);
     $movimentacoes = $stmt->fetchAll();
 
+    // Exportação para CSV se solicitado
+    if (isset($_GET['export']) && $_GET['export'] === 'csv') {
+        if (ob_get_level()) {
+            ob_end_clean();
+        }
+        
+        header('Content-Type: text/csv; charset=UTF-8');
+        header('Content-Disposition: attachment; filename="relatorio_movimentacoes_' . date('Ymd_His') . '.csv"');
+        
+        $output = fopen('php://output', 'w');
+        
+        // UTF-8 BOM
+        fprintf($output, chr(0xEF).chr(0xBB).chr(0xBF));
+        
+        // Cabeçalhos
+        fputcsv($output, ['ID', 'Sala', 'Código Sala', 'Usuário', 'Matrícula', 'Data Retirada', 'Data Devolução', 'Observação'], ';');
+        
+        foreach ($movimentacoes as $row) {
+            $dataRetirada = $row['data_retirada'] ? date('d/m/Y H:i:s', strtotime($row['data_retirada'])) : '';
+            $dataDevolucao = $row['data_devolucao'] ? date('d/m/Y H:i:s', strtotime($row['data_devolucao'])) : 'Em aberto';
+            
+            fputcsv($output, [
+                $row['id'],
+                $row['nome_sala'],
+                $row['codigo_sala'],
+                $row['usuario_nome'],
+                $row['usuario_matricula'],
+                $dataRetirada,
+                $dataDevolucao,
+                $row['observacao']
+            ], ';');
+        }
+        
+        fclose($output);
+        exit;
+    }
+
 } catch (\PDOException $e) {
     echo "Erro de Banco de Dados: " . $e->getMessage();
     exit;
@@ -399,9 +436,14 @@ try {
                 <h1>Relatório de Movimentação</h1>
                 <p>Monitore e audite o histórico completo de retiradas e devoluções.</p>
             </div>
-            <button class="btn-print" onclick="window.print()">
-                🖨️ Imprimir Página
-            </button>
+            <div style="display: flex; gap: 10px;">
+                <button class="btn-print" onclick="exportarCSV()" style="background-color: var(--primary); border-color: var(--primary); color: white;">
+                    📊 Exportar CSV
+                </button>
+                <button class="btn-print" onclick="window.print()">
+                    🖨️ Imprimir Página
+                </button>
+            </div>
         </div>
 
         <!-- Filtros -->
@@ -486,6 +528,13 @@ try {
         </div>
     </main>
 
+    <script>
+        function exportarCSV() {
+            const urlParams = new URLSearchParams(window.location.search);
+            urlParams.set('export', 'csv');
+            window.location.href = window.location.pathname + '?' + urlParams.toString();
+        }
+    </script>
     <script src="/api/admin_responsive.js"></script>
 </body>
 </html>
