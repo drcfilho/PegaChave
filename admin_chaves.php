@@ -508,9 +508,12 @@ try {
                 <h1>Gerenciamento de Chaves</h1>
                 <p>Cadastre salas, edite informações e gerencie os códigos QR associados.</p>
             </div>
-            <button class="btn-add" onclick="openKeyModal()">
-                ➕ Nova Chave
-            </button>
+            <div style="display: flex; gap: 15px; align-items: center; flex-wrap: wrap;">
+                <input type="text" id="search-input" placeholder="🔍 Pesquisar chave..." style="padding: 10px 16px; border-radius: 8px; border: 1px solid var(--border-color); background: var(--card-bg); color: var(--text-color); font-size: 14px; font-weight: 500; min-width: 250px; outline: none; transition: border 0.2s;" oninput="filterTable()">
+                <button class="btn-add" onclick="openKeyModal()">
+                    ➕ Nova Chave
+                </button>
+            </div>
         </div>
 
         <div class="content-card">
@@ -707,6 +710,23 @@ try {
 
             // Re-inserir ordenadas
             rows.forEach(row => tbody.appendChild(row));
+        }
+
+        // Filtro/Pesquisa Rápida na Tabela
+        function filterTable() {
+            const query = document.getElementById('search-input').value.toLowerCase();
+            const rows = document.querySelectorAll("table tbody tr");
+            
+            if (rows.length === 1 && rows[0].cells.length === 1) return;
+
+            rows.forEach(row => {
+                const text = row.textContent.toLowerCase();
+                if (text.includes(query)) {
+                    row.style.display = '';
+                } else {
+                    row.style.display = 'none';
+                }
+            });
         }
     </script>
     <script src="/api/admin_responsive.js"></script>

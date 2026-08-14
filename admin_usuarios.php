@@ -286,6 +286,29 @@ try {
             text-transform: uppercase;
         }
 
+        th.sortable {
+            cursor: pointer;
+            position: relative;
+            user-select: none;
+            transition: background 0.2s;
+        }
+
+        th.sortable:hover {
+            background-color: rgba(0,0,0,0.05);
+            color: var(--primary);
+        }
+
+        body.dark-theme th.sortable:hover {
+            background-color: rgba(255,255,255,0.05);
+        }
+
+        th.sortable::after {
+            content: ' ↕';
+            font-size: 10px;
+            color: #94a3b8;
+            margin-left: 4px;
+        }
+
         td {
             font-size: 14px;
             padding: 14px 16px;
@@ -486,9 +509,12 @@ try {
                 <h1>Gerenciamento de Usuários</h1>
                 <p>Cadastre servidores e professores autorizados a realizar a movimentação de chaves.</p>
             </div>
-            <button class="btn-add" onclick="openUserModal()">
-                ➕ Novo Usuário
-            </button>
+            <div style="display: flex; gap: 15px; align-items: center; flex-wrap: wrap;">
+                <input type="text" id="search-input" placeholder="🔍 Pesquisar usuário..." style="padding: 10px 16px; border-radius: 8px; border: 1px solid var(--border-color); background: var(--card-bg); color: var(--text-color); font-size: 14px; font-weight: 500; min-width: 250px; outline: none; transition: border 0.2s;" oninput="filterTable()">
+                <button class="btn-add" onclick="openUserModal()">
+                    ➕ Novo Usuário
+                </button>
+            </div>
         </div>
 
         <div class="content-card">
@@ -496,12 +522,12 @@ try {
                 <table>
                     <thead>
                         <tr>
-                            <th>Nome</th>
-                            <th>ID (Matrícula)</th>
-                            <th>Função</th>
-                            <th>E-mail</th>
-                            <th>QR Hash</th>
-                            <th>Ativo</th>
+                            <th class="sortable" onclick="sortTable(0)">Nome</th>
+                            <th class="sortable" onclick="sortTable(1)">ID (Matrícula)</th>
+                            <th class="sortable" onclick="sortTable(2)">Função</th>
+                            <th class="sortable" onclick="sortTable(3)">E-mail</th>
+                            <th class="sortable" onclick="sortTable(4)">QR Hash</th>
+                            <th class="sortable" onclick="sortTable(5)">Ativo</th>
                             <th>Ações</th>
                         </tr>
                     </thead>
@@ -640,6 +666,56 @@ try {
             this.value = this.value.replace(/[^a-zA-Z0-9_-]/g, '');
             document.getElementById('user_qr_code_hash').value = this.value ? 'user_' + this.value : '';
         });
+
+        // Ordenação Interativa de Tabela
+        let sortDirections = {};
+        function sortTable(colIndex) {
+            const table = document.querySelector("table");
+            const tbody = table.querySelector("tbody");
+            const rows = Array.from(tbody.querySelectorAll("tr"));
+            
+            if (rows.length === 1 && rows[0].cells.length === 1) return;
+
+            const currentDir = sortDirections[colIndex] || 'desc';
+            const nextDir = currentDir === 'desc' ? 'asc' : 'desc';
+            sortDirections[colIndex] = nextDir;
+
+            // Ordenar linhas
+            rows.sort((a, b) => {
+                const cellA = a.cells[colIndex].textContent.trim();
+                const cellB = b.cells[colIndex].textContent.trim();
+
+                const numA = parseFloat(cellA);
+                const numB = parseFloat(cellB);
+                if (!isNaN(numA) && !isNaN(numB)) {
+                    return nextDir === 'asc' ? numA - numB : numB - numA;
+                }
+
+                return nextDir === 'asc' 
+                    ? cellA.localeCompare(cellB, 'pt-BR', { numeric: true, sensitivity: 'base' })
+                    : cellB.localeCompare(cellA, 'pt-BR', { numeric: true, sensitivity: 'base' });
+            });
+
+            // Re-inserir ordenadas
+            rows.forEach(row => tbody.appendChild(row));
+        }
+
+        // Filtro/Pesquisa Rápida na Tabela
+        function filterTable() {
+            const query = document.getElementById('search-input').value.toLowerCase();
+            const rows = document.querySelectorAll("table tbody tr");
+            
+            if (rows.length === 1 && rows[0].cells.length === 1) return;
+
+            rows.forEach(row => {
+                const text = row.textContent.toLowerCase();
+                if (text.includes(query)) {
+                    row.style.display = '';
+                } else {
+                    row.style.display = 'none';
+                }
+            });
+        }
     </script>
     <script src="/api/admin_responsive.js"></script>
 </body>
