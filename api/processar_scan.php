@@ -87,6 +87,27 @@ try {
             $usuario = $_SESSION['usuario_pendente'];
             $usuario_id = $usuario['id'];
 
+            // Verificar restrições de acesso (bloqueios por perfil a chaves específicas)
+            $perfil_id = $usuario['perfil_id'] ?? null;
+            if ($perfil_id) {
+                $stmtRestricao = $pdo->prepare("
+                    SELECT p.nome AS perfil_nome 
+                    FROM restricoes_acesso r
+                    JOIN perfis p ON r.perfil_id = p.id
+                    WHERE r.perfil_id = ? AND r.chave_id = ?
+                ");
+                $stmtRestricao->execute([$perfil_id, $chave_id]);
+                $restrito = $stmtRestricao->fetch();
+
+                if ($restrito) {
+                    echo json_encode([
+                        "status" => "error",
+                        "message" => "Bloqueado: Perfil '{$restrito['perfil_nome']}' não tem permissão para retirar esta chave!"
+                    ]);
+                    exit;
+                }
+            }
+
             // Verificar se há uma reserva ativa ou prestes a começar (próximos 15 min) para outro usuário
             $stmtReserva = $pdo->prepare("
                 SELECT r.*, u.nome AS reservado_nome 
@@ -158,7 +179,7 @@ try {
     }
 
     // 2. Verificar se o QR Code pertence a um Usuário
-    $stmt = $pdo->prepare("SELECT id, nome, matricula, ativo FROM usuarios WHERE qr_code_hash = ?");
+    $stmt = $pdo->prepare("SELECT id, nome, matricula, perfil_id, ativo FROM usuarios WHERE qr_code_hash = ?");
     $stmt->execute([$qr_code]);
     $usuario = $stmt->fetch();
 

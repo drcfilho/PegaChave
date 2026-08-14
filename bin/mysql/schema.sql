@@ -98,3 +98,12 @@ CREATE TABLE IF NOT EXISTS reservas (
     FOREIGN KEY (chave_id) REFERENCES chaves(id) ON DELETE CASCADE,
     FOREIGN KEY (usuario_id) REFERENCES usuarios(id) ON DELETE CASCADE
 ) ENGINE=InnoDB;
+
+-- 9. Tabela de Restrições de Acesso por Perfil a Chaves
+CREATE TABLE IF NOT EXISTS restricoes_acesso (
+    perfil_id INT NOT NULL,
+    chave_id INT NOT NULL,
+    PRIMARY KEY (perfil_id, chave_id),
+    FOREIGN KEY (perfil_id) REFERENCES perfis(id) ON DELETE CASCADE,
+    FOREIGN KEY (chave_id) REFERENCES chaves(id) ON DELETE CASCADE
+) ENGINE=InnoDB;

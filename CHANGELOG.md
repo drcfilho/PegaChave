@@ -49,6 +49,11 @@ Este arquivo registra todo o histórico de desenvolvimento e as melhorias aplica
 * **Validação no Quiosque**: Verificação integrada no leitor (`api/processar_scan.php`) bloqueando retiradas de salas que estejam reservadas para terceiros no horário atual ou nos próximos 15 minutos.
 * **Integração na Consulta Pública**: A tela `consulta.php` agora exibe de forma clara e organizada a lista de reservas ativas de hoje para cada sala, além de oferecer um alternador dinâmico de layout (Modo Cards/Grid e Modo Listagem compacta) com preferência salva localmente.
 
+### 🔒 10. Matriz de Restrições de Acesso
+* **Tabela de Restrições**: Criação da tabela `restricoes_acesso` no banco de dados via migração `005_cria_restricoes_acesso`.
+* **Painel Administrativo (`admin_restricoes.php`)**: Criação da interface com matriz interativa de Perfis vs Salas, permitindo bloquear o acesso de determinados perfis de usuários a salas específicas (ex: impedir que Alunos ou Estagiários peguem a chave do CPD).
+* **Validação no Quiosque**: Verificação integrada no processo de checkout da chave, bloqueando novas retiradas com mensagens claras de restrição caso o perfil do portador esteja bloqueado para a chave correspondente.
+
 ---
 
 ### ⚙️ 8. Limite de Chaves sob Posse

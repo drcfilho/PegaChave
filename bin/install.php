@@ -176,6 +176,15 @@ try {
                 FOREIGN KEY (chave_id) REFERENCES chaves(id) ON DELETE CASCADE,
                 FOREIGN KEY (usuario_id) REFERENCES usuarios(id) ON DELETE CASCADE
             ) ENGINE=InnoDB;
+        ",
+        '005_cria_restricoes_acesso' => "
+            CREATE TABLE IF NOT EXISTS restricoes_acesso (
+                perfil_id INT NOT NULL,
+                chave_id INT NOT NULL,
+                PRIMARY KEY (perfil_id, chave_id),
+                FOREIGN KEY (perfil_id) REFERENCES perfis(id) ON DELETE CASCADE,
+                FOREIGN KEY (chave_id) REFERENCES chaves(id) ON DELETE CASCADE
+            ) ENGINE=InnoDB;
         "
     ];
 
