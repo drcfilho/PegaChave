@@ -13,6 +13,7 @@ O **PegaChave** é uma aplicação web moderna e inteligente projetada para auto
 * **Suporte a PWA (Progressive Web App):** Aplicativo instalável com Service Worker e manifesto para carregamento rápido e robustez mesmo com conexão oscilante.
 * **Funcionamento Offline & Sincronização:** Se a rede cair, o Quiosque salva as leituras localmente no LocalStorage e as sincroniza em segundo plano de forma automática assim que a conexão com o servidor retorna.
 * **Entrada Manual de Redundância e Tema:** Permite digitar o código da sala manualmente e alternar entre Tema Claro e Escuro.
+* **Alertas Integrados Sem Popup**: O quiosque não utiliza popups nativos (`alert()`). Todos os avisos e mensagens de erro são renderizados na própria tela através de um banner de status elegante que fecha sozinho após 5 segundos.
 
 ### 📊 2. Painel de Administração Integrado
 * **Dashboard com Analytics:** Métricas de chaves Disponíveis, Em Uso, logs de movimentação em tempo real e gráficos interativos (fluxo semanal e salas mais utilizadas) com Chart.js.

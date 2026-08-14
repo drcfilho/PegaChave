@@ -482,6 +482,8 @@ require_once __DIR__ . '/api/db.php';
     <!-- Container Principal (Quiosque Principal) -->
     <div class="main-container" id="quiosque-view">
         <div class="quiosque-card">
+            <!-- Banner de Alertas (Sem popups!) -->
+            <div id="quiosque-alert" style="display: none; width: 100%; padding: 12px; border-radius: 8px; font-weight: 700; text-align: center; margin-bottom: 15px; font-size: 14px; box-shadow: 0 2px 4px rgba(0,0,0,0.05); transition: all 0.3s ease;"></div>
             <div class="instruction-title" id="quiosque-title">
                 Aproxime o QR Code do Crachá ou da Chave
             </div>
@@ -796,10 +798,10 @@ require_once __DIR__ . '/api/db.php';
                     }
                 } else if (result.status === 'pending_user') {
                     playBeep('error');
-                    alert(result.message);
+                    showQuiosqueAlert(result.message, 'info');
                 } else {
                     playBeep('error');
-                    alert("Erro: " + result.message);
+                    showQuiosqueAlert(result.message, 'error');
                 }
             } catch (err) {
                 console.warn("Servidor indisponível. Salvando leitura offline...", err);
@@ -810,6 +812,38 @@ require_once __DIR__ . '/api/db.php';
                     isProcessing = false;
                 }, 2000);
             }
+        }
+
+        let alertTimeout = null;
+        function showQuiosqueAlert(message, type = 'error') {
+            const alertEl = document.getElementById('quiosque-alert');
+            if (!alertEl) return;
+
+            if (alertTimeout) {
+                clearTimeout(alertTimeout);
+            }
+
+            alertEl.textContent = message;
+            alertEl.style.display = 'block';
+
+            if (type === 'success') {
+                alertEl.style.backgroundColor = '#dcfce7';
+                alertEl.style.border = '1px solid #bbf7d0';
+                alertEl.style.color = '#166534';
+            } else if (type === 'info') {
+                alertEl.style.backgroundColor = '#e0f2fe';
+                alertEl.style.border = '1px solid #bae6fd';
+                alertEl.style.color = '#0369a1';
+            } else { // error
+                alertEl.style.backgroundColor = '#fee2e2';
+                alertEl.style.border = '1px solid #fecaca';
+                alertEl.style.color = '#991b1b';
+            }
+
+            // Ocultar automaticamente após 5 segundos
+            alertTimeout = setTimeout(() => {
+                alertEl.style.display = 'none';
+            }, 5000);
         }
 
         function showSuccessScreen(data) {
