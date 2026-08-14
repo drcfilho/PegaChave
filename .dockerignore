@@ -1,0 +1,11 @@
+bin/
+.git/
+.env
+.gitignore
+scratch/
+README.md
+plano_unificacao_bd.md
+sugestoes_melhorias.md
+iniciar.bat
+Dockerfile
+docker-compose.yml

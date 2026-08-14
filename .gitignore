@@ -1,5 +1,9 @@
 # Ignorar pastas de binários locais e banco de dados local
-bin/
+bin/*
+!bin/install.php
+!bin/mysql/
+bin/mysql/*
+!bin/mysql/schema.sql
 
 # Arquivos de logs e temporários
 *.log
