@@ -379,51 +379,53 @@ try {
             </div>
         </div>
 
-        <?php if ($pendentesCount > 0): ?>
-            <div class="alert-banner" style="background-color: #fee2e2; border: 1px solid #ef4444; border-left: 6px solid #ef4444; color: #991b1b; padding: 16px; border-radius: 8px; margin-bottom: 25px; display: flex; align-items: center; justify-content: space-between; font-size: 14px; font-weight: 600;">
-                <div style="display: flex; align-items: center; gap: 10px;">
-                    <span style="font-size: 20px;">⚠️</span>
-                    <div>
-                        Atenção: Existem <?php echo $pendentesCount; ?> chaves com atraso de devolução (em uso há mais de 8 horas)!
+        <div id="alert-banner-container">
+            <?php if ($pendentesCount > 0): ?>
+                <div class="alert-banner" style="background-color: #fee2e2; border: 1px solid #ef4444; border-left: 6px solid #ef4444; color: #991b1b; padding: 16px; border-radius: 8px; margin-bottom: 25px; display: flex; align-items: center; justify-content: space-between; font-size: 14px; font-weight: 600;">
+                    <div style="display: flex; align-items: center; gap: 10px;">
+                        <span style="font-size: 20px;">⚠️</span>
+                        <div>
+                            Atenção: Existem <?php echo $pendentesCount; ?> chaves com atraso de devolução (em uso há mais de 8 horas)!
+                        </div>
                     </div>
                 </div>
-            </div>
-        <?php endif; ?>
+            <?php endif; ?>
+        </div>
 
         <!-- Estatísticas Rápidas -->
         <div class="stats-grid">
             <div class="stat-card">
                 <div class="stat-info">
                     <h3>Disponíveis</h3>
-                    <div class="stat-value" style="color: var(--success);"><?php echo $chavesDisponiveis; ?></div>
+                    <div class="stat-value" id="stat-disponiveis" style="color: var(--success);"><?php echo $chavesDisponiveis; ?></div>
                 </div>
                 <div class="stat-icon">🟢</div>
             </div>
             <div class="stat-card">
                 <div class="stat-info">
                     <h3>Em Uso</h3>
-                    <div class="stat-value" style="color: var(--error);"><?php echo $chavesEmUsoCount; ?></div>
+                    <div class="stat-value" id="stat-em-uso" style="color: var(--error);"><?php echo $chavesEmUsoCount; ?></div>
                 </div>
                 <div class="stat-icon">🔴</div>
             </div>
             <div class="stat-card">
                 <div class="stat-info">
                     <h3>Atrasadas</h3>
-                    <div class="stat-value" style="color: #f59e0b;"><?php echo $pendentesCount; ?></div>
+                    <div class="stat-value" id="stat-atrasadas" style="color: #f59e0b;"><?php echo $pendentesCount; ?></div>
                 </div>
                 <div class="stat-icon">⚠️</div>
             </div>
             <div class="stat-card">
                 <div class="stat-info">
                     <h3>Retiradas Hoje</h3>
-                    <div class="stat-value" style="color: #6366f1;"><?php echo $retiradasHoje; ?></div>
+                    <div class="stat-value" id="stat-retiradas-hoje" style="color: #6366f1;"><?php echo $retiradasHoje; ?></div>
                 </div>
                 <div class="stat-icon">🔑</div>
             </div>
             <div class="stat-card">
                 <div class="stat-info">
                     <h3>Devoluções Hoje</h3>
-                    <div class="stat-value" style="color: var(--success);"><?php echo $devolucoesHoje; ?></div>
+                    <div class="stat-value" id="stat-devolucoes-hoje" style="color: var(--success);"><?php echo $devolucoesHoje; ?></div>
                 </div>
                 <div class="stat-icon">↩</div>
             </div>
@@ -459,7 +461,7 @@ try {
                             <th>Ações</th>
                         </tr>
                     </thead>
-                    <tbody>
+                    <tbody id="tabela-chaves-em-uso">
                         <?php if (empty($chavesEmUso)): ?>
                             <tr>
                                 <td colspan="5" style="text-align: center; color: #64748b; padding: 25px;">
@@ -489,6 +491,9 @@ try {
     </main>
 
     <script>
+        let chartFluxoInstance = null;
+        let chartSalasInstance = null;
+
         async function devolverChave(chaveId) {
             if (!confirm("Deseja forçar a devolução manual desta chave?")) return;
             try {
@@ -504,7 +509,7 @@ try {
                     });
                     const scanData = await scanRes.json();
                     alert(scanData.message);
-                    window.location.reload();
+                    refreshDashboard();
                 }
             } catch (err) {
                 console.error(err);
@@ -512,11 +517,96 @@ try {
             }
         }
 
-        // Configuração dos Gráficos Analíticos com Chart.js
+        async function refreshDashboard() {
+            try {
+                const response = await fetch('/api/dashboard_data.php');
+                const result = await response.json();
+                if (result.status !== 'success') return;
+
+                const data = result.data;
+
+                // 1. Atualizar cards de estatísticas
+                document.getElementById('stat-disponiveis').textContent = data.chavesDisponiveis;
+                document.getElementById('stat-em-uso').textContent = data.chavesEmUsoCount;
+                document.getElementById('stat-atrasadas').textContent = data.pendentesCount;
+                document.getElementById('stat-retiradas-hoje').textContent = data.retiradasHoje;
+                document.getElementById('stat-devolucoes-hoje').textContent = data.devolucoesHoje;
+
+                // 2. Atualizar banner de alerta
+                const bannerContainer = document.getElementById('alert-banner-container');
+                if (data.pendentesCount > 0) {
+                    bannerContainer.innerHTML = `
+                        <div class="alert-banner" style="background-color: #fee2e2; border: 1px solid #ef4444; border-left: 6px solid #ef4444; color: #991b1b; padding: 16px; border-radius: 8px; margin-bottom: 25px; display: flex; align-items: center; justify-content: space-between; font-size: 14px; font-weight: 600;">
+                            <div style="display: flex; align-items: center; gap: 10px;">
+                                <span style="font-size: 20px;">⚠️</span>
+                                <div>
+                                    Atenção: Existem ${data.pendentesCount} chaves com atraso de devolução (em uso há mais de 8 horas)!
+                                </div>
+                            </div>
+                        </div>
+                    `;
+                } else {
+                    bannerContainer.innerHTML = '';
+                }
+
+                // 3. Atualizar tabela de chaves em uso
+                const tbody = document.getElementById('tabela-chaves-em-uso');
+                if (data.chavesEmUso.length === 0) {
+                    tbody.innerHTML = `
+                        <tr>
+                            <td colspan="5" style="text-align: center; color: #64748b; padding: 25px;">
+                                Nenhuma chave retirada no momento.
+                            </td>
+                        </tr>
+                    `;
+                } else {
+                    let html = '';
+                    data.chavesEmUso.forEach(c => {
+                        const styleTr = c.atrasada == 1 ? 'style="background-color: #fee2e2;"' : '';
+                        const tagAtrasada = c.atrasada == 1 ? '<span style="background-color: #ef4444; color: white; font-size: 10px; font-weight: 800; padding: 2px 6px; border-radius: 4px; margin-left: 6px; display: inline-block;">ATRASADA ⚠️</span>' : '';
+                        html += `
+                            <tr ${styleTr}>
+                                <td><strong>${escapeHtml(c.nome_sala)}</strong> (${escapeHtml(c.codigo_sala)})</td>
+                                <td>${escapeHtml(c.usuario_nome)}</td>
+                                <td>${escapeHtml(c.usuario_perfil)}</td>
+                                <td>
+                                    ${escapeHtml(c.desde)}
+                                    ${tagAtrasada}
+                                </td>
+                                <td><a class="action-link" style="color: var(--error);" onclick="devolverChave(${c.chave_id})">Devolver Manual</a></td>
+                            </tr>
+                        `;
+                    });
+                    tbody.innerHTML = html;
+                }
+
+                // 4. Atualizar gráficos
+                if (chartFluxoInstance) {
+                    chartFluxoInstance.data.labels = data.fluxoSemanal.map(f => f.dia_mes);
+                    chartFluxoInstance.data.datasets[0].data = data.fluxoSemanal.map(f => f.total);
+                    chartFluxoInstance.update();
+                }
+
+                if (chartSalasInstance) {
+                    chartSalasInstance.data.labels = data.topSalas.map(s => s.nome_sala);
+                    chartSalasInstance.data.datasets[0].data = data.topSalas.map(s => s.total_retiradas);
+                    chartSalasInstance.update();
+                }
+
+            } catch (err) {
+                console.error("Erro no polling do dashboard:", err);
+            }
+        }
+
+        function escapeHtml(str) {
+            if (!str) return '';
+            return str.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;").replace(/'/g, "&#039;");
+        }
+
         document.addEventListener('DOMContentLoaded', () => {
             // 1. Gráfico de Fluxo Semanal (Linha)
             const ctxFluxo = document.getElementById('chartFluxoSemanal').getContext('2d');
-            new Chart(ctxFluxo, {
+            chartFluxoInstance = new Chart(ctxFluxo, {
                 type: 'line',
                 data: {
                     labels: <?php echo json_encode(array_column($fluxoSemanal, 'dia_mes')); ?>,
@@ -547,7 +637,7 @@ try {
 
             // 2. Gráfico de Top 5 Salas (Barras Horizontais)
             const ctxSalas = document.getElementById('chartTopSalas').getContext('2d');
-            new Chart(ctxSalas, {
+            chartSalasInstance = new Chart(ctxSalas, {
                 type: 'bar',
                 data: {
                     labels: <?php echo json_encode(array_column($topSalas, 'nome_sala')); ?>,
@@ -573,6 +663,9 @@ try {
                     }
                 }
             });
+
+            // Polling rápido a cada 2 segundos para atualizações rápidas
+            setInterval(refreshDashboard, 2000);
         });
     </script>
     <script src="/api/admin_responsive.js"></script>
