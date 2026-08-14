@@ -195,7 +195,7 @@ require_once __DIR__ . '/api/db.php';
         }
 
         #reader video {
-            transform: scaleX(1) !important;
+            transform: scaleX(-1) !important;
         }
 
         /* Marcador de Scan */
