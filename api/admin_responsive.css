@@ -1,0 +1,123 @@
+/* api/admin_responsive.css */
+
+/* Mobile Header (Hidden on Desktop) */
+.mobile-admin-header {
+    display: none;
+    background-color: var(--sidebar-bg);
+    color: white;
+    padding: 12px 20px;
+    align-items: center;
+    justify-content: space-between;
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 60px;
+    z-index: 99;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+}
+
+.mobile-menu-toggle {
+    background: transparent;
+    border: none;
+    color: white;
+    font-size: 24px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 6px;
+    border-radius: 4px;
+    transition: background 0.2s;
+}
+
+.mobile-menu-toggle:hover {
+    background: rgba(255,255,255,0.08);
+}
+
+.mobile-brand {
+    font-size: 18px;
+    font-weight: 800;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+/* Backdrop for Mobile Sidebar */
+.sidebar-backdrop {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0,0,0,0.4);
+    z-index: 98;
+    backdrop-filter: blur(2px);
+}
+
+/* Responsive Rules for Tablet and Mobile */
+@media (max-width: 1024px) {
+    .mobile-admin-header {
+        display: flex;
+    }
+
+    aside, .sidebar {
+        left: -260px !important;
+        transition: left 0.3s ease-in-out;
+        z-index: 1000 !important;
+    }
+
+    aside.active, .sidebar.active {
+        left: 0 !important;
+    }
+
+    .sidebar-backdrop.active {
+        display: block;
+    }
+
+    main, .main-content {
+        margin-left: 0 !important;
+        width: 100% !important;
+        padding: 80px 20px 40px 20px !important; /* Extra padding top for fixed mobile header */
+    }
+
+    /* Adjust page headers for smaller screens */
+    .page-header {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 15px;
+    }
+
+    .page-header button, .page-header .btn-add {
+        width: 100%;
+        text-align: center;
+        justify-content: center;
+    }
+
+    /* Responsive tables */
+    .content-card {
+        padding: 16px !important;
+        overflow-x: auto;
+    }
+
+    table {
+        min-width: 600px;
+    }
+
+    /* stats-grid in admin dashboard */
+    .stats-grid {
+        grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)) !important;
+    }
+
+    /* Forms */
+    .color-pickers-row, .modal-actions {
+        flex-direction: column !important;
+        gap: 15px !important;
+    }
+
+    .btn-modal {
+        width: 100% !important;
+        justify-content: center;
+    }
+}

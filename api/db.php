@@ -2,13 +2,44 @@
 // api/db.php
 
 
-$host = '127.0.0.1';
-$db   = 'controle_chaves';
-$user = 'root';
-$pass = '';
+if (!function_exists('carregarEnv')) {
+    function carregarEnv($caminho) {
+        if (!file_exists($caminho)) {
+            return false;
+        }
+        $linhas = file($caminho, FILE_IGNORE_NEW_LINES | FILE_SKIP_EMPTY_LINES);
+        foreach ($linhas as $linha) {
+            $linha = trim($linha);
+            if ($linha === '' || strpos($linha, '#') === 0) {
+                continue;
+            }
+            if (strpos($linha, '=') !== false) {
+                list($nome, $valor) = explode('=', $linha, 2);
+                $nome = trim($nome);
+                $valor = trim($valor);
+                if (preg_match('/^"(.*)"$/', $valor, $matches)) {
+                    $valor = $matches[1];
+                } elseif (preg_match('/^\'(.*)\'$/', $valor, $matches)) {
+                    $valor = $matches[1];
+                }
+                $_ENV[$nome] = $valor;
+                putenv("$nome=$valor");
+            }
+        }
+        return true;
+    }
+}
+
+carregarEnv(dirname(__DIR__) . '/.env');
+
+$host = $_ENV['DB_HOST'] ?? '127.0.0.1';
+$port = $_ENV['DB_PORT'] ?? '3306';
+$db   = $_ENV['DB_NAME'] ?? 'controle_chaves';
+$user = $_ENV['DB_USER'] ?? 'root';
+$pass = $_ENV['DB_PASS'] ?? '';
 $charset = 'utf8mb4';
 
-$dsn = "mysql:host=$host;dbname=$db;charset=$charset;port=3306";
+$dsn = "mysql:host=$host;dbname=$db;charset=$charset;port=$port";
 $options = [
     PDO::ATTR_ERRMODE            => PDO::ERRMODE_EXCEPTION,
     PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ASSOC,
@@ -46,5 +77,34 @@ function registrar_log($pdo, $acao, $detalhes) {
         $stmt->execute([$admin_id, $acao, $detalhes]);
     } catch (\Exception $e) {
         // Silencioso para não quebrar a aplicação caso ocorra erro
+    }
+}
+
+// Inicializar token CSRF se a sessão estiver ativa
+if (session_status() === PHP_SESSION_ACTIVE) {
+    if (empty($_SESSION['csrf_token'])) {
+        $_SESSION['csrf_token'] = bin2hex(random_bytes(32));
+    }
+}
+
+// Funções Auxiliares de CSRF
+if (!function_exists('obter_csrf_token')) {
+    function obter_csrf_token() {
+        return $_SESSION['csrf_token'] ?? '';
+    }
+}
+
+if (!function_exists('renderizar_csrf_input')) {
+    function renderizar_csrf_input() {
+        echo '<input type="hidden" name="csrf_token" value="' . htmlspecialchars(obter_csrf_token()) . '">';
+    }
+}
+
+if (!function_exists('validar_csrf_token')) {
+    function validar_csrf_token($token) {
+        if (empty($_SESSION['csrf_token']) || empty($token)) {
+            return false;
+        }
+        return hash_equals($_SESSION['csrf_token'], $token);
     }
 }

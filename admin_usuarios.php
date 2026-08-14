@@ -9,8 +9,12 @@ require_once __DIR__ . '/api/db.php';
 $message = '';
 $messageType = '';
 
-if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
-    $action = $_POST['action'];
+if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+    if (!validar_csrf_token($_POST['csrf_token'] ?? '')) {
+        $message = "Token de segurança inválido. Tente novamente.";
+        $messageType = "error";
+    } else {
+        $action = $_POST['action'];
 
     try {
         if ($action === 'add_usuario') {
@@ -51,19 +55,18 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
             $userInfo = $stmtUser->fetch();
             $nomeExcluido = $userInfo ? $userInfo['nome'] . ' (Matrícula: ' . $userInfo['matricula'] . ')' : "ID $id";
 
-            // Remover dependências de movimentações
-            $pdo->prepare("DELETE FROM movimentacoes WHERE usuario_id = ?")->execute([$id]);
-            
-            $stmt = $pdo->prepare("DELETE FROM usuarios WHERE id = ?");
+            // Não apagamos mais as movimentações para manter o histórico de auditoria intacto.
+            $stmt = $pdo->prepare("UPDATE usuarios SET excluido = TRUE, ativo = FALSE WHERE id = ?");
             $stmt->execute([$id]);
-            registrar_log($pdo, 'Remoção de Usuário', "Usuário '$nomeExcluido' e seu histórico foram removidos.");
-            $message = "Usuário removido.";
+            registrar_log($pdo, 'Arquivamento de Usuário', "Usuário '$nomeExcluido' foi arquivado.");
+            $message = "Usuário arquivado para auditoria com sucesso.";
             $messageType = "success";
         }
     } catch (\PDOException $e) {
         $message = "Erro ao salvar dados: " . $e->getMessage();
         $messageType = "error";
     }
+  }
 }
 
 try {
@@ -71,6 +74,7 @@ try {
         SELECT u.*, p.nome AS funcao 
         FROM usuarios u 
         JOIN perfis p ON u.perfil_id = p.id 
+        WHERE u.excluido = FALSE
         ORDER BY u.nome ASC
     ")->fetchAll();
 
@@ -392,6 +396,7 @@ try {
             100% { top: -60px; opacity: 0; }
         }
     </style>
+    <link rel="stylesheet" href="/api/admin_responsive.css">
 </head>
 <body>
 
@@ -415,6 +420,9 @@ try {
             </li>
             <li class="sidebar-item active">
                 <a href="/admin_usuarios.php">👤 Usuários</a>
+            </li>
+            <li class="sidebar-item">
+                <a href="/admin_usuarios_arquivados.php">🗄️ Arquivados</a>
             </li>
             <li class="sidebar-item">
                 <a href="/admin_gerar_qr.php">🖨️ Gerar QR Codes</a>
@@ -505,6 +513,7 @@ try {
         <div class="modal-content">
             <h3 class="modal-title-text" id="user-modal-title">Cadastrar Novo Usuário</h3>
             <form method="POST" action="admin_usuarios.php">
+                <?php renderizar_csrf_input(); ?>
                 <input type="hidden" name="action" id="user-action" value="add_usuario">
                 <input type="hidden" name="id" id="user-id">
                 
@@ -551,6 +560,7 @@ try {
     </div>
 
     <form id="delete-form" method="POST" action="admin_usuarios.php" style="display: none;">
+        <?php renderizar_csrf_input(); ?>
         <input type="hidden" name="action" value="delete_usuario">
         <input type="hidden" name="id" id="delete-id">
     </form>
@@ -594,5 +604,6 @@ try {
             }
         }
     </script>
+    <script src="/api/admin_responsive.js"></script>
 </body>
 </html>

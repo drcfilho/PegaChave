@@ -7,6 +7,14 @@ require_once __DIR__ . '/api/db.php';
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Quiosque - <?php echo htmlspecialchars($nome_escola); ?></title>
+    
+    <!-- PWA Meta -->
+    <link rel="manifest" href="/manifest.json">
+    <meta name="theme-color" content="#0284c7">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <link rel="apple-touch-icon" href="/logo_pwa.jpg">
+
     <!-- Google Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -22,6 +30,14 @@ require_once __DIR__ . '/api/db.php';
             --header-bg: <?php echo $cor_secundaria; ?>;
             --card-bg: #ffffff;
             --border-color: #e2e8f0;
+        }
+
+        /* Suporte ao Tema Escuro */
+        body.dark-theme {
+            --bg-color: #0f172a;
+            --text-color: #f8fafc;
+            --card-bg: #1e293b;
+            --border-color: #334155;
         }
 
         * {
@@ -404,6 +420,7 @@ require_once __DIR__ . '/api/db.php';
             <span><?php echo htmlspecialchars($nome_escola); ?></span>
         </div>
         <div class="header-right">
+            <button onclick="toggleDarkMode()" style="background: rgba(255,255,255,0.1); border: 1px solid rgba(255,255,255,0.2); color: white; padding: 6px 12px; border-radius: 6px; font-weight: 600; cursor: pointer; margin-right: 15px; font-size: 13px;">🌗 Tema</button>
             <button onclick="window.location.href='/consulta.php'" style="background: rgba(255,255,255,0.1); border: 1px solid rgba(255,255,255,0.2); color: white; padding: 6px 12px; border-radius: 6px; font-weight: 600; cursor: pointer; margin-right: 15px; font-size: 13px;">🔍 Consultar Chaves</button>
             <span id="quiosque-time">[10:45]</span>
             <span style="display: flex; align-items: center; gap: 6px;">
@@ -491,6 +508,62 @@ require_once __DIR__ . '/api/db.php';
     <!-- html5-qrcode library -->
     <script src="https://unpkg.com/html5-qrcode"></script>
     <script>
+        // Registrar Service Worker para PWA
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', () => {
+                navigator.serviceWorker.register('/service-worker.js')
+                    .then(reg => console.log('Service Worker registrado com sucesso:', reg))
+                    .catch(err => console.warn('Erro ao registrar Service Worker:', err));
+            });
+        }
+
+        // Configuração do Tema Escuro
+        function initTheme() {
+            const savedTheme = localStorage.getItem('theme');
+            if (savedTheme === 'dark' || (!savedTheme && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+                document.body.classList.add('dark-theme');
+            }
+        }
+        function toggleDarkMode() {
+            const isDark = document.body.classList.toggle('dark-theme');
+            localStorage.setItem('theme', isDark ? 'dark' : 'light');
+        }
+        initTheme();
+
+        // Feedback de Áudio
+        function playBeep(type) {
+            try {
+                const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+                const osc = audioCtx.createOscillator();
+                const gain = audioCtx.createGain();
+                osc.connect(gain);
+                gain.connect(audioCtx.destination);
+                
+                if (type === 'success') {
+                    osc.frequency.value = 880;
+                    gain.gain.setValueAtTime(0.1, audioCtx.currentTime);
+                    gain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.15);
+                    osc.start(audioCtx.currentTime);
+                    osc.stop(audioCtx.currentTime + 0.15);
+                } else if (type === 'error') {
+                    osc.type = 'sawtooth';
+                    osc.frequency.value = 150;
+                    gain.gain.setValueAtTime(0.15, audioCtx.currentTime);
+                    gain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.4);
+                    osc.start(audioCtx.currentTime);
+                    osc.stop(audioCtx.currentTime + 0.4);
+                } else if (type === 'info') {
+                    osc.frequency.value = 600;
+                    gain.gain.setValueAtTime(0.08, audioCtx.currentTime);
+                    gain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.1);
+                    osc.start(audioCtx.currentTime);
+                    osc.stop(audioCtx.currentTime + 0.15);
+                }
+            } catch (e) {
+                console.warn("Web Audio API bloqueada ou não suportada:", e);
+            }
+        }
+
         // Atualizar Relógio
         function updateClock() {
             const now = new Date();
@@ -574,18 +647,23 @@ require_once __DIR__ . '/api/db.php';
                 
                 if (result.status === 'success') {
                     if (result.tipo === 'devolucao' || result.tipo === 'retirada') {
+                        playBeep('success');
                         showSuccessScreen(result);
                     } else if (result.tipo === 'usuario') {
+                        playBeep('info');
                         // Apenas atualiza o cabeçalho para orientar a leitura da chave
                         const titleEl = document.getElementById('quiosque-title');
                         titleEl.textContent = `Olá, ${result.usuario}! Agora aproxime a Chave.`;
                     }
                 } else if (result.status === 'pending_user') {
+                    playBeep('error');
                     alert(result.message);
                 } else {
+                    playBeep('error');
                     alert("Erro: " + result.message);
                 }
             } catch (err) {
+                playBeep('error');
                 console.error("Erro na API:", err);
             } finally {
                 setTimeout(() => {

@@ -2,6 +2,21 @@
 // api/processar_scan.php
 header("Content-Type: application/json; charset=UTF-8");
 session_start();
+
+// Controle de Rate Limiting (Máximo de 10 requisições a cada 30 segundos)
+$currentTime = time();
+if (!isset($_SESSION['scan_attempts'])) {
+    $_SESSION['scan_attempts'] = [];
+}
+$_SESSION['scan_attempts'] = array_filter($_SESSION['scan_attempts'], function($timestamp) use ($currentTime) {
+    return ($currentTime - $timestamp) < 30;
+});
+if (count($_SESSION['scan_attempts']) >= 10) {
+    echo json_encode(["status" => "error", "message" => "Muitas tentativas rápidas. Por favor, aguarde alguns segundos antes de tentar novamente."]);
+    exit;
+}
+$_SESSION['scan_attempts'][] = $currentTime;
+
 require_once __DIR__ . '/db.php';
 
 // Receber JSON input

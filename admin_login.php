@@ -12,10 +12,13 @@ if (isset($_SESSION['admin_logged_in']) && $_SESSION['admin_logged_in'] === true
 $error = '';
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    $usuarioInput = trim($_POST['usuario'] ?? '');
-    $senhaInput = $_POST['senha'] ?? '';
+    if (!validar_csrf_token($_POST['csrf_token'] ?? '')) {
+        $error = "Token de segurança inválido. Tente novamente.";
+    } else {
+        $usuarioInput = trim($_POST['usuario'] ?? '');
+        $senhaInput = $_POST['senha'] ?? '';
 
-    if ($usuarioInput && $senhaInput) {
+        if ($usuarioInput && $senhaInput) {
         try {
             $stmt = $pdo->prepare("SELECT * FROM administradores WHERE usuario = ?");
             $stmt->execute([$usuarioInput]);
@@ -37,6 +40,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     } else {
         $error = "Por favor, preencha todos os campos.";
     }
+  }
 }
 ?>
 <!DOCTYPE html>
@@ -201,6 +205,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         <?php endif; ?>
 
         <form method="POST" action="admin_login.php">
+            <?php renderizar_csrf_input(); ?>
             <div class="form-group">
                 <label for="usuario">Usuário</label>
                 <input type="text" name="usuario" id="usuario" class="form-control" placeholder="Digite seu usuário" required autofocus>

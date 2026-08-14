@@ -205,6 +205,7 @@ try {
             display: inline-block;
         }
     </style>
+    <link rel="stylesheet" href="/api/admin_responsive.css">
 </head>
 <body>
 
@@ -222,6 +223,9 @@ try {
             </li>
             <li class="sidebar-item">
                 <a href="/admin_usuarios.php">👤 Usuários</a>
+            </li>
+            <li class="sidebar-item">
+                <a href="/admin_usuarios_arquivados.php">🗄️ Arquivados</a>
             </li>
             <li class="sidebar-item">
                 <a href="/admin_gerar_qr.php">🖨️ Gerar QR Codes</a>
@@ -298,5 +302,6 @@ try {
         </div>
     </main>
 
+    <script src="/api/admin_responsive.js"></script>
 </body>
 </html>

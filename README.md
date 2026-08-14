@@ -41,7 +41,7 @@ Certifique-se de ter instalado em seu ambiente local:
 * Banco de Dados MySQL 8.0+
 
 ### 2. Configurando o Banco de Dados
-Importe o arquivo do esquema SQL localizado em `bin/mysql/schema.sql` (ou siga as especificações do arquivo `bd.md`):
+Importe o arquivo do esquema SQL localizado em `bin/mysql/schema.sql`:
 ```sql
 CREATE DATABASE controle_chaves;
 USE controle_chaves;

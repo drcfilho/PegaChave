@@ -6,3 +6,10 @@ bin/
 tmp/
 .vscode/
 .idea/
+
+# Ignorar arquivos Markdown de controle interno (exceto README)
+*.md
+!README.md
+
+# Configurações sensíveis
+.env

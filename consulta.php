@@ -35,6 +35,14 @@ try {
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Consulta de Chaves - <?php echo htmlspecialchars($nome_escola); ?></title>
+    
+    <!-- PWA Meta -->
+    <link rel="manifest" href="/manifest.json">
+    <meta name="theme-color" content="#0284c7">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <link rel="apple-touch-icon" href="/logo_pwa.jpg">
+
     <!-- Google Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -43,10 +51,19 @@ try {
         :root {
             --bg-color: #f8fafc;
             --text-color: #0f172a;
+            --card-bg: #ffffff;
             --primary: <?php echo $cor_primaria; ?>;
             --success: #22c55e;
             --error: #ef4444;
             --border-color: #e2e8f0;
+        }
+
+        /* Suporte ao Tema Escuro */
+        body.dark-theme {
+            --bg-color: #0f172a;
+            --text-color: #f8fafc;
+            --card-bg: #1e293b;
+            --border-color: #334155;
         }
 
         * {
@@ -76,7 +93,7 @@ try {
         .header h1 {
             font-size: 28px;
             font-weight: 800;
-            color: #0f172a;
+            color: var(--text-color);
             margin-bottom: 8px;
             display: flex;
             align-items: center;
@@ -104,7 +121,7 @@ try {
             font-size: 16px;
             border-radius: 12px;
             border: 2px solid var(--border-color);
-            background-color: #ffffff;
+            background-color: var(--card-bg);
             color: var(--text-color);
             outline: none;
             box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
@@ -136,7 +153,7 @@ try {
         }
 
         .card-chave {
-            background-color: #ffffff;
+            background-color: var(--card-bg);
             border-radius: 12px;
             border: 1px solid var(--border-color);
             padding: 20px;
@@ -162,7 +179,7 @@ try {
         .card-title h3 {
             font-size: 16px;
             font-weight: 700;
-            color: #0f172a;
+            color: var(--text-color);
             margin-bottom: 4px;
         }
 
@@ -288,6 +305,14 @@ try {
     </a>
 
     <script>
+        // Inicializar Tema de acordo com a preferência salva
+        (function() {
+            const savedTheme = localStorage.getItem('theme');
+            if (savedTheme === 'dark' || (!savedTheme && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+                document.body.classList.add('dark-theme');
+            }
+        })();
+
         function filterCards() {
             const query = document.getElementById('search').value.toLowerCase().trim();
             const cards = document.querySelectorAll('.card-chave');

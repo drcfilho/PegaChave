@@ -9,7 +9,11 @@ require_once __DIR__ . '/api/db.php';
 $message = '';
 $messageType = '';
 
-if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']) && $_POST['action'] === 'update_config') {
+if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+    if (!validar_csrf_token($_POST['csrf_token'] ?? '')) {
+        $message = "Token de segurança inválido. Tente novamente.";
+        $messageType = "error";
+    } elseif (isset($_POST['action']) && $_POST['action'] === 'update_config') {
     $nome_input = $_POST['nome_escola'] ?? 'Escola Lumiar';
     $cor_p_input = $_POST['cor_primaria'] ?? '#0284c7';
     $cor_s_input = $_POST['cor_secundaria'] ?? '#0f172a';
@@ -38,6 +42,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']) && $_POST['
         $message = "Erro ao salvar configurações: " . $e->getMessage();
         $messageType = "error";
     }
+  }
 }
 ?>
 <!DOCTYPE html>
@@ -272,6 +277,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']) && $_POST['
             100% { top: -60px; opacity: 0; }
         }
     </style>
+    <link rel="stylesheet" href="/api/admin_responsive.css">
 </head>
 <body>
 
@@ -295,6 +301,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']) && $_POST['
             </li>
             <li class="sidebar-item">
                 <a href="/admin_usuarios.php">👤 Usuários</a>
+            </li>
+            <li class="sidebar-item">
+                <a href="/admin_usuarios_arquivados.php">🗄️ Arquivados</a>
             </li>
             <li class="sidebar-item">
                 <a href="/admin_gerar_qr.php">🖨️ Gerar QR Codes</a>
@@ -331,6 +340,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']) && $_POST['
 
         <div class="content-card">
             <form method="POST" action="admin_config.php">
+                <?php renderizar_csrf_input(); ?>
                 <input type="hidden" name="action" value="update_config">
                 
                 <div class="form-group">
@@ -370,5 +380,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']) && $_POST['
             e.target.nextElementSibling.textContent = e.target.value.toUpperCase();
         });
     </script>
+    <script src="/api/admin_responsive.js"></script>
 </body>
 </html>

@@ -7,6 +7,14 @@ require_once __DIR__ . '/api/db.php';
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Regras e Instruções - <?php echo htmlspecialchars($nome_escola); ?></title>
+    
+    <!-- PWA Meta -->
+    <link rel="manifest" href="/manifest.json">
+    <meta name="theme-color" content="#0284c7">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <link rel="apple-touch-icon" href="/logo_pwa.jpg">
+
     <!-- Google Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -18,6 +26,14 @@ require_once __DIR__ . '/api/db.php';
             --primary-blue: <?php echo $cor_primaria; ?>;
             --card-bg: #ffffff;
             --border-color: #e2e8f0;
+        }
+
+        /* Suporte ao Tema Escuro */
+        body.dark-theme {
+            --bg-color: #0f172a;
+            --text-color: #f8fafc;
+            --card-bg: #1e293b;
+            --border-color: #334155;
         }
 
         * {
@@ -50,7 +66,7 @@ require_once __DIR__ . '/api/db.php';
             align-items: center;
             gap: 15px;
             margin-bottom: 30px;
-            border-bottom: 2px solid #f1f5f9;
+            border-bottom: 2px solid var(--border-color);
             padding-bottom: 20px;
         }
 
@@ -61,13 +77,13 @@ require_once __DIR__ . '/api/db.php';
         h1 {
             font-size: 24px;
             font-weight: 800;
-            color: #0f172a;
+            color: var(--text-color);
         }
 
         h2 {
             font-size: 18px;
             font-weight: 700;
-            color: #1e293b;
+            color: var(--text-color);
             margin-top: 25px;
             margin-bottom: 12px;
             display: flex;
@@ -164,5 +180,14 @@ require_once __DIR__ . '/api/db.php';
         </a>
     </div>
 
+    <script>
+        // Inicializar Tema de acordo com a preferência salva
+        (function() {
+            const savedTheme = localStorage.getItem('theme');
+            if (savedTheme === 'dark' || (!savedTheme && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+                document.body.classList.add('dark-theme');
+            }
+        })();
+    </script>
 </body>
 </html>
