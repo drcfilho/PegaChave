@@ -24,6 +24,8 @@ Este arquivo registra todo o histórico de desenvolvimento e as melhorias aplica
 * **Limitação de Acesso (Rate Limiting)**: Máximo de 10 tentativas rápidas de escaneamento a cada 30 segundos no leitor para evitar ataques automatizados.
 * **Arquivamento Seguro (Soft Delete)**: O botão de excluir usuário foi alterado para desativar e arquivar o registro. Isso mantém o histórico de logs e movimentações de chaves íntegro no banco de dados.
 * **Aba de Auditoria com Senha**: Criação da tela `admin_usuarios_arquivados.php`, onde os administradores acessam os dados de usuários arquivados inserindo a sua senha de login.
+* **Sistema de Migrações Automáticas**: O instalador `bin/install.php` agora possui controle de versões para aplicar alterações de estrutura (como novas colunas e tabelas) de forma incremental e sem perda de dados.
+* **Validação Estrita de Dados**: Sanitização e validações avançadas (incluindo tipo, e-mail e expressões regulares de segurança) de todas as entradas do painel para cadastros e edições.
 
 ---
 

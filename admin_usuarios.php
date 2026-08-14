@@ -18,11 +18,23 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
     try {
         if ($action === 'add_usuario') {
-            $nome = $_POST['nome'] ?? '';
-            $email = $_POST['email'] ?? '';
-            $matricula = $_POST['matricula'] ?? '';
-            $perfil_id = $_POST['perfil_id'] ?? '';
-            $qr_code_hash = $_POST['qr_code_hash'] ?? '';
+            $nome = trim($_POST['nome'] ?? '');
+            $email = trim($_POST['email'] ?? '');
+            $matricula = trim($_POST['matricula'] ?? '');
+            $perfil_id = filter_var($_POST['perfil_id'] ?? '', FILTER_VALIDATE_INT);
+            $qr_code_hash = trim($_POST['qr_code_hash'] ?? '');
+
+            if (empty($nome) || empty($matricula) || empty($qr_code_hash) || !$perfil_id) {
+                throw new Exception("Por favor, preencha todos os campos obrigatórios corretamente.");
+            }
+            if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
+                throw new Exception("Formato de e-mail inválido.");
+            }
+
+            // Saneamento básico
+            $nome = htmlspecialchars($nome, ENT_QUOTES, 'UTF-8');
+            $matricula = preg_replace('/[^a-zA-Z0-9_-]/', '', $matricula);
+            $qr_code_hash = preg_replace('/[^a-zA-Z0-9_-]/', '', $qr_code_hash);
 
             $stmt = $pdo->prepare("INSERT INTO usuarios (nome, email, matricula, perfil_id, qr_code_hash) VALUES (?, ?, ?, ?, ?)");
             $stmt->execute([$nome, $email, $matricula, $perfil_id, $qr_code_hash]);
@@ -32,13 +44,24 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         }
 
         elseif ($action === 'edit_usuario') {
-            $id = $_POST['id'] ?? '';
-            $nome = $_POST['nome'] ?? '';
-            $email = $_POST['email'] ?? '';
-            $matricula = $_POST['matricula'] ?? '';
-            $perfil_id = $_POST['perfil_id'] ?? '';
-            $qr_code_hash = $_POST['qr_code_hash'] ?? '';
+            $id = filter_var($_POST['id'] ?? '', FILTER_VALIDATE_INT);
+            $nome = trim($_POST['nome'] ?? '');
+            $email = trim($_POST['email'] ?? '');
+            $matricula = trim($_POST['matricula'] ?? '');
+            $perfil_id = filter_var($_POST['perfil_id'] ?? '', FILTER_VALIDATE_INT);
+            $qr_code_hash = trim($_POST['qr_code_hash'] ?? '');
             $ativo = isset($_POST['ativo']) ? 1 : 0;
+
+            if (!$id || empty($nome) || empty($matricula) || empty($qr_code_hash) || !$perfil_id) {
+                throw new Exception("Todos os campos obrigatórios devem ser preenchidos.");
+            }
+            if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
+                throw new Exception("Formato de e-mail inválido.");
+            }
+
+            $nome = htmlspecialchars($nome, ENT_QUOTES, 'UTF-8');
+            $matricula = preg_replace('/[^a-zA-Z0-9_-]/', '', $matricula);
+            $qr_code_hash = preg_replace('/[^a-zA-Z0-9_-]/', '', $qr_code_hash);
 
             $stmt = $pdo->prepare("UPDATE usuarios SET nome = ?, email = ?, matricula = ?, perfil_id = ?, qr_code_hash = ?, ativo = ? WHERE id = ?");
             $stmt->execute([$nome, $email, $matricula, $perfil_id, $qr_code_hash, $ativo, $id]);

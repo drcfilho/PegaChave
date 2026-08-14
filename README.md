@@ -58,7 +58,7 @@ Se você utiliza os executáveis locais presentes na pasta `bin/`:
    ```bash
    cp .env.example .env
    ```
-2. Inicialize o banco de dados e as tabelas executando o script instalador automático:
+2. Inicialize o banco de dados e aplique as migrações automáticas executando o script instalador:
    ```bash
    php bin/install.php
    ```

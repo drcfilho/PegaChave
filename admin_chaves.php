@@ -18,10 +18,20 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
     try {
         if ($action === 'add_chave') {
-            $nome_sala = $_POST['nome_sala'] ?? '';
-            $codigo_sala = $_POST['codigo_sala'] ?? '';
-            $qr_code_hash = $_POST['qr_code_hash'] ?? '';
-            $descricao = $_POST['descricao'] ?? '';
+            $nome_sala = trim($_POST['nome_sala'] ?? '');
+            $codigo_sala = trim($_POST['codigo_sala'] ?? '');
+            $qr_code_hash = trim($_POST['qr_code_hash'] ?? '');
+            $descricao = trim($_POST['descricao'] ?? '');
+
+            if (empty($nome_sala) || empty($codigo_sala) || empty($qr_code_hash)) {
+                throw new Exception("Por favor, preencha todos os campos obrigatórios.");
+            }
+
+            // Saneamento básico
+            $nome_sala = htmlspecialchars($nome_sala, ENT_QUOTES, 'UTF-8');
+            $codigo_sala = preg_replace('/[^a-zA-Z0-9_-]/', '', $codigo_sala);
+            $qr_code_hash = preg_replace('/[^a-zA-Z0-9_-]/', '', $qr_code_hash);
+            $descricao = htmlspecialchars($descricao, ENT_QUOTES, 'UTF-8');
 
             $stmt = $pdo->prepare("INSERT INTO chaves (nome_sala, codigo_sala, qr_code_hash, descricao) VALUES (?, ?, ?, ?)");
             $stmt->execute([$nome_sala, $codigo_sala, $qr_code_hash, $descricao]);
@@ -31,11 +41,20 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         } 
         
         elseif ($action === 'edit_chave') {
-            $id = $_POST['id'] ?? '';
-            $nome_sala = $_POST['nome_sala'] ?? '';
-            $codigo_sala = $_POST['codigo_sala'] ?? '';
-            $qr_code_hash = $_POST['qr_code_hash'] ?? '';
-            $descricao = $_POST['descricao'] ?? '';
+            $id = filter_var($_POST['id'] ?? '', FILTER_VALIDATE_INT);
+            $nome_sala = trim($_POST['nome_sala'] ?? '');
+            $codigo_sala = trim($_POST['codigo_sala'] ?? '');
+            $qr_code_hash = trim($_POST['qr_code_hash'] ?? '');
+            $descricao = trim($_POST['descricao'] ?? '');
+
+            if (!$id || empty($nome_sala) || empty($codigo_sala) || empty($qr_code_hash)) {
+                throw new Exception("Todos os campos obrigatórios devem ser preenchidos.");
+            }
+
+            $nome_sala = htmlspecialchars($nome_sala, ENT_QUOTES, 'UTF-8');
+            $codigo_sala = preg_replace('/[^a-zA-Z0-9_-]/', '', $codigo_sala);
+            $qr_code_hash = preg_replace('/[^a-zA-Z0-9_-]/', '', $qr_code_hash);
+            $descricao = htmlspecialchars($descricao, ENT_QUOTES, 'UTF-8');
 
             $stmt = $pdo->prepare("UPDATE chaves SET nome_sala = ?, codigo_sala = ?, qr_code_hash = ?, descricao = ? WHERE id = ?");
             $stmt->execute([$nome_sala, $codigo_sala, $qr_code_hash, $descricao, $id]);

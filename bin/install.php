@@ -80,18 +80,109 @@ try {
     $pdo = new PDO($dsnComDb, $user, $pass, $options);
     echo "Conectado ao banco de dados '$dbName' com sucesso!\n";
 
-    // 3. Ler e executar o schema.sql
-    $schemaPath = $rootPath . '/bin/mysql/schema.sql';
-    if (!file_exists($schemaPath)) {
-        throw new Exception("Arquivo de esquema SQL não encontrado em: $schemaPath");
+    // 3. Criar tabela de controle de migrações se não existir
+    $pdo->exec("CREATE TABLE IF NOT EXISTS schema_migrations (
+        versao VARCHAR(50) PRIMARY KEY,
+        executado_em TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+    ) ENGINE=InnoDB;");
+
+    // Definição das migrações sequenciais do banco de dados
+    $migrations = [
+        '001_cria_estrutura_base' => "
+            CREATE TABLE IF NOT EXISTS perfis (
+                id INT AUTO_INCREMENT PRIMARY KEY,
+                nome VARCHAR(50) NOT NULL UNIQUE
+            ) ENGINE=InnoDB;
+            
+            INSERT INTO perfis (id, nome) VALUES 
+            (1, 'Administrador'), (2, 'Estagiário'), (3, 'Docente'), (4, 'TAE'),
+            (5, 'Limpeza'), (6, 'Segurança'), (7, 'Externo'), (8, 'Aluno')
+            ON DUPLICATE KEY UPDATE nome=VALUES(nome);
+            
+            CREATE TABLE IF NOT EXISTS usuarios (
+                id INT AUTO_INCREMENT PRIMARY KEY,
+                nome VARCHAR(100) NOT NULL,
+                email VARCHAR(100) UNIQUE,
+                matricula VARCHAR(50) NOT NULL UNIQUE,
+                perfil_id INT NOT NULL,
+                qr_code_hash VARCHAR(64) NOT NULL UNIQUE,
+                senha_hash VARCHAR(255) NULL,
+                ativo BOOLEAN DEFAULT TRUE,
+                criado_em TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+                FOREIGN KEY (perfil_id) REFERENCES perfis(id)
+            ) ENGINE=InnoDB;
+            
+            CREATE TABLE IF NOT EXISTS chaves (
+                id INT AUTO_INCREMENT PRIMARY KEY,
+                nome_sala VARCHAR(100) NOT NULL,
+                codigo_sala VARCHAR(20) NOT NULL UNIQUE,
+                qr_code_hash VARCHAR(64) NOT NULL UNIQUE,
+                status_disponivel BOOLEAN DEFAULT TRUE,
+                descricao TEXT NULL,
+                criado_em TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+            ) ENGINE=InnoDB;
+            
+            CREATE TABLE IF NOT EXISTS movimentacoes (
+                id INT AUTO_INCREMENT PRIMARY KEY,
+                usuario_id INT NOT NULL,
+                chave_id INT NOT NULL,
+                data_retirada DATETIME DEFAULT CURRENT_TIMESTAMP,
+                data_devolucao DATETIME NULL,
+                observacao TEXT NULL,
+                FOREIGN KEY (usuario_id) REFERENCES usuarios(id),
+                FOREIGN KEY (chave_id) REFERENCES chaves(id),
+                INDEX idx_chave_devolucao (chave_id, data_devolucao),
+                INDEX idx_usuario (usuario_id)
+            ) ENGINE=InnoDB;
+        ",
+        '002_cria_tabelas_administrativas' => "
+            CREATE TABLE IF NOT EXISTS administradores (
+                id INT AUTO_INCREMENT PRIMARY KEY,
+                usuario VARCHAR(50) NOT NULL UNIQUE,
+                senha VARCHAR(255) NOT NULL,
+                nome VARCHAR(100) NOT NULL,
+                criado_em TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+            ) ENGINE=InnoDB;
+            
+            CREATE TABLE IF NOT EXISTS configuracoes (
+                chave VARCHAR(50) PRIMARY KEY,
+                valor VARCHAR(255) NOT NULL
+            ) ENGINE=InnoDB;
+            
+            CREATE TABLE IF NOT EXISTS logs_auditoria (
+                id INT AUTO_INCREMENT PRIMARY KEY,
+                admin_id INT NULL,
+                acao VARCHAR(255) NOT NULL,
+                detalhes TEXT NULL,
+                criado_em TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+                FOREIGN KEY (admin_id) REFERENCES administradores(id) ON DELETE SET NULL
+            ) ENGINE=InnoDB;
+        ",
+        '003_adiciona_soft_delete_usuarios' => function($pdo) {
+            $colExists = $pdo->query("SHOW COLUMNS FROM usuarios LIKE 'excluido'")->fetch();
+            if (!$colExists) {
+                $pdo->exec("ALTER TABLE usuarios ADD COLUMN excluido BOOLEAN DEFAULT FALSE AFTER ativo");
+            }
+        }
+    ];
+
+    echo "Verificando e aplicando migrações pendentes...\n";
+    foreach ($migrations as $versao => $action) {
+        $stmtMig = $pdo->prepare("SELECT COUNT(*) FROM schema_migrations WHERE versao = ?");
+        $stmtMig->execute([$versao]);
+        if ($stmtMig->fetchColumn() == 0) {
+            echo "Aplicando migração: $versao...\n";
+            if (is_callable($action)) {
+                $action($pdo);
+            } else {
+                $pdo->exec($action);
+            }
+            $stmtInsert = $pdo->prepare("INSERT INTO schema_migrations (versao) VALUES (?)");
+            $stmtInsert->execute([$versao]);
+            echo "Migração $versao aplicada com sucesso!\n";
+        }
     }
-    
-    echo "Lendo arquivo schema.sql...\n";
-    $sql = file_get_contents($schemaPath);
-    
-    echo "Executando queries de criação de tabelas...\n";
-    $pdo->exec($sql);
-    echo "Tabelas criadas/verificadas com sucesso!\n";
+    echo "Todas as migrações aplicadas/verificadas!\n";
 
     // 4. Inserir administrador padrão se a tabela de administradores estiver vazia
     $stmt = $pdo->query("SELECT COUNT(*) FROM administradores");
