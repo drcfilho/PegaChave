@@ -102,7 +102,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 }
 
 try {
-    $chaves = $pdo->query("SELECT * FROM chaves ORDER BY nome_sala ASC")->fetchAll();
+    $chaves = $pdo->query("SELECT * FROM chaves ORDER BY codigo_sala ASC")->fetchAll();
 } catch (\PDOException $e) {
     echo "Erro de Banco de Dados: " . $e->getMessage();
     exit;
