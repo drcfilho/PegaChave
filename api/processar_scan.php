@@ -29,9 +29,159 @@ if (!$qr_code) {
 }
 
 try {
-    // 1. Verificar se o QR Code pertence a uma Chave
-    $stmt = $pdo->prepare("SELECT * FROM chaves WHERE qr_code_hash = ?");
-    $stmt->execute([$qr_code]);
+    // Verificar se o input contiver vírgula, tratamos como múltiplas chaves (códigos ou hashes)
+    $contem_virgula = (strpos($qr_code, ',') !== false);
+
+    if ($contem_virgula) {
+        $codigos = array_map('trim', explode(',', $qr_code));
+        $sucessos = [];
+        $erros = [];
+
+        // Buscar a primeira chave para inferir a operação (retirada ou devolução)
+        $primeiro_cod = $codigos[0];
+        $stmtCh = $pdo->prepare("SELECT * FROM chaves WHERE qr_code_hash = ? OR codigo_sala = ?");
+        $stmtCh->execute([$primeiro_cod, $primeiro_cod]);
+        $primeira_chave = $stmtCh->fetch();
+
+        if (!$primeira_chave) {
+            echo json_encode(["status" => "error", "message" => "A primeira chave do lote ('$primeiro_cod') não foi encontrada."]);
+            exit;
+        }
+
+        $operacao = $primeira_chave['status_disponivel'] ? 'retirada' : 'devolucao';
+
+        if ($operacao === 'retirada' && !isset($_SESSION['usuario_pendente'])) {
+            echo json_encode([
+                "status" => "pending_user",
+                "message" => "Por favor, insira a matrícula do usuário antes de registrar a retirada múltipla das chaves: " . implode(', ', $codigos)
+            ]);
+            exit;
+        }
+
+        $usuario_atual = $_SESSION['usuario_pendente'] ?? null;
+
+        // Processar cada código de chave
+        foreach ($codigos as $cod) {
+            if (empty($cod)) continue;
+
+            $stmtCh = $pdo->prepare("SELECT * FROM chaves WHERE qr_code_hash = ? OR codigo_sala = ?");
+            $stmtCh->execute([$cod, $cod]);
+            $ch = $stmtCh->fetch();
+
+            if (!$ch) {
+                $erros[] = "Código '$cod' não encontrado";
+                continue;
+            }
+
+            $ch_id = $ch['id'];
+            $nom_sala = $ch['nome_sala'];
+
+            if ($operacao === 'devolucao') {
+                // Devolução da chave
+                $stmtMov = $pdo->prepare("SELECT id, usuario_id FROM movimentacoes WHERE chave_id = ? AND data_devolucao IS NULL ORDER BY data_retirada DESC LIMIT 1");
+                $stmtMov->execute([$ch_id]);
+                $mov = $stmtMov->fetch();
+
+                if ($mov) {
+                    $observacao = null;
+                    if (isset($_SESSION['admin_logged_in']) && $_SESSION['admin_logged_in'] === true) {
+                        $admin_nome = $_SESSION['admin_name'] ?? 'Administrador';
+                        $observacao = "Devolvida manualmente por: " . $admin_nome;
+                    }
+                    $pdo->prepare("UPDATE movimentacoes SET data_devolucao = NOW(), observacao = ? WHERE id = ?")->execute([$observacao, $mov['id']]);
+                    $pdo->prepare("UPDATE chaves SET status_disponivel = TRUE WHERE id = ?")->execute([$ch_id]);
+                    $sucessos[] = $nom_sala;
+                } else {
+                    $pdo->prepare("UPDATE chaves SET status_disponivel = TRUE WHERE id = ?")->execute([$ch_id]);
+                    $sucessos[] = $nom_sala . " (Corrigido)";
+                }
+            } else {
+                // Retirada da chave
+                // 1. Restrições de perfil
+                $perfil_id = $usuario_atual['perfil_id'] ?? null;
+                if ($perfil_id) {
+                    $stmtRestricao = $pdo->prepare("SELECT COUNT(*) FROM restricoes_acesso WHERE perfil_id = ? AND chave_id = ?");
+                    $stmtRestricao->execute([$perfil_id, $ch_id]);
+                    if ($stmtRestricao->fetchColumn() > 0) {
+                        $erros[] = "Acesso Bloqueado para perfil no item $nom_sala";
+                        continue;
+                    }
+                }
+
+                // 2. Restrições de matrícula
+                if (!empty($ch['matriculas_permitidas'])) {
+                    $matriculas_permitidas = array_map('trim', explode(',', $ch['matriculas_permitidas']));
+                    if (!in_array($usuario_atual['matricula'], $matriculas_permitidas)) {
+                        $erros[] = "Matrícula não autorizada no item $nom_sala";
+                        continue;
+                    }
+                }
+
+                // 3. Reservas
+                $stmtReserva = $pdo->prepare("
+                    SELECT r.*, u.nome AS reservado_nome 
+                    FROM reservas r
+                    JOIN usuarios u ON r.usuario_id = u.id
+                    WHERE r.chave_id = ?
+                      AND r.data_reserva = CURDATE()
+                      AND (
+                          (CURTIME() BETWEEN r.hora_inicio AND r.hora_fim)
+                          OR (r.hora_inicio BETWEEN CURTIME() AND ADDTIME(CURTIME(), '00:15:00'))
+                      )
+                      AND r.usuario_id <> ?
+                    LIMIT 1
+                ");
+                $stmtReserva->execute([$ch_id, $usuario_atual['id']]);
+                if ($stmtReserva->fetch()) {
+                    $erros[] = "Sala $nom_sala reservada para terceiros";
+                    continue;
+                }
+
+                // 4. Limite de chaves
+                if (isset($limite_chaves) && $limite_chaves > 0) {
+                    $stmtCount = $pdo->prepare("SELECT COUNT(*) FROM movimentacoes WHERE usuario_id = ? AND data_devolucao IS NULL");
+                    $stmtCount->execute([$usuario_atual['id']]);
+                    $totalPosse = $stmtCount->fetchColumn();
+
+                    if ($totalPosse >= $limite_chaves) {
+                        $erros[] = "Limite excedido para retirar $nom_sala";
+                        continue;
+                    }
+                }
+
+                // Inserir movimentação
+                $pdo->prepare("INSERT INTO movimentacoes (usuario_id, chave_id, data_retirada) VALUES (?, ?, NOW())")->execute([$usuario_atual['id'], $ch_id]);
+                $pdo->prepare("UPDATE chaves SET status_disponivel = FALSE WHERE id = ?")->execute([$ch_id]);
+                $sucessos[] = $nom_sala;
+            }
+        }
+
+        unset($_SESSION['usuario_pendente']);
+
+        if (count($sucessos) > 0) {
+            $msg = ($operacao === 'retirada' ? 'Chaves retiradas: ' : 'Chaves devolvidas: ') . implode(', ', $sucessos);
+            if (count($erros) > 0) {
+                $msg .= ". Alertas: " . implode('; ', $erros);
+            }
+            echo json_encode([
+                "status" => "success",
+                "tipo" => $operacao,
+                "sala" => implode(', ', $sucessos),
+                "usuario" => $usuario_atual ? $usuario_atual['nome'] : "Desconhecido",
+                "message" => $msg
+            ]);
+        } else {
+            echo json_encode([
+                "status" => "error",
+                "message" => "Bloqueado: " . implode('; ', $erros)
+            ]);
+        }
+        exit;
+    }
+
+    // 1. Verificar se o QR Code pertence a uma Chave (por hash ou código)
+    $stmt = $pdo->prepare("SELECT * FROM chaves WHERE qr_code_hash = ? OR codigo_sala = ?");
+    $stmt->execute([$qr_code, $qr_code]);
     $chave = $stmt->fetch();
 
     if ($chave) {
@@ -40,33 +190,27 @@ try {
 
         // Caso A: Chave Indisponível -> Devolução Automática
         if (!$chave['status_disponivel']) {
-            // Achar a movimentação em aberto para essa chave
             $stmtMov = $pdo->prepare("SELECT id, usuario_id FROM movimentacoes WHERE chave_id = ? AND data_devolucao IS NULL ORDER BY data_retirada DESC LIMIT 1");
             $stmtMov->execute([$chave_id]);
             $mov = $stmtMov->fetch();
 
             if ($mov) {
-                // Registrar observação se for devolução manual por admin logado
                 $observacao = null;
                 if (isset($_SESSION['admin_logged_in']) && $_SESSION['admin_logged_in'] === true) {
                     $admin_nome = $_SESSION['admin_name'] ?? 'Administrador';
                     $observacao = "Devolvida manualmente por: " . $admin_nome;
                 }
 
-                // Registrar devolução
                 $stmtUpdateMov = $pdo->prepare("UPDATE movimentacoes SET data_devolucao = NOW(), observacao = ? WHERE id = ?");
                 $stmtUpdateMov->execute([$observacao, $mov['id']]);
 
-                // Atualizar status da chave
                 $stmtUpdateChave = $pdo->prepare("UPDATE chaves SET status_disponivel = TRUE WHERE id = ?");
                 $stmtUpdateChave->execute([$chave_id]);
 
-                // Buscar nome do usuário para retornar na resposta
                 $stmtUser = $pdo->prepare("SELECT nome FROM usuarios WHERE id = ?");
                 $stmtUser->execute([$mov['usuario_id']]);
                 $user = $stmtUser->fetch();
 
-                // Limpar qualquer sessão pendente para segurança
                 unset($_SESSION['usuario_pendente']);
 
                 echo json_encode([
@@ -77,24 +221,21 @@ try {
                     "message" => "Chave da sala $nome_sala devolvida com sucesso!"
                 ]);
             } else {
-                // Inconsistência: chave indisponível no cadastro, mas sem registro de movimentação aberta
-                // Força ficar disponível para limpar estado
                 $pdo->prepare("UPDATE chaves SET status_disponivel = TRUE WHERE id = ?")->execute([$chave_id]);
                 echo json_encode([
                     "status" => "error",
-                    "message" => "Inconsistência corrigida: Chave estava marcada como ocupada mas não havia registro aberto."
+                    "message" => "Inconsistência corrigida: Chave marcada como ocupada mas sem movimentação."
                 ]);
             }
             exit;
         }
 
         // Caso B: Chave Disponível -> Retirada
-        // Precisa ter um usuário pendente em sessão
         if (isset($_SESSION['usuario_pendente'])) {
             $usuario = $_SESSION['usuario_pendente'];
             $usuario_id = $usuario['id'];
 
-            // Verificar restrições de acesso (bloqueios por perfil a chaves específicas)
+            // Verificar restrições de perfil
             $perfil_id = $usuario['perfil_id'] ?? null;
             if ($perfil_id) {
                 $stmtRestricao = $pdo->prepare("
@@ -115,11 +256,9 @@ try {
                 }
             }
 
-            // Verificar restrições de matrícula específica (Acesso Restrito)
+            // Verificar restrições de matrícula
             if (!empty($chave['matriculas_permitidas'])) {
-                // Separar as matrículas por vírgula e limpar espaços em branco
                 $matriculas_permitidas = array_map('trim', explode(',', $chave['matriculas_permitidas']));
-                // Se a matrícula do usuário não estiver na lista de permitidas
                 if (!in_array($usuario['matricula'], $matriculas_permitidas)) {
                     echo json_encode([
                         "status" => "error",
@@ -129,7 +268,7 @@ try {
                 }
             }
 
-            // Verificar se há uma reserva ativa ou prestes a começar (próximos 15 min) para outro usuário
+            // Reservas
             $stmtReserva = $pdo->prepare("
                 SELECT r.*, u.nome AS reservado_nome 
                 FROM reservas r
@@ -156,7 +295,7 @@ try {
                 exit;
             }
 
-            // Verificar se o usuário excedeu o limite de chaves configurado
+            // Limite de chaves
             if (isset($limite_chaves) && $limite_chaves > 0) {
                 $stmtCount = $pdo->prepare("SELECT COUNT(*) FROM movimentacoes WHERE usuario_id = ? AND data_devolucao IS NULL");
                 $stmtCount->execute([$usuario_id]);
@@ -171,15 +310,12 @@ try {
                 }
             }
 
-            // Registrar nova movimentação
             $stmtInsert = $pdo->prepare("INSERT INTO movimentacoes (usuario_id, chave_id, data_retirada) VALUES (?, ?, NOW())");
             $stmtInsert->execute([$usuario_id, $chave_id]);
 
-            // Atualizar status da chave para indisponível
             $stmtUpdateChave = $pdo->prepare("UPDATE chaves SET status_disponivel = FALSE WHERE id = ?");
             $stmtUpdateChave->execute([$chave_id]);
 
-            // Limpa a sessão pendente
             unset($_SESSION['usuario_pendente']);
 
             echo json_encode([
@@ -190,18 +326,17 @@ try {
                 "message" => "Chave da sala $nome_sala retirada com sucesso por " . $usuario['nome'] . "!"
             ]);
         } else {
-            // Chave está disponível, mas não tem usuário na sessão
             echo json_encode([
                 "status" => "pending_user",
-                "message" => "Por favor, aproxime o crachá do usuário antes de registrar a retirada da chave da sala $nome_sala."
+                "message" => "Por favor, insira a matrícula do usuário antes de registrar a retirada da chave da sala $nome_sala."
             ]);
         }
         exit;
     }
 
-    // 2. Verificar se o QR Code pertence a um Usuário
-    $stmt = $pdo->prepare("SELECT id, nome, matricula, perfil_id, ativo FROM usuarios WHERE qr_code_hash = ?");
-    $stmt->execute([$qr_code]);
+    // 2. Verificar se o QR Code pertence a um Usuário (por hash ou matrícula)
+    $stmt = $pdo->prepare("SELECT id, nome, matricula, perfil_id, ativo FROM usuarios WHERE qr_code_hash = ? OR matricula = ?");
+    $stmt->execute([$qr_code, $qr_code]);
     $usuario = $stmt->fetch();
 
     if ($usuario) {
@@ -210,20 +345,18 @@ try {
             exit;
         }
 
-        // Salvar usuário na sessão temporária
         $_SESSION['usuario_pendente'] = $usuario;
 
         echo json_encode([
             "status" => "success",
             "tipo" => "usuario",
             "usuario" => $usuario['nome'],
-            "message" => "Olá, " . $usuario['nome'] . "! Agora aproxime o QR Code da chave que deseja retirar."
+            "message" => "Olá, " . $usuario['nome'] . "! Agora insira o código da chave que deseja retirar."
         ]);
         exit;
     }
 
-    // 3. Caso não pertença a nenhum
-    echo json_encode(["status" => "error", "message" => "Código QR não identificado."]);
+    echo json_encode(["status" => "error", "message" => "Código não identificado no sistema (Matrícula ou Código da Sala inválido)."]);
 
 } catch (\PDOException $e) {
     echo json_encode(["status" => "error", "message" => "Erro de banco de dados: " . $e->getMessage()]);

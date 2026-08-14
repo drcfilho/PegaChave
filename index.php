@@ -509,7 +509,7 @@ require_once __DIR__ . '/api/db.php';
             <!-- Input de Código Manual -->
             <div class="input-row">
                 <div class="input-code-wrapper">
-                    <input type="text" id="manual-code" class="input-code" placeholder="Digitar Código (Sala)" onkeydown="checkEnter(event)">
+                    <input type="text" id="manual-code" class="input-code" placeholder="Digitar Código (Matrícula ou Sala/s)" onkeydown="checkEnter(event)">
                 </div>
                 <button class="btn-help" onclick="window.location.href='/regras.php'">
                     <span>❓</span> Ajuda
