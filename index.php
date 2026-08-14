@@ -40,6 +40,52 @@ require_once __DIR__ . '/api/db.php';
             --border-color: #334155;
         }
 
+        body.dark-theme .instruction-title {
+            color: #ffffff !important;
+        }
+
+        body.dark-theme .input-code {
+            background-color: #0f172a;
+            color: #ffffff;
+            border-color: #475569;
+        }
+
+        body.dark-theme .btn-help {
+            color: #94a3b8;
+        }
+
+        body.dark-theme .btn-help:hover {
+            color: #ffffff;
+        }
+
+        body.dark-theme .success-overlay {
+            background-color: var(--bg-color);
+            color: var(--text-color);
+        }
+
+        body.dark-theme .success-card {
+            background-color: var(--card-bg);
+            color: #ffffff;
+        }
+
+        body.dark-theme .success-title {
+            color: #ffffff !important;
+        }
+
+        body.dark-theme .success-details {
+            background-color: #0f172a;
+            color: #ffffff;
+            border-color: #334155;
+        }
+
+        body.dark-theme .detail-row {
+            color: #cbd5e1;
+        }
+
+        body.dark-theme .detail-row strong {
+            color: #ffffff;
+        }
+
         * {
             box-sizing: border-box;
             margin: 0;

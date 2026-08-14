@@ -17,7 +17,7 @@ Este arquivo registra todo o histórico de desenvolvimento e as melhorias aplica
   * **Informação (Azul)**: Bip de tom médio na leitura do crachá do usuário.
   * **Erro (Vermelho)**: Bip grave em caso de leitura inválida ou falha na API.
 * **Suporte Completo a PWA**: Criação de `manifest.json`, service worker de cache (`service-worker.js`) e ícones de atalho para instalação direta em tablets.
-* **Tema Escuro (Dark Mode)**: Botão no cabeçalho e suporte automático à preferência do sistema, sincronizado localmente entre todas as telas.
+* **Tema Escuro (Dark Mode)**: Botão no cabeçalho e suporte automático à preferência do sistema, sincronizado localmente entre todas as telas. O contraste do Quiosque foi aprimorado no modo escuro definindo cor branca para os títulos de instrução, inputs manuais e detalhes do popup de sucesso.
 
 ### 🔒 3. Segurança e Auditoria
 * **Proteção contra CSRF**: Geração e validação de tokens de segurança únicos por sessão em todos os formulários administrativos POST (Login, Cadastro de Salas, Cadastro de Usuários e Configurações).
