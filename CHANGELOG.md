@@ -40,6 +40,11 @@ Este arquivo registra todo o histórico de desenvolvimento e as melhorias aplica
 * **Top 5 Salas Mais Utilizadas**: Gráfico de barras horizontais indicando quais salas tiveram mais acessos e retiradas no sistema.
 * **Integração com Chart.js**: Gráficos totalmente responsivos, com temas de cores personalizados e renderizados no topo do painel administrativo.
 
+### 📅 7. Sistema de Reservas/Agendamentos
+* **Tabela de Reservas**: Criação da tabela `reservas` via migração `004_cria_sistema_reservas` no instalador.
+* **Painel de Agendamentos**: Página `admin_reservas.php` para cadastro de reservas de salas (Chave, Usuário, Data, Horário) com validação de sobreposição de horários e prevenção de conflitos.
+* **Validação no Quiosque**: Verificação integrada no leitor (`api/processar_scan.php`) bloqueando retiradas de salas que estejam reservadas para terceiros no horário atual ou nos próximos 15 minutos.
+
 ---
 
 ## 📜 Histórico de Commits (Git Log Atualizado)

@@ -305,6 +305,9 @@ try {
                 <a href="/admin_usuarios_arquivados.php">🗄️ Arquivados</a>
             </li>
             <li class="sidebar-item">
+                <a href="/admin_reservas.php">📅 Agendamentos</a>
+            </li>
+            <li class="sidebar-item">
                 <a href="/admin_gerar_qr.php">🖨️ Gerar QR Codes</a>
             </li>
             <li class="sidebar-item active">

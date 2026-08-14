@@ -163,7 +163,20 @@ try {
             if (!$colExists) {
                 $pdo->exec("ALTER TABLE usuarios ADD COLUMN excluido BOOLEAN DEFAULT FALSE AFTER ativo");
             }
-        }
+        },
+        '004_cria_sistema_reservas' => "
+            CREATE TABLE IF NOT EXISTS reservas (
+                id INT AUTO_INCREMENT PRIMARY KEY,
+                chave_id INT NOT NULL,
+                usuario_id INT NOT NULL,
+                data_reserva DATE NOT NULL,
+                hora_inicio TIME NOT NULL,
+                hora_fim TIME NOT NULL,
+                criado_em TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+                FOREIGN KEY (chave_id) REFERENCES chaves(id) ON DELETE CASCADE,
+                FOREIGN KEY (usuario_id) REFERENCES usuarios(id) ON DELETE CASCADE
+            ) ENGINE=InnoDB;
+        "
     ];
 
     echo "Verificando e aplicando migrações pendentes...\n";

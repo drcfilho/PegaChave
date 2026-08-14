@@ -85,3 +85,16 @@ CREATE TABLE IF NOT EXISTS logs_auditoria (
     criado_em TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     FOREIGN KEY (admin_id) REFERENCES administradores(id) ON DELETE SET NULL
 ) ENGINE=InnoDB;
+
+-- 8. Tabela de Reservas / Agendamentos
+CREATE TABLE IF NOT EXISTS reservas (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    chave_id INT NOT NULL,
+    usuario_id INT NOT NULL,
+    data_reserva DATE NOT NULL,
+    hora_inicio TIME NOT NULL,
+    hora_fim TIME NOT NULL,
+    criado_em TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (chave_id) REFERENCES chaves(id) ON DELETE CASCADE,
+    FOREIGN KEY (usuario_id) REFERENCES usuarios(id) ON DELETE CASCADE
+) ENGINE=InnoDB;

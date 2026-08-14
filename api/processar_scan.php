@@ -87,6 +87,33 @@ try {
             $usuario = $_SESSION['usuario_pendente'];
             $usuario_id = $usuario['id'];
 
+            // Verificar se há uma reserva ativa ou prestes a começar (próximos 15 min) para outro usuário
+            $stmtReserva = $pdo->prepare("
+                SELECT r.*, u.nome AS reservado_nome 
+                FROM reservas r
+                JOIN usuarios u ON r.usuario_id = u.id
+                WHERE r.chave_id = ?
+                  AND r.data_reserva = CURDATE()
+                  AND (
+                      (CURTIME() BETWEEN r.hora_inicio AND r.hora_fim)
+                      OR (r.hora_inicio BETWEEN CURTIME() AND ADDTIME(CURTIME(), '00:15:00'))
+                  )
+                  AND r.usuario_id <> ?
+                LIMIT 1
+            ");
+            $stmtReserva->execute([$chave_id, $usuario_id]);
+            $reservaAtiva = $stmtReserva->fetch();
+
+            if ($reservaAtiva) {
+                $inicio = date('H:i', strtotime($reservaAtiva['hora_inicio']));
+                $fim = date('H:i', strtotime($reservaAtiva['hora_fim']));
+                echo json_encode([
+                    "status" => "error",
+                    "message" => "Bloqueado: Sala reservada para {$reservaAtiva['reservado_nome']} das $inicio às $fim!"
+                ]);
+                exit;
+            }
+
             // Registrar nova movimentação
             $stmtInsert = $pdo->prepare("INSERT INTO movimentacoes (usuario_id, chave_id, data_retirada) VALUES (?, ?, NOW())");
             $stmtInsert->execute([$usuario_id, $chave_id]);
