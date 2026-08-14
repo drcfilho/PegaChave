@@ -31,6 +31,10 @@ $router->post('/admin/config', 'AdminConfigController', 'index');
 $router->get('/admin/logs', 'AdminLogsController', 'index');
 $router->get('/admin/gerar_qr', 'AdminGerarQrController', 'index');
 $router->get('/admin/consulta', 'AdminConsultaController', 'index');
+$router->get('/admin/operadores', 'AdminOperadoresController', 'index');
+$router->post('/admin/operadores/create', 'AdminOperadoresController', 'create');
+$router->post('/admin/operadores/update', 'AdminOperadoresController', 'update');
+$router->post('/admin/operadores/delete', 'AdminOperadoresController', 'delete');
 
 // Despacha a requisição baseada na URL
 $router->dispatch($_SERVER['REQUEST_URI'], $_SERVER['REQUEST_METHOD']);

@@ -29,6 +29,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 $_SESSION['admin_logged_in'] = true;
                 $_SESSION['admin_user_id'] = $admin['id'];
                 $_SESSION['admin_name'] = $admin['nome'];
+                $_SESSION['admin_role'] = $admin['role'] ?? 'admin_master';
+                $_SESSION['admin_permissoes'] = $admin['permissoes'] ? json_decode($admin['permissoes'], true) : [];
                 
                 header("Location: " . BASE_URL . "/admin");
                 exit;
