@@ -130,6 +130,24 @@ try {
         WHERE r.data_reserva >= CURDATE()
         ORDER BY r.data_reserva ASC, r.hora_inicio ASC
     ")->fetchAll();
+
+    // Obter reservas passadas (histórico)
+    $reservasPassadas = $pdo->query("
+        SELECT 
+            r.id,
+            r.data_reserva,
+            DATE_FORMAT(r.hora_inicio, '%H:%i') AS inicio,
+            DATE_FORMAT(r.hora_fim, '%H:%i') AS fim,
+            c.nome_sala,
+            c.codigo_sala,
+            u.nome AS usuario_nome
+        FROM reservas r
+        JOIN chaves c ON r.chave_id = c.id
+        JOIN usuarios u ON r.usuario_id = u.id
+        WHERE r.data_reserva < CURDATE()
+        ORDER BY r.data_reserva DESC, r.hora_inicio DESC
+        LIMIT 100
+    ")->fetchAll();
 } catch (\PDOException $e) {
     echo "Erro de Banco de Dados: " . $e->getMessage();
     exit;
@@ -573,6 +591,43 @@ try {
                                             <button type="submit" class="action-link" style="background:none; border:none; padding:0; font-size:inherit; font-family:inherit;">Cancelar</button>
                                         </form>
                                     </td>
+                                </tr>
+                            <?php endforeach; ?>
+                        <?php endif; ?>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- Histórico de Reservas Passadas -->
+        <div class="content-card">
+            <h2 class="card-title">Histórico de Reservas Passadas (Auditoria)</h2>
+            <div style="overflow-x: auto;">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Data</th>
+                            <th>Horário</th>
+                            <th>Chave/Sala</th>
+                            <th>Reservado Para</th>
+                            <th>Status</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <?php if (empty($reservasPassadas)): ?>
+                            <tr>
+                                <td colspan="5" style="text-align: center; color: #64748b; padding: 25px;">
+                                    Nenhum histórico de agendamento encontrado.
+                                </td>
+                            </tr>
+                        <?php else: ?>
+                            <?php foreach ($reservasPassadas as $rp): ?>
+                                <tr>
+                                    <td><strong><?php echo date('d/m/Y', strtotime($rp['data_reserva'])); ?></strong></td>
+                                    <td><?php echo $rp['inicio']; ?> - <?php echo $rp['fim']; ?></td>
+                                    <td><strong><?php echo htmlspecialchars($rp['nome_sala']); ?></strong> (<?php echo htmlspecialchars($rp['codigo_sala']); ?>)</td>
+                                    <td><?php echo htmlspecialchars($rp['usuario_nome']); ?></td>
+                                    <td style="color: #64748b; font-style: italic;">Concluído / Expirado</td>
                                 </tr>
                             <?php endforeach; ?>
                         <?php endif; ?>

@@ -42,7 +42,7 @@ Este arquivo registra todo o histórico de desenvolvimento e as melhorias aplica
 
 ### 📅 7. Sistema de Reservas/Agendamentos
 * **Tabela de Reservas**: Criação da tabela `reservas` via migração `004_cria_sistema_reservas` no instalador.
-* **Painel de Agendamentos**: Página `admin_reservas.php` para cadastro de reservas de salas (Chave, Usuário, Data, Horário) com validação de sobreposição de horários e prevenção de conflitos.
+* **Painel de Agendamentos & Histórico**: Página `admin_reservas.php` para cadastro de reservas de salas (Chave, Usuário, Data, Horário) com validação de sobreposição de horários, prevenção de conflitos e listagem de reservas passadas para auditoria.
 * **Validação no Quiosque**: Verificação integrada no leitor (`api/processar_scan.php`) bloqueando retiradas de salas que estejam reservadas para terceiros no horário atual ou nos próximos 15 minutos.
 * **Integração na Consulta Pública**: A tela `consulta.php` agora exibe de forma clara e organizada a lista de reservas ativas de hoje para cada sala, permitindo ao usuário saber previamente quais horários a sala estará ocupada.
 
