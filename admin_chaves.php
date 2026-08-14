@@ -285,6 +285,29 @@ try {
             text-transform: uppercase;
         }
 
+        th.sortable {
+            cursor: pointer;
+            position: relative;
+            user-select: none;
+            transition: background 0.2s;
+        }
+
+        th.sortable:hover {
+            background-color: rgba(0,0,0,0.05);
+            color: var(--primary);
+        }
+
+        body.dark-theme th.sortable:hover {
+            background-color: rgba(255,255,255,0.05);
+        }
+
+        th.sortable::after {
+            content: ' ↕';
+            font-size: 10px;
+            color: #94a3b8;
+            margin-left: 4px;
+        }
+
         td {
             font-size: 14px;
             padding: 14px 16px;
@@ -495,14 +518,14 @@ try {
                 <table>
                     <thead>
                         <tr>
-                            <th>Sala/Ambiente</th>
-                            <th>Bloco</th>
-                            <th>Andar</th>
-                            <th>Código</th>
-                            <th>QR Hash</th>
-                            <th>Descrição</th>
-                            <th>Acesso Restrito</th>
-                            <th>Status</th>
+                            <th class="sortable" onclick="sortTable(0)">Sala/Ambiente</th>
+                            <th class="sortable" onclick="sortTable(1)">Bloco</th>
+                            <th class="sortable" onclick="sortTable(2)">Andar</th>
+                            <th class="sortable" onclick="sortTable(3)">Código</th>
+                            <th class="sortable" onclick="sortTable(4)">QR Hash</th>
+                            <th class="sortable" onclick="sortTable(5)">Descrição</th>
+                            <th class="sortable" onclick="sortTable(6)">Acesso Restrito</th>
+                            <th class="sortable" onclick="sortTable(7)">Status</th>
                             <th>Ações</th>
                         </tr>
                     </thead>
@@ -652,6 +675,39 @@ try {
             this.value = this.value.replace(/[^a-zA-Z0-9_-]/g, '');
             document.getElementById('key_qr_code_hash').value = this.value ? 'chaves_' + this.value : '';
         });
+
+        // Ordenação Interativa de Tabela
+        let sortDirections = {};
+        function sortTable(colIndex) {
+            const table = document.querySelector("table");
+            const tbody = table.querySelector("tbody");
+            const rows = Array.from(tbody.querySelectorAll("tr"));
+            
+            if (rows.length === 1 && rows[0].cells.length === 1) return;
+
+            const currentDir = sortDirections[colIndex] || 'desc';
+            const nextDir = currentDir === 'desc' ? 'asc' : 'desc';
+            sortDirections[colIndex] = nextDir;
+
+            // Ordenar linhas
+            rows.sort((a, b) => {
+                const cellA = a.cells[colIndex].textContent.trim();
+                const cellB = b.cells[colIndex].textContent.trim();
+
+                const numA = parseFloat(cellA);
+                const numB = parseFloat(cellB);
+                if (!isNaN(numA) && !isNaN(numB)) {
+                    return nextDir === 'asc' ? numA - numB : numB - numA;
+                }
+
+                return nextDir === 'asc' 
+                    ? cellA.localeCompare(cellB, 'pt-BR', { numeric: true, sensitivity: 'base' })
+                    : cellB.localeCompare(cellA, 'pt-BR', { numeric: true, sensitivity: 'base' });
+            });
+
+            // Re-inserir ordenadas
+            rows.forEach(row => tbody.appendChild(row));
+        }
     </script>
     <script src="/api/admin_responsive.js"></script>
 </body>

@@ -1,4 +1,4 @@
-const CACHE_NAME = 'pegachave-v10';
+const CACHE_NAME = 'pegachave-v11';
 const ASSETS = [
   '/',
   '/index.php',
