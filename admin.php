@@ -50,6 +50,35 @@ try {
         AND data_retirada < DATE_SUB(NOW(), INTERVAL 8 HOUR)
     ")->fetchColumn();
 
+    // 3. Analytics - Top 5 salas mais utilizadas
+    $topSalas = $pdo->query("
+        SELECT c.nome_sala, COUNT(m.id) AS total_retiradas
+        FROM movimentacoes m
+        JOIN chaves c ON m.chave_id = c.id
+        GROUP BY c.id
+        ORDER BY total_retiradas DESC
+        LIMIT 5
+    ")->fetchAll();
+
+    // 4. Analytics - Fluxo de retiradas nos últimos 7 dias
+    $fluxoSemanal = $pdo->query("
+        SELECT 
+            DATE_FORMAT(d.data, '%d/%m') AS dia_mes,
+            COALESCE(COUNT(m.id), 0) AS total
+        FROM (
+            SELECT CURDATE() - INTERVAL 6 DAY AS data UNION ALL
+            SELECT CURDATE() - INTERVAL 5 DAY UNION ALL
+            SELECT CURDATE() - INTERVAL 4 DAY UNION ALL
+            SELECT CURDATE() - INTERVAL 3 DAY UNION ALL
+            SELECT CURDATE() - INTERVAL 2 DAY UNION ALL
+            SELECT CURDATE() - INTERVAL 1 DAY UNION ALL
+            SELECT CURDATE()
+        ) d
+        LEFT JOIN movimentacoes m ON DATE(m.data_retirada) = d.data
+        GROUP BY d.data
+        ORDER BY d.data ASC
+    ")->fetchAll();
+
 } catch (\PDOException $e) {
     echo "Erro de Banco de Dados: " . $e->getMessage();
     exit;
@@ -289,6 +318,7 @@ try {
         }
     </style>
     <link rel="stylesheet" href="/api/admin_responsive.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 </head>
 <body>
 
@@ -393,6 +423,22 @@ try {
             </div>
         </div>
 
+        <!-- Gráficos Analíticos -->
+        <div class="stats-grid" style="grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 20px; margin-bottom: 25px;">
+            <div class="content-card" style="margin-bottom: 0;">
+                <h2 class="card-title">Fluxo de Retiradas (Últimos 7 dias)</h2>
+                <div style="height: 220px; position: relative;">
+                    <canvas id="chartFluxoSemanal"></canvas>
+                </div>
+            </div>
+            <div class="content-card" style="margin-bottom: 0;">
+                <h2 class="card-title">Top 5 Salas Mais Utilizadas</h2>
+                <div style="height: 220px; position: relative;">
+                    <canvas id="chartTopSalas"></canvas>
+                </div>
+            </div>
+        </div>
+
         <!-- Chaves em Uso -->
         <div class="content-card">
             <h2 class="card-title">Chaves em Uso Atualmente</h2>
@@ -459,6 +505,69 @@ try {
                 alert("Erro ao processar devolução.");
             }
         }
+
+        // Configuração dos Gráficos Analíticos com Chart.js
+        document.addEventListener('DOMContentLoaded', () => {
+            // 1. Gráfico de Fluxo Semanal (Linha)
+            const ctxFluxo = document.getElementById('chartFluxoSemanal').getContext('2d');
+            new Chart(ctxFluxo, {
+                type: 'line',
+                data: {
+                    labels: <?php echo json_encode(array_column($fluxoSemanal, 'dia_mes')); ?>,
+                    datasets: [{
+                        label: 'Chaves Retiradas',
+                        data: <?php echo json_encode(array_column($fluxoSemanal, 'total')); ?>,
+                        borderColor: '#6366f1',
+                        backgroundColor: 'rgba(99, 102, 241, 0.1)',
+                        borderWidth: 3,
+                        fill: true,
+                        tension: 0.4
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: { display: false }
+                    },
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            ticks: { stepSize: 1 }
+                        }
+                    }
+                }
+            });
+
+            // 2. Gráfico de Top 5 Salas (Barras Horizontais)
+            const ctxSalas = document.getElementById('chartTopSalas').getContext('2d');
+            new Chart(ctxSalas, {
+                type: 'bar',
+                data: {
+                    labels: <?php echo json_encode(array_column($topSalas, 'nome_sala')); ?>,
+                    datasets: [{
+                        label: 'Total de Retiradas',
+                        data: <?php echo json_encode(array_column($topSalas, 'total_retiradas')); ?>,
+                        backgroundColor: 'rgba(2, 132, 199, 0.85)',
+                        borderRadius: 6
+                    }]
+                },
+                options: {
+                    indexAxis: 'y',
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: { display: false }
+                    },
+                    scales: {
+                        x: {
+                            beginAtZero: true,
+                            ticks: { stepSize: 1 }
+                        }
+                    }
+                }
+            });
+        });
     </script>
     <script src="/api/admin_responsive.js"></script>
 </body>

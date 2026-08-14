@@ -35,6 +35,11 @@ Este arquivo registra todo o histórico de desenvolvimento e as melhorias aplica
 * **Script de Varredura Automatizada**: Script `bin/alertar_atrasos.php` que varre o banco localizando retiradas ativas de chaves com mais de 8 horas de duração.
 * **Notificação e Simulação**: Envio automático de e-mail ao usuário atrasado e logs de depuração detalhados em `tmp/email_alerts.log`, integrado ao fluxo de logs de auditoria do banco.
 
+### 📈 6. Gráficos Analíticos (Dashboard)
+* **Fluxo de Movimentação Semanal**: Gráfico de linha interativo exibindo a quantidade de chaves retiradas nos últimos 7 dias.
+* **Top 5 Salas Mais Utilizadas**: Gráfico de barras horizontais indicando quais salas tiveram mais acessos e retiradas no sistema.
+* **Integração com Chart.js**: Gráficos totalmente responsivos, com temas de cores personalizados e renderizados no topo do painel administrativo.
+
 ---
 
 ## 📜 Histórico de Commits (Git Log Atualizado)

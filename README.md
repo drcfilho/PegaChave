@@ -14,7 +14,7 @@ O **PegaChave** é uma aplicação web moderna e inteligente projetada para auto
 * **Entrada Manual de Redundância e Tema:** Permite digitar o código da sala manualmente e alternar entre Tema Claro e Escuro.
 
 ### 📊 2. Painel de Administração Integrado
-* **Dashboard em Tempo Real:** Métricas de chaves Disponíveis, Em Uso e logs de movimentação em tempo real.
+* **Dashboard com Analytics:** Métricas de chaves Disponíveis, Em Uso, logs de movimentação em tempo real e gráficos interativos (fluxo semanal e salas mais utilizadas) com Chart.js.
 * **Layout 100% Responsivo:** O painel foi otimizado para ser totalmente usável em tablets na portaria, com barra lateral ocultável e navegação fluida em telas touch.
 * **Gerenciamento Completo (CRUD) com Soft Delete:** Cadastro, edição e desativação de Salas/Chaves e Usuários.
 * **Arquivamento e Auditoria Protegida:** A exclusão de usuários realiza exclusão lógica (soft delete) mantendo o histórico de chaves seguras no banco de dados. Os dados dos usuários arquivados são visualizados em uma aba especial protegida por senha de administrador.
