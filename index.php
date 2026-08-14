@@ -194,6 +194,10 @@ require_once __DIR__ . '/api/db.php';
             transform: scale(1.2);
         }
 
+        #reader video {
+            transform: scaleX(1) !important;
+        }
+
         /* Marcador de Scan */
         .scan-target-box {
             position: absolute;

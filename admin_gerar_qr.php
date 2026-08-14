@@ -637,7 +637,7 @@ try {
                     </div>
                     <img src="https://api.qrserver.com/v1/create-qr-code/?size=110x110&data=${encodeURIComponent(hash)}" alt="QR Code">
                     <div class="no-print" style="margin-top: 6px; margin-bottom: 4px;">
-                        <button onclick="downloadQRCode('${hash}', '${cat}_${name.replace(/[^a-zA-Z0-9]/g, '_')}')" style="background: var(--primary); color: white; border: none; padding: 4px 8px; border-radius: 4px; font-size: 11px; font-weight: 600; cursor: pointer;">⬇️ Baixar</button>
+                        <button onclick="downloadQRCode('${hash}', '${name.replace(/'/g, "\\'")}', '${id.replace(/'/g, "\\'")}', '${cat}', '${cat}_${name.replace(/[^a-zA-Z0-9]/g, '_')}')" style="background: var(--primary); color: white; border: none; padding: 4px 8px; border-radius: 4px; font-size: 11px; font-weight: 600; cursor: pointer;">⬇️ Baixar</button>
                     </div>
                     <div class="item-name">${name}</div>
                     <div class="item-id">${id}</div>
@@ -650,22 +650,70 @@ try {
             window.scrollTo(0, 0);
         }
 
-        async function downloadQRCode(hash, filename) {
+        async function downloadQRCode(hash, name, id, cat, filename) {
             try {
-                const url = `https://api.qrserver.com/v1/create-qr-code/?size=300x300&data=${encodeURIComponent(hash)}`;
-                const response = await fetch(url);
-                const blob = await response.blob();
-                const blobUrl = URL.createObjectURL(blob);
+                const qrUrl = `https://api.qrserver.com/v1/create-qr-code/?size=300x300&data=${encodeURIComponent(hash)}`;
                 
-                const a = document.createElement('a');
-                a.href = blobUrl;
-                a.download = `${filename}.png`;
-                document.body.appendChild(a);
-                a.click();
-                document.body.removeChild(a);
-                URL.revokeObjectURL(blobUrl);
+                const img = new Image();
+                img.crossOrigin = "anonymous";
+                img.src = qrUrl;
+                
+                await new Promise((resolve, reject) => {
+                    img.onload = resolve;
+                    img.onerror = reject;
+                });
+
+                const canvas = document.createElement('canvas');
+                canvas.width = 300;
+                canvas.height = 390;
+                const ctx = canvas.getContext('2d');
+
+                // Fundo branco
+                ctx.fillStyle = '#ffffff';
+                ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+                // Desenhar QR Code (300x300)
+                ctx.drawImage(img, 0, 0, 300, 300);
+
+                // Textos
+                ctx.fillStyle = '#1e293b';
+                ctx.textAlign = 'center';
+
+                // Categoria (🔑 CHAVE ou 👤 CRACHÁ)
+                ctx.font = 'bold 11px sans-serif';
+                ctx.fillText(cat === 'Chave' ? '🔑 CHAVE' : '👤 CRACHÁ', 150, 320);
+
+                // Nome do item completo
+                ctx.font = 'bold 14px sans-serif';
+                let displayName = name;
+                if (displayName.length > 28) {
+                    displayName = displayName.substring(0, 26) + '...';
+                }
+                ctx.fillText(displayName, 150, 342);
+
+                // Identificador / Código
+                ctx.font = '12px sans-serif';
+                ctx.fillStyle = '#64748b';
+                ctx.fillText(id, 150, 362);
+
+                // Hash do QR
+                ctx.font = '9px monospace';
+                ctx.fillStyle = '#94a3b8';
+                ctx.fillText(hash, 150, 378);
+
+                canvas.toBlob(blob => {
+                    const blobUrl = URL.createObjectURL(blob);
+                    const a = document.createElement('a');
+                    a.href = blobUrl;
+                    a.download = `${filename}.png`;
+                    document.body.appendChild(a);
+                    a.click();
+                    document.body.removeChild(a);
+                    URL.revokeObjectURL(blobUrl);
+                }, 'image/png');
+
             } catch (err) {
-                console.error("Erro ao baixar QR Code:", err);
+                console.error("Erro ao gerar imagem composta do QR Code:", err);
                 window.open(`https://api.qrserver.com/v1/create-qr-code/?size=300x300&data=${encodeURIComponent(hash)}`, '_blank');
             }
         }

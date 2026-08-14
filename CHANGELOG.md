@@ -18,7 +18,8 @@ Este arquivo registra todo o histórico de desenvolvimento e as melhorias aplica
   * **Erro (Vermelho)**: Bip grave em caso de leitura inválida ou falha na API.
 * **Suporte Completo a PWA**: Criação de `manifest.json`, service worker de cache (`service-worker.js`) e ícones de atalho para instalação direta em tablets.
 * **Tema Escuro (Dark Mode)**: Botão no cabeçalho e suporte automático à preferência do sistema, sincronizado localmente entre todas as telas. O contraste do Quiosque foi aprimorado no modo escuro definindo cor branca para os títulos de instrução, inputs manuais e detalhes do popup de sucesso.
-* **Download de QR Code**: Adicionado botão "⬇️ Baixar" em cada cartão de etiqueta no preview do gerador de etiquetas (`admin_gerar_qr.php`), permitindo salvar o QR Code individual em alta qualidade (PNG de 300x300 pixels).
+* **Download de QR Code**: Adicionado botão "⬇️ Baixar" em cada cartão de etiqueta no preview do gerador de etiquetas (`admin_gerar_qr.php`), que gera e baixa uma imagem composta (PNG de 300x390 pixels) contendo o QR Code e as informações completas do item (nome da sala ou usuário, código e hash) escritas na própria imagem usando HTML5 Canvas.
+* **Câmera Sem Espelhar**: Desativado o espelhamento padrão da webcam no Quiosque (`index.php`), forçando a proporção e orientação física real da captura de vídeo (melhorando o apontamento do crachá/chave).
 
 ### 🔒 3. Segurança e Auditoria
 * **Proteção contra CSRF**: Geração e validação de tokens de segurança únicos por sessão em todos os formulários administrativos POST (Login, Cadastro de Salas, Cadastro de Usuários e Configurações).
