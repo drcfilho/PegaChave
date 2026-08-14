@@ -19,6 +19,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     try {
         if ($action === 'add_chave') {
             $nome_sala = trim($_POST['nome_sala'] ?? '');
+            $bloco = trim($_POST['bloco'] ?? '');
+            $andar = trim($_POST['andar'] ?? '');
             $codigo_sala = trim($_POST['codigo_sala'] ?? '');
             $qr_code_hash = trim($_POST['qr_code_hash'] ?? '');
             $descricao = trim($_POST['descricao'] ?? '');
@@ -29,13 +31,15 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
             // Saneamento básico
             $nome_sala = htmlspecialchars($nome_sala, ENT_QUOTES, 'UTF-8');
+            $bloco = htmlspecialchars($bloco, ENT_QUOTES, 'UTF-8');
+            $andar = htmlspecialchars($andar, ENT_QUOTES, 'UTF-8');
             $codigo_sala = preg_replace('/[^a-zA-Z0-9_-]/', '', $codigo_sala);
             $qr_code_hash = preg_replace('/[^a-zA-Z0-9_-]/', '', $qr_code_hash);
             $descricao = htmlspecialchars($descricao, ENT_QUOTES, 'UTF-8');
 
-            $stmt = $pdo->prepare("INSERT INTO chaves (nome_sala, codigo_sala, qr_code_hash, descricao) VALUES (?, ?, ?, ?)");
-            $stmt->execute([$nome_sala, $codigo_sala, $qr_code_hash, $descricao]);
-            registrar_log($pdo, 'Cadastro de Chave', "Chave '$nome_sala' ($codigo_sala) cadastrada.");
+            $stmt = $pdo->prepare("INSERT INTO chaves (nome_sala, bloco, andar, codigo_sala, qr_code_hash, descricao) VALUES (?, ?, ?, ?, ?, ?)");
+            $stmt->execute([$nome_sala, $bloco, $andar, $codigo_sala, $qr_code_hash, $descricao]);
+            registrar_log($pdo, 'Cadastro de Chave', "Chave '$nome_sala' ($codigo_sala) cadastrada. Bloco: '$bloco', Andar: '$andar'.");
             $message = "Chave '$nome_sala' cadastrada com sucesso!";
             $messageType = "success";
         } 
@@ -43,6 +47,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         elseif ($action === 'edit_chave') {
             $id = filter_var($_POST['id'] ?? '', FILTER_VALIDATE_INT);
             $nome_sala = trim($_POST['nome_sala'] ?? '');
+            $bloco = trim($_POST['bloco'] ?? '');
+            $andar = trim($_POST['andar'] ?? '');
             $codigo_sala = trim($_POST['codigo_sala'] ?? '');
             $qr_code_hash = trim($_POST['qr_code_hash'] ?? '');
             $descricao = trim($_POST['descricao'] ?? '');
@@ -52,13 +58,15 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             }
 
             $nome_sala = htmlspecialchars($nome_sala, ENT_QUOTES, 'UTF-8');
+            $bloco = htmlspecialchars($bloco, ENT_QUOTES, 'UTF-8');
+            $andar = htmlspecialchars($andar, ENT_QUOTES, 'UTF-8');
             $codigo_sala = preg_replace('/[^a-zA-Z0-9_-]/', '', $codigo_sala);
             $qr_code_hash = preg_replace('/[^a-zA-Z0-9_-]/', '', $qr_code_hash);
             $descricao = htmlspecialchars($descricao, ENT_QUOTES, 'UTF-8');
 
-            $stmt = $pdo->prepare("UPDATE chaves SET nome_sala = ?, codigo_sala = ?, qr_code_hash = ?, descricao = ? WHERE id = ?");
-            $stmt->execute([$nome_sala, $codigo_sala, $qr_code_hash, $descricao, $id]);
-            registrar_log($pdo, 'Edição de Chave', "Chave ID $id atualizada para '$nome_sala' ($codigo_sala).");
+            $stmt = $pdo->prepare("UPDATE chaves SET nome_sala = ?, bloco = ?, andar = ?, codigo_sala = ?, qr_code_hash = ?, descricao = ? WHERE id = ?");
+            $stmt->execute([$nome_sala, $bloco, $andar, $codigo_sala, $qr_code_hash, $descricao, $id]);
+            registrar_log($pdo, 'Edição de Chave', "Chave ID $id atualizada para '$nome_sala' ($codigo_sala). Bloco: '$bloco', Andar: '$andar'.");
             $message = "Chave atualizada com sucesso!";
             $messageType = "success";
         } 
@@ -482,6 +490,8 @@ try {
                     <thead>
                         <tr>
                             <th>Sala/Ambiente</th>
+                            <th>Bloco</th>
+                            <th>Andar</th>
                             <th>Código</th>
                             <th>QR Hash</th>
                             <th>Descrição</th>
@@ -492,7 +502,7 @@ try {
                     <tbody>
                         <?php if (empty($chaves)): ?>
                             <tr>
-                                <td colspan="6" style="text-align: center; color: #64748b; padding: 25px;">
+                                <td colspan="8" style="text-align: center; color: #64748b; padding: 25px;">
                                     Nenhuma chave cadastrada.
                                 </td>
                             </tr>
@@ -500,6 +510,8 @@ try {
                             <?php foreach ($chaves as $c): ?>
                                 <tr>
                                     <td><strong><?php echo htmlspecialchars($c['nome_sala']); ?></strong></td>
+                                    <td><?php echo htmlspecialchars($c['bloco'] ?? '-'); ?></td>
+                                    <td><?php echo htmlspecialchars($c['andar'] ?? '-'); ?></td>
                                     <td><code><?php echo htmlspecialchars($c['codigo_sala']); ?></code></td>
                                     <td><small><?php echo htmlspecialchars($c['qr_code_hash']); ?></small></td>
                                     <td><?php echo htmlspecialchars($c['descricao']); ?></td>
@@ -534,6 +546,16 @@ try {
                 <div class="form-group">
                     <label for="nome_sala">Nome da Sala</label>
                     <input type="text" name="nome_sala" id="nome_sala" class="form-control" placeholder="Ex: Sala 12 - Lab. Biologia" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="bloco">Bloco</label>
+                    <input type="text" name="bloco" id="bloco" class="form-control" placeholder="Ex: Bloco A">
+                </div>
+
+                <div class="form-group">
+                    <label for="andar">Andar</label>
+                    <input type="text" name="andar" id="andar" class="form-control" placeholder="Ex: 2º Andar">
                 </div>
                 
                 <div class="form-group">
@@ -571,6 +593,8 @@ try {
             document.getElementById('key-action').value = "add_chave";
             document.getElementById('key-id').value = "";
             document.getElementById('nome_sala').value = "";
+            document.getElementById('bloco').value = "";
+            document.getElementById('andar').value = "";
             document.getElementById('codigo_sala').value = "";
             document.getElementById('key_qr_code_hash').value = "";
             document.getElementById('descricao').value = "";
@@ -582,6 +606,8 @@ try {
             document.getElementById('key-action').value = "edit_chave";
             document.getElementById('key-id').value = chave.id;
             document.getElementById('nome_sala').value = chave.nome_sala;
+            document.getElementById('bloco').value = chave.bloco || "";
+            document.getElementById('andar').value = chave.andar || "";
             document.getElementById('codigo_sala').value = chave.codigo_sala;
             document.getElementById('key_qr_code_hash').value = chave.qr_code_hash;
             document.getElementById('descricao').value = chave.descricao;

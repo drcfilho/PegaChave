@@ -18,8 +18,8 @@ O **PegaChave** é uma aplicação web moderna e inteligente projetada para auto
 ### 📊 2. Painel de Administração Integrado
 * **Dashboard com Analytics:** Métricas de chaves Disponíveis, Em Uso, logs de movimentação em tempo real e gráficos interativos (fluxo semanal e salas mais utilizadas) com Chart.js.
 * **Layout 100% Responsivo:** O painel foi otimizado para ser totalmente usável em tablets na portaria, com barra lateral ocultável e navegação fluida em telas touch.
-* **Gerador de Etiquetas QR**: Geração em lote com filtros de busca e seleção por checkboxes, com suporte para impressão de etiquetas e download individual dos QR Codes gerados em formato de imagem PNG de alta resolução (300x300 px).
-* **Gerenciamento Completo (CRUD) com Soft Delete:** Cadastro, edição e desativação de Salas/Chaves e Usuários.
+* **Gerador de Etiquetas QR**: Geração em lote com filtros de busca e seleção por checkboxes, com suporte para impressão de etiquetas e download de imagens PNG compostas contendo o QR Code e os detalhes do item (como localização e nome) geradas em alta resolução (300x410 px).
+* **Gerenciamento Completo (CRUD) com Soft Delete:** Cadastro de Salas/Chaves (contendo informações de Bloco e Andar para melhor organização) e Usuários com desativação lógica.
 * **Arquivamento e Auditoria Protegida:** O arquivamento de usuários mantém o histórico de chaves seguras no banco de dados. Os dados dos usuários arquivados são visualizados em aba especial protegida por senha.
 * **Logs de Auditoria Administrativa:** Registro detalhado de todas as ações tomadas pelos administradores.
 * **Exportação para CSV**: Possibilidade de exportar relatórios de movimentações e logs de auditoria administrativa diretamente para arquivos CSV (compatíveis com Excel).

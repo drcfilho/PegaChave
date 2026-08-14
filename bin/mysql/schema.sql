@@ -55,6 +55,8 @@ CREATE TABLE IF NOT EXISTS usuarios (
 CREATE TABLE IF NOT EXISTS chaves (
     id INT AUTO_INCREMENT PRIMARY KEY,
     nome_sala VARCHAR(100) NOT NULL,
+    bloco VARCHAR(50) NULL,
+    andar VARCHAR(50) NULL,
     codigo_sala VARCHAR(20) NOT NULL UNIQUE,
     qr_code_hash VARCHAR(64) NOT NULL UNIQUE,
     status_disponivel BOOLEAN DEFAULT TRUE,

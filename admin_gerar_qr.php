@@ -9,7 +9,7 @@ require_once __DIR__ . '/api/db.php';
 
 try {
     // Buscar todas as chaves
-    $chaves = $pdo->query("SELECT id, nome_sala AS nome, codigo_sala AS identificador, qr_code_hash, 'Chave' AS categoria FROM chaves ORDER BY nome_sala ASC")->fetchAll();
+    $chaves = $pdo->query("SELECT id, nome_sala AS nome, bloco, andar, codigo_sala AS identificador, qr_code_hash, 'Chave' AS categoria FROM chaves ORDER BY nome_sala ASC")->fetchAll();
     
     // Buscar todos os usuários
     $usuarios = $pdo->query("SELECT id, nome, matricula AS identificador, qr_code_hash, 'Usuário' AS categoria FROM usuarios ORDER BY nome ASC")->fetchAll();
@@ -492,20 +492,24 @@ try {
                             </label>
                         </th>
                         <th>Sala / Ambiente</th>
+                        <th>Bloco</th>
+                        <th>Andar</th>
                         <th>Código</th>
                         <th>Hash do QR Code</th>
                     </tr>
                 </thead>
                 <tbody id="tbody-chaves">
                     <?php foreach ($chaves as $c): ?>
-                        <tr class="item-row" data-search="<?php echo strtolower(htmlspecialchars($c['nome'] . ' ' . $c['identificador'])); ?>">
+                        <tr class="item-row" data-search="<?php echo strtolower(htmlspecialchars($c['nome'] . ' ' . $c['identificador'] . ' ' . ($c['bloco'] ?? '') . ' ' . ($c['andar'] ?? ''))); ?>">
                             <td>
                                 <label class="checkbox-container">
-                                    <input type="checkbox" class="chk-item chk-chave" value="<?php echo $c['id']; ?>" data-name="<?php echo htmlspecialchars($c['nome']); ?>" data-id="<?php echo htmlspecialchars($c['identificador']); ?>" data-hash="<?php echo htmlspecialchars($c['qr_code_hash']); ?>" data-cat="Chave" onchange="updateSelectedCount()">
+                                    <input type="checkbox" class="chk-item chk-chave" value="<?php echo $c['id']; ?>" data-name="<?php echo htmlspecialchars($c['nome']); ?>" data-bloco="<?php echo htmlspecialchars($c['bloco'] ?? ''); ?>" data-andar="<?php echo htmlspecialchars($c['andar'] ?? ''); ?>" data-id="<?php echo htmlspecialchars($c['identificador']); ?>" data-hash="<?php echo htmlspecialchars($c['qr_code_hash']); ?>" data-cat="Chave" onchange="updateSelectedCount()">
                                     <span class="checkmark"></span>
                                 </label>
                             </td>
                             <td><strong><?php echo htmlspecialchars($c['nome']); ?></strong></td>
+                            <td><?php echo htmlspecialchars($c['bloco'] ?? '-'); ?></td>
+                            <td><?php echo htmlspecialchars($c['andar'] ?? '-'); ?></td>
                             <td><?php echo htmlspecialchars($c['identificador']); ?></td>
                             <td><code style="font-size: 12px;"><?php echo htmlspecialchars($c['qr_code_hash']); ?></code></td>
                         </tr>
@@ -628,6 +632,8 @@ try {
 
             checkedBoxes.forEach(chk => {
                 const name = chk.getAttribute('data-name');
+                const bloco = chk.getAttribute('data-bloco') || '';
+                const andar = chk.getAttribute('data-andar') || '';
                 const id = chk.getAttribute('data-id');
                 const hash = chk.getAttribute('data-hash');
                 const cat = chk.getAttribute('data-cat');
@@ -640,9 +646,10 @@ try {
                     </div>
                     <img src="https://api.qrserver.com/v1/create-qr-code/?size=110x110&data=${encodeURIComponent(hash)}" alt="QR Code">
                     <div class="no-print" style="margin-top: 6px; margin-bottom: 4px;">
-                        <button onclick="downloadQRCode('${hash}', '${name.replace(/'/g, "\\'")}', '${id.replace(/'/g, "\\'")}', '${cat}', '${cat}_${name.replace(/[^a-zA-Z0-9]/g, '_')}')" style="background: var(--primary); color: white; border: none; padding: 4px 8px; border-radius: 4px; font-size: 11px; font-weight: 600; cursor: pointer;">⬇️ Baixar</button>
+                        <button onclick="downloadQRCode('${hash}', '${name.replace(/'/g, "\\'")}', '${id.replace(/'/g, "\\'")}', '${cat}', '${bloco.replace(/'/g, "\\'")}', '${andar.replace(/'/g, "\\'")}', '${cat}_${name.replace(/[^a-zA-Z0-9]/g, '_')}')" style="background: var(--primary); color: white; border: none; padding: 4px 8px; border-radius: 4px; font-size: 11px; font-weight: 600; cursor: pointer;">⬇️ Baixar</button>
                     </div>
                     <div class="item-name">${name}</div>
+                    ${bloco || andar ? `<div style="font-size: 11px; color: #475569; font-weight: 600; margin-bottom: 4px;">${bloco ? 'Bloco: ' + bloco : ''} ${bloco && andar ? '|' : ''} ${andar ? 'Andar: ' + andar : ''}</div>` : ''}
                     <div class="item-id">${id}</div>
                     <div class="item-hash">${hash}</div>
                 `;
@@ -653,7 +660,7 @@ try {
             window.scrollTo(0, 0);
         }
 
-        async function downloadQRCode(hash, name, id, cat, filename) {
+        async function downloadQRCode(hash, name, id, cat, bloco, andar, filename) {
             try {
                 const qrUrl = `https://api.qrserver.com/v1/create-qr-code/?size=300x300&data=${encodeURIComponent(hash)}`;
                 
@@ -668,7 +675,7 @@ try {
 
                 const canvas = document.createElement('canvas');
                 canvas.width = 300;
-                canvas.height = 390;
+                canvas.height = 410;
                 const ctx = canvas.getContext('2d');
 
                 // Fundo branco
@@ -692,17 +699,25 @@ try {
                 if (displayName.length > 28) {
                     displayName = displayName.substring(0, 26) + '...';
                 }
-                ctx.fillText(displayName, 150, 342);
+                ctx.fillText(displayName, 150, 340);
+
+                // Bloco e Andar (se existirem)
+                ctx.font = 'bold 11px sans-serif';
+                ctx.fillStyle = '#475569';
+                if (bloco || andar) {
+                    const locText = (bloco ? 'Bloco: ' + bloco : '') + (bloco && andar ? ' | ' : '') + (andar ? 'Andar: ' + andar : '');
+                    ctx.fillText(locText, 150, 356);
+                }
 
                 // Identificador / Código
                 ctx.font = '12px sans-serif';
                 ctx.fillStyle = '#64748b';
-                ctx.fillText(id, 150, 362);
+                ctx.fillText(id, 150, 375);
 
                 // Hash do QR
                 ctx.font = '9px monospace';
                 ctx.fillStyle = '#94a3b8';
-                ctx.fillText(hash, 150, 378);
+                ctx.fillText(hash, 150, 395);
 
                 canvas.toBlob(blob => {
                     const blobUrl = URL.createObjectURL(blob);

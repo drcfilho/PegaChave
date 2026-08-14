@@ -8,6 +8,8 @@ try {
         SELECT 
             c.id, 
             c.nome_sala, 
+            c.bloco,
+            c.andar,
             c.codigo_sala, 
             c.status_disponivel, 
             c.descricao,
@@ -229,7 +231,19 @@ try {
             margin-top: 15px;
             font-size: 13px;
         }
+        .badge-loc {
+            font-size: 11px;
+            background: rgba(0,0,0,0.05);
+            padding: 2px 6px;
+            border-radius: 4px;
+            color: #475569;
+            font-weight: 500;
+        }
 
+        body.dark-theme .badge-loc {
+            background: rgba(255,255,255,0.08);
+            color: #cbd5e1;
+        }
         .detail-row {
             margin-bottom: 6px;
             display: flex;
@@ -337,12 +351,22 @@ try {
     <!-- Lista de Cards -->
     <div class="grid-chaves" id="keys-grid">
         <?php foreach ($chaves as $c): ?>
-            <div class="card-chave" data-name="<?php echo strtolower(htmlspecialchars($c['nome_sala'] . ' ' . $c['codigo_sala'] . ' ' . ($c['reservado_por_nome'] ?? ''))); ?>">
+            <div class="card-chave" data-name="<?php echo strtolower(htmlspecialchars($c['nome_sala'] . ' ' . $c['codigo_sala'] . ' ' . ($c['bloco'] ?? '') . ' ' . ($c['andar'] ?? '') . ' ' . ($c['reservado_por_nome'] ?? ''))); ?>">
                 <div>
                     <div class="card-header">
                         <div class="card-title">
                             <h3><?php echo htmlspecialchars($c['nome_sala']); ?></h3>
-                            <span>Código: <?php echo htmlspecialchars($c['codigo_sala']); ?></span>
+                            <span style="font-size: 11px; font-weight: 600; color: #64748b;">Código: <?php echo htmlspecialchars($c['codigo_sala']); ?></span>
+                            <?php if (!empty($c['bloco']) || !empty($c['andar'])): ?>
+                                <span class="badge-loc">
+                                    <?php 
+                                        $loc = [];
+                                        if (!empty($c['bloco'])) $loc[] = "Bloco: " . htmlspecialchars($c['bloco']);
+                                        if (!empty($c['andar'])) $loc[] = "Andar: " . htmlspecialchars($c['andar']);
+                                        echo implode(" | ", $loc);
+                                    ?>
+                                </span>
+                            <?php endif; ?>
                         </div>
                         <span class="status-badge <?php echo $c['status_disponivel'] ? 'disponivel' : 'ocupada'; ?>">
                             <?php echo $c['status_disponivel'] ? 'Disponível' : 'Em Uso'; ?>

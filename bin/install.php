@@ -185,7 +185,17 @@ try {
                 FOREIGN KEY (perfil_id) REFERENCES perfis(id) ON DELETE CASCADE,
                 FOREIGN KEY (chave_id) REFERENCES chaves(id) ON DELETE CASCADE
             ) ENGINE=InnoDB;
-        "
+        ",
+        '006_adiciona_bloco_e_andar_chaves' => function($pdo) {
+            $colBloco = $pdo->query("SHOW COLUMNS FROM chaves LIKE 'bloco'")->fetch();
+            if (!$colBloco) {
+                $pdo->exec("ALTER TABLE chaves ADD COLUMN bloco VARCHAR(50) NULL AFTER nome_sala");
+            }
+            $colAndar = $pdo->query("SHOW COLUMNS FROM chaves LIKE 'andar'")->fetch();
+            if (!$colAndar) {
+                $pdo->exec("ALTER TABLE chaves ADD COLUMN andar VARCHAR(50) NULL AFTER bloco");
+            }
+        }
     ];
 
     echo "Verificando e aplicando migrações pendentes...\n";
