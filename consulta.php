@@ -24,6 +24,21 @@ try {
     $stmt = $pdo->query($query);
     $chaves = $stmt->fetchAll();
 
+    // Buscar reservas/agendamentos de hoje agrupados por chave
+    $stmtReservas = $pdo->query("
+        SELECT r.chave_id, r.hora_inicio, r.hora_fim, u.nome AS reservado_nome
+        FROM reservas r
+        JOIN usuarios u ON r.usuario_id = u.id
+        WHERE r.data_reserva = CURDATE()
+        ORDER BY r.hora_inicio ASC
+    ");
+    $reservasHoje = [];
+    if ($stmtReservas) {
+        foreach ($stmtReservas->fetchAll() as $res) {
+            $reservasHoje[$res['chave_id']][] = $res;
+        }
+    }
+
 } catch (\PDOException $e) {
     echo "Erro ao carregar dados: " . $e->getMessage();
     exit;
@@ -294,6 +309,20 @@ try {
                         <div class="detail-row">
                             <span>⏰</span> <strong>Retirada:</strong> <?php echo htmlspecialchars($c['data_retirada_formatada']); ?>
                         </div>
+                    </div>
+                <?php endif; ?>
+
+                <?php if (!empty($reservasHoje[$c['id']])): ?>
+                    <div style="margin-top: 12px; padding-top: 10px; border-top: 1px dashed var(--border-color); font-size: 13px;">
+                        <span style="font-weight: 700; color: var(--primary); display: block; margin-bottom: 5px;">📅 Agendada hoje:</span>
+                        <ul style="list-style: none; padding-left: 0;">
+                            <?php foreach ($reservasHoje[$c['id']] as $rHoje): ?>
+                                <li style="display: flex; align-items: center; gap: 6px; color: #64748b; margin-bottom: 2px;">
+                                    <span>🕒</span>
+                                    <span><?php echo date('H:i', strtotime($rHoje['hora_inicio'])) . ' - ' . date('H:i', strtotime($rHoje['hora_fim'])) . ' (' . htmlspecialchars($rHoje['reservado_nome']) . ')'; ?></span>
+                                </li>
+                            <?php endforeach; ?>
+                        </ul>
                     </div>
                 <?php endif; ?>
             </div>

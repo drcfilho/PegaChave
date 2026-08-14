@@ -44,9 +44,12 @@ Este arquivo registra todo o histórico de desenvolvimento e as melhorias aplica
 * **Tabela de Reservas**: Criação da tabela `reservas` via migração `004_cria_sistema_reservas` no instalador.
 * **Painel de Agendamentos**: Página `admin_reservas.php` para cadastro de reservas de salas (Chave, Usuário, Data, Horário) com validação de sobreposição de horários e prevenção de conflitos.
 * **Validação no Quiosque**: Verificação integrada no leitor (`api/processar_scan.php`) bloqueando retiradas de salas que estejam reservadas para terceiros no horário atual ou nos próximos 15 minutos.
+* **Integração na Consulta Pública**: A tela `consulta.php` agora exibe de forma clara e organizada a lista de reservas ativas de hoje para cada sala, permitindo ao usuário saber previamente quais horários a sala estará ocupada.
+
+---
 
 ### ⚙️ 8. Limite de Chaves sob Posse
-* **Configuração no Painel**: Adicionado input numérico em `admin_config.php` que permite ao administrador definir o limite máximo de chaves que um usuário pode ter em posse simultaneamente (deixando 0 para ilimitadas).
+* **Configuração no Panel**: Adicionado input numérico em `admin_config.php` que permite ao administrador definir o limite máximo de chaves que um usuário pode ter em posse simultaneamente (deixando 0 para ilimitadas).
 * **Travamento no Quiosque**: A API de escaneamento valida em tempo real se o usuário já atingiu seu limite de chaves e bloqueia novas retiradas caso necessário.
 
 ---
