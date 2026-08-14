@@ -53,6 +53,7 @@ try {
      $nome_escola = 'Escola Lumiar';
      $cor_primaria = '#0284c7';
      $cor_secundaria = '#0f172a';
+     $limite_chaves = 0; // 0 = Sem limite
      
      try {
          $stmtConfig = $pdo->query("SELECT chave, valor FROM configuracoes");
@@ -61,6 +62,7 @@ try {
              if (isset($configs['nome_escola'])) $nome_escola = $configs['nome_escola'];
              if (isset($configs['cor_primaria'])) $cor_primaria = $configs['cor_primaria'];
              if (isset($configs['cor_secundaria'])) $cor_secundaria = $configs['cor_secundaria'];
+             if (isset($configs['limite_chaves'])) $limite_chaves = (int)$configs['limite_chaves'];
          }
      } catch (\Exception $exConfig) {
          // Fallback silencioso se a tabela de configurações não existir

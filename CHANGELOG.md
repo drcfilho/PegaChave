@@ -45,6 +45,10 @@ Este arquivo registra todo o histórico de desenvolvimento e as melhorias aplica
 * **Painel de Agendamentos**: Página `admin_reservas.php` para cadastro de reservas de salas (Chave, Usuário, Data, Horário) com validação de sobreposição de horários e prevenção de conflitos.
 * **Validação no Quiosque**: Verificação integrada no leitor (`api/processar_scan.php`) bloqueando retiradas de salas que estejam reservadas para terceiros no horário atual ou nos próximos 15 minutos.
 
+### ⚙️ 8. Limite de Chaves sob Posse
+* **Configuração no Painel**: Adicionado input numérico em `admin_config.php` que permite ao administrador definir o limite máximo de chaves que um usuário pode ter em posse simultaneamente (deixando 0 para ilimitadas).
+* **Travamento no Quiosque**: A API de escaneamento valida em tempo real se o usuário já atingiu seu limite de chaves e bloqueia novas retiradas caso necessário.
+
 ---
 
 ## 📜 Histórico de Commits (Git Log Atualizado)

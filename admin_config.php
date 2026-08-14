@@ -17,6 +17,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $nome_input = $_POST['nome_escola'] ?? 'Escola Lumiar';
     $cor_p_input = $_POST['cor_primaria'] ?? '#0284c7';
     $cor_s_input = $_POST['cor_secundaria'] ?? '#0f172a';
+    $limite_input = filter_var($_POST['limite_chaves'] ?? '0', FILTER_VALIDATE_INT);
+    if ($limite_input === false || $limite_input < 0) {
+        $limite_input = 0;
+    }
 
     try {
         $stmt1 = $pdo->prepare("INSERT INTO configuracoes (chave, valor) VALUES ('nome_escola', ?) ON DUPLICATE KEY UPDATE valor = VALUES(valor)");
@@ -28,15 +32,19 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $stmt3 = $pdo->prepare("INSERT INTO configuracoes (chave, valor) VALUES ('cor_secundaria', ?) ON DUPLICATE KEY UPDATE valor = VALUES(valor)");
         $stmt3->execute([$cor_s_input]);
 
-        registrar_log($pdo, 'Alteração de Configuração', "Nome da Escola: '$nome_input', Cor Primária: '$cor_p_input', Cor Secundária: '$cor_s_input'.");
+        $stmt4 = $pdo->prepare("INSERT INTO configuracoes (chave, valor) VALUES ('limite_chaves', ?) ON DUPLICATE KEY UPDATE valor = VALUES(valor)");
+        $stmt4->execute([$limite_input]);
 
-        $message = "Configurações e cores atualizadas com sucesso!";
+        registrar_log($pdo, 'Alteração de Configuração', "Nome da Escola: '$nome_input', Cor Primária: '$cor_p_input', Cor Secundária: '$cor_s_input', Limite de Chaves: $limite_input.");
+
+        $message = "Configurações atualizadas com sucesso!";
         $messageType = "success";
 
         // Recarregar variáveis locais após alteração
         $nome_escola = $nome_input;
         $cor_primaria = $cor_p_input;
         $cor_secundaria = $cor_s_input;
+        $limite_chaves = $limite_input;
 
     } catch (\PDOException $e) {
         $message = "Erro ao salvar configurações: " . $e->getMessage();
@@ -367,6 +375,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                             <span style="font-family: monospace; font-size: 14px;"><?php echo htmlspecialchars($cor_secundaria); ?></span>
                         </div>
                     </div>
+                </div>
+
+                <div class="form-group" style="margin-top: 20px;">
+                    <label for="limite_chaves">Limite Máximo de Chaves sob Posse Simultânea (por Usuário)</label>
+                    <input type="number" name="limite_chaves" id="limite_chaves" class="form-control" min="0" value="<?php echo htmlspecialchars($limite_chaves ?? 0); ?>" style="max-width: 150px;" required>
+                    <p style="font-size: 12px; color: #64748b; margin-top: 6px;">Defina como 0 para permitir retiradas ilimitadas.</p>
                 </div>
 
                 <button type="submit" class="btn-save">Salvar Alterações</button>

@@ -22,6 +22,7 @@ O **PegaChave** é uma aplicação web moderna e inteligente projetada para auto
 * **Exportação para CSV**: Possibilidade de exportar relatórios de movimentações e logs de auditoria administrativa diretamente para arquivos CSV (compatíveis com Excel).
 * **Sistema de Reservas**: Agendamento de chaves para datas e horários específicos pelo painel admin, com prevenção de conflitos e bloqueio de retirada no quiosque se a chave pertencer a outra reserva ativa.
 * **Alertas de Atraso**: Envio automatizado de e-mails para usuários que excederem o período limite de posse de chaves (através de execução periódica do script de alerta).
+* **Limite de Chaves**: Controle de limite máximo de chaves em posse simultânea por usuário (configurável pelo administrador), bloqueando novas retiradas no quiosque se excedido.
 * **Segurança CSRF:** Proteção ativa em todos os formulários administrativos contra falsificação de requisições.
 
 ### 🔍 3. Consulta Pública de Disponibilidade

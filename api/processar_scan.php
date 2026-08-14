@@ -114,6 +114,21 @@ try {
                 exit;
             }
 
+            // Verificar se o usuário excedeu o limite de chaves configurado
+            if (isset($limite_chaves) && $limite_chaves > 0) {
+                $stmtCount = $pdo->prepare("SELECT COUNT(*) FROM movimentacoes WHERE usuario_id = ? AND data_devolucao IS NULL");
+                $stmtCount->execute([$usuario_id]);
+                $totalPosse = $stmtCount->fetchColumn();
+
+                if ($totalPosse >= $limite_chaves) {
+                    echo json_encode([
+                        "status" => "error",
+                        "message" => "Bloqueado: Limite atingido! Você só pode ter $limite_chaves chave(s) retirada(s) simultaneamente."
+                    ]);
+                    exit;
+                }
+            }
+
             // Registrar nova movimentação
             $stmtInsert = $pdo->prepare("INSERT INTO movimentacoes (usuario_id, chave_id, data_retirada) VALUES (?, ?, NOW())");
             $stmtInsert->execute([$usuario_id, $chave_id]);
