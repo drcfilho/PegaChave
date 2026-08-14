@@ -195,6 +195,12 @@ try {
             if (!$colAndar) {
                 $pdo->exec("ALTER TABLE chaves ADD COLUMN andar VARCHAR(50) NULL AFTER bloco");
             }
+        },
+        '007_adiciona_matriculas_permitidas_chaves' => function($pdo) {
+            $colMat = $pdo->query("SHOW COLUMNS FROM chaves LIKE 'matriculas_permitidas'")->fetch();
+            if (!$colMat) {
+                $pdo->exec("ALTER TABLE chaves ADD COLUMN matriculas_permitidas TEXT NULL AFTER andar");
+            }
         }
     ];
 

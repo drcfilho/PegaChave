@@ -21,6 +21,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $nome_sala = trim($_POST['nome_sala'] ?? '');
             $bloco = trim($_POST['bloco'] ?? '');
             $andar = trim($_POST['andar'] ?? '');
+            $matriculas_permitidas = trim($_POST['matriculas_permitidas'] ?? '');
             $codigo_sala = trim($_POST['codigo_sala'] ?? '');
             $qr_code_hash = trim($_POST['qr_code_hash'] ?? '');
             $descricao = trim($_POST['descricao'] ?? '');
@@ -33,13 +34,14 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $nome_sala = htmlspecialchars($nome_sala, ENT_QUOTES, 'UTF-8');
             $bloco = htmlspecialchars($bloco, ENT_QUOTES, 'UTF-8');
             $andar = htmlspecialchars($andar, ENT_QUOTES, 'UTF-8');
+            $matriculas_permitidas = htmlspecialchars($matriculas_permitidas, ENT_QUOTES, 'UTF-8');
             $codigo_sala = preg_replace('/[^a-zA-Z0-9_-]/', '', $codigo_sala);
             $qr_code_hash = preg_replace('/[^a-zA-Z0-9_-]/', '', $qr_code_hash);
             $descricao = htmlspecialchars($descricao, ENT_QUOTES, 'UTF-8');
 
-            $stmt = $pdo->prepare("INSERT INTO chaves (nome_sala, bloco, andar, codigo_sala, qr_code_hash, descricao) VALUES (?, ?, ?, ?, ?, ?)");
-            $stmt->execute([$nome_sala, $bloco, $andar, $codigo_sala, $qr_code_hash, $descricao]);
-            registrar_log($pdo, 'Cadastro de Chave', "Chave '$nome_sala' ($codigo_sala) cadastrada. Bloco: '$bloco', Andar: '$andar'.");
+            $stmt = $pdo->prepare("INSERT INTO chaves (nome_sala, bloco, andar, matriculas_permitidas, codigo_sala, qr_code_hash, descricao) VALUES (?, ?, ?, ?, ?, ?, ?)");
+            $stmt->execute([$nome_sala, $bloco, $andar, $matriculas_permitidas, $codigo_sala, $qr_code_hash, $descricao]);
+            registrar_log($pdo, 'Cadastro de Chave', "Chave '$nome_sala' ($codigo_sala) cadastrada. Bloco: '$bloco', Andar: '$andar'. Restrita para: '$matriculas_permitidas'.");
             $message = "Chave '$nome_sala' cadastrada com sucesso!";
             $messageType = "success";
         } 
@@ -49,6 +51,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $nome_sala = trim($_POST['nome_sala'] ?? '');
             $bloco = trim($_POST['bloco'] ?? '');
             $andar = trim($_POST['andar'] ?? '');
+            $matriculas_permitidas = trim($_POST['matriculas_permitidas'] ?? '');
             $codigo_sala = trim($_POST['codigo_sala'] ?? '');
             $qr_code_hash = trim($_POST['qr_code_hash'] ?? '');
             $descricao = trim($_POST['descricao'] ?? '');
@@ -60,13 +63,14 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $nome_sala = htmlspecialchars($nome_sala, ENT_QUOTES, 'UTF-8');
             $bloco = htmlspecialchars($bloco, ENT_QUOTES, 'UTF-8');
             $andar = htmlspecialchars($andar, ENT_QUOTES, 'UTF-8');
+            $matriculas_permitidas = htmlspecialchars($matriculas_permitidas, ENT_QUOTES, 'UTF-8');
             $codigo_sala = preg_replace('/[^a-zA-Z0-9_-]/', '', $codigo_sala);
             $qr_code_hash = preg_replace('/[^a-zA-Z0-9_-]/', '', $qr_code_hash);
             $descricao = htmlspecialchars($descricao, ENT_QUOTES, 'UTF-8');
 
-            $stmt = $pdo->prepare("UPDATE chaves SET nome_sala = ?, bloco = ?, andar = ?, codigo_sala = ?, qr_code_hash = ?, descricao = ? WHERE id = ?");
-            $stmt->execute([$nome_sala, $bloco, $andar, $codigo_sala, $qr_code_hash, $descricao, $id]);
-            registrar_log($pdo, 'Edição de Chave', "Chave ID $id atualizada para '$nome_sala' ($codigo_sala). Bloco: '$bloco', Andar: '$andar'.");
+            $stmt = $pdo->prepare("UPDATE chaves SET nome_sala = ?, bloco = ?, andar = ?, matriculas_permitidas = ?, codigo_sala = ?, qr_code_hash = ?, descricao = ? WHERE id = ?");
+            $stmt->execute([$nome_sala, $bloco, $andar, $matriculas_permitidas, $codigo_sala, $qr_code_hash, $descricao, $id]);
+            registrar_log($pdo, 'Edição de Chave', "Chave ID $id atualizada para '$nome_sala' ($codigo_sala). Bloco: '$bloco', Andar: '$andar'. Restrita para: '$matriculas_permitidas'.");
             $message = "Chave atualizada com sucesso!";
             $messageType = "success";
         } 
@@ -495,6 +499,7 @@ try {
                             <th>Código</th>
                             <th>QR Hash</th>
                             <th>Descrição</th>
+                            <th>Acesso Restrito</th>
                             <th>Status</th>
                             <th>Ações</th>
                         </tr>
@@ -502,7 +507,7 @@ try {
                     <tbody>
                         <?php if (empty($chaves)): ?>
                             <tr>
-                                <td colspan="8" style="text-align: center; color: #64748b; padding: 25px;">
+                                <td colspan="9" style="text-align: center; color: #64748b; padding: 25px;">
                                     Nenhuma chave cadastrada.
                                 </td>
                             </tr>
@@ -515,6 +520,14 @@ try {
                                     <td><code><?php echo htmlspecialchars($c['codigo_sala']); ?></code></td>
                                     <td><small><?php echo htmlspecialchars($c['qr_code_hash']); ?></small></td>
                                     <td><?php echo htmlspecialchars($c['descricao']); ?></td>
+                                    <td>
+                                        <?php if (!empty($c['matriculas_permitidas'])): ?>
+                                            <span style="background-color: #fee2e2; border: 1px solid #fecaca; color: #ef4444; padding: 2px 6px; border-radius: 4px; font-size: 11px; font-weight: 700; display: inline-block;">Restrita</span>
+                                            <div style="font-size: 11px; color: #64748b; margin-top: 4px; max-width: 150px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;" title="<?php echo htmlspecialchars($c['matriculas_permitidas']); ?>"><?php echo htmlspecialchars($c['matriculas_permitidas']); ?></div>
+                                        <?php else: ?>
+                                            <span style="color: #64748b; font-size: 12px;">Público</span>
+                                        <?php endif; ?>
+                                    </td>
                                     <td>
                                         <span style="color: <?php echo $c['status_disponivel'] ? '#22c55e' : '#ef4444'; ?>; font-weight: bold;">
                                             <?php echo $c['status_disponivel'] ? 'Disponível' : 'Retirada'; ?>
@@ -559,6 +572,11 @@ try {
                 </div>
                 
                 <div class="form-group">
+                    <label for="matriculas_permitidas">Matrículas Autorizadas (Separadas por vírgula)</label>
+                    <input type="text" name="matriculas_permitidas" id="matriculas_permitidas" class="form-control" placeholder="Ex: 2023001, 2023002 (Deixe vazio para acesso público)">
+                </div>
+                
+                <div class="form-group">
                     <label for="codigo_sala">Código da Sala</label>
                     <input type="text" name="codigo_sala" id="codigo_sala" class="form-control" placeholder="Ex: SALA-12" required>
                 </div>
@@ -595,6 +613,7 @@ try {
             document.getElementById('nome_sala').value = "";
             document.getElementById('bloco').value = "";
             document.getElementById('andar').value = "";
+            document.getElementById('matriculas_permitidas').value = "";
             document.getElementById('codigo_sala').value = "";
             document.getElementById('key_qr_code_hash').value = "";
             document.getElementById('descricao').value = "";
@@ -608,6 +627,7 @@ try {
             document.getElementById('nome_sala').value = chave.nome_sala;
             document.getElementById('bloco').value = chave.bloco || "";
             document.getElementById('andar').value = chave.andar || "";
+            document.getElementById('matriculas_permitidas').value = chave.matriculas_permitidas || "";
             document.getElementById('codigo_sala').value = chave.codigo_sala;
             document.getElementById('key_qr_code_hash').value = chave.qr_code_hash;
             document.getElementById('descricao').value = chave.descricao;

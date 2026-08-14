@@ -27,6 +27,7 @@ O **PegaChave** é uma aplicação web moderna e inteligente projetada para auto
 * **Alertas de Atraso**: Envio automatizado de e-mails para usuários que excederem o período limite de posse de chaves (através de execução periódica do script de alerta).
 * **Limite de Chaves**: Controle de limite máximo de chaves em posse simultânea por usuário (configurável pelo administrador), bloqueando novas retiradas no quiosque se excedido.
 * **Matriz de Restrições de Acesso**: Interface de matriz interativa de Perfis vs Salas para bloquear a retirada de salas específicas por determinados perfis de usuários, com validação e travamento em tempo real no quiosque.
+* **Acesso Restrito por Matrícula**: Cadastro de lista de matrículas permitidas para chaves críticas (como CPD ou laboratórios específicos), garantindo que apenas usuários cadastrados com tais matrículas consigam realizar a retirada no quiosque.
 * **Segurança CSRF:** Proteção ativa em todos os formulários administrativos contra falsificação de requisições.
 
 ### 🔍 3. Consulta Pública de Disponibilidade

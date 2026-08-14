@@ -108,6 +108,20 @@ try {
                 }
             }
 
+            // Verificar restrições de matrícula específica (Acesso Restrito)
+            if (!empty($chave['matriculas_permitidas'])) {
+                // Separar as matrículas por vírgula e limpar espaços em branco
+                $matriculas_permitidas = array_map('trim', explode(',', $chave['matriculas_permitidas']));
+                // Se a matrícula do usuário não estiver na lista de permitidas
+                if (!in_array($usuario['matricula'], $matriculas_permitidas)) {
+                    echo json_encode([
+                        "status" => "error",
+                        "message" => "Bloqueado: Acesso restrito! Sua matrícula '{$usuario['matricula']}' não está autorizada a retirar esta chave."
+                    ]);
+                    exit;
+                }
+            }
+
             // Verificar se há uma reserva ativa ou prestes a começar (próximos 15 min) para outro usuário
             $stmtReserva = $pdo->prepare("
                 SELECT r.*, u.nome AS reservado_nome 
