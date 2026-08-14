@@ -1,88 +1,5 @@
 <?php
-// admin_usuarios_arquivados.php
-session_start();
-if (!isset($_SESSION['admin_logged_in']) || $_SESSION['admin_logged_in'] !== true) {
-    header("Location: admin_login.php");
-    exit;
-}
-require_once __DIR__ . '/api/db.php';
-
-$message = '';
-$messageType = '';
-$autenticado = $_SESSION['arquivados_autenticado'] ?? false;
-
-// 1. Processar autenticação para ver a aba
-if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']) && $_POST['action'] === 'auth_arquivados') {
-    if (!validar_csrf_token($_POST['csrf_token'] ?? '')) {
-        $message = "Token de segurança inválido.";
-        $messageType = "error";
-    } else {
-        $senhaInput = $_POST['senha'] ?? '';
-        $adminId = $_SESSION['admin_user_id'];
-        
-        try {
-            $stmt = $pdo->prepare("SELECT senha FROM administradores WHERE id = ?");
-            $stmt->execute([$adminId]);
-            $admin = $stmt->fetch();
-            
-            if ($admin && password_verify($senhaInput, $admin['senha'])) {
-                $_SESSION['arquivados_autenticado'] = true;
-                $autenticado = true;
-                registrar_log($pdo, 'Acesso Autorizado', "Acessou a aba de usuários arquivados.");
-            } else {
-                $message = "Senha incorreta. Acesso negado.";
-                $messageType = "error";
-                registrar_log($pdo, 'Tentativa de Acesso Falha', "Tentativa falha de acessar a aba de usuários arquivados.");
-            }
-        } catch (\PDOException $e) {
-            $message = "Erro de banco de dados: " . $e->getMessage();
-            $messageType = "error";
-        }
-    }
-}
-
-// 2. Processar restauração de usuário
-if ($autenticado && $_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action']) && $_POST['action'] === 'restore_usuario') {
-    if (!validar_csrf_token($_POST['csrf_token'] ?? '')) {
-        $message = "Token de segurança inválido.";
-        $messageType = "error";
-    } else {
-        $id = $_POST['id'] ?? '';
-        try {
-            $stmtUser = $pdo->prepare("SELECT nome, matricula FROM usuarios WHERE id = ?");
-            $stmtUser->execute([$id]);
-            $userInfo = $stmtUser->fetch();
-            $nomeUsuario = $userInfo ? $userInfo['nome'] : "ID $id";
-
-            $stmt = $pdo->prepare("UPDATE usuarios SET excluido = FALSE, ativo = TRUE WHERE id = ?");
-            $stmt->execute([$id]);
-            
-            registrar_log($pdo, 'Restauração de Usuário', "Usuário '$nomeUsuario' foi restaurado do arquivo.");
-            $message = "Usuário '$nomeUsuario' restaurado com sucesso!";
-            $messageType = "success";
-        } catch (\PDOException $e) {
-            $message = "Erro ao restaurar usuário: " . $e->getMessage();
-            $messageType = "error";
-        }
-    }
-}
-
-// 3. Buscar usuários arquivados
-$usuariosArquivados = [];
-if ($autenticado) {
-    try {
-        $usuariosArquivados = $pdo->query("
-            SELECT u.*, p.nome AS funcao 
-            FROM usuarios u 
-            JOIN perfis p ON u.perfil_id = p.id 
-            WHERE u.excluido = TRUE
-            ORDER BY u.nome ASC
-        ")->fetchAll();
-    } catch (\PDOException $e) {
-        $message = "Erro ao buscar dados: " . $e->getMessage();
-        $messageType = "error";
-    }
-}
+// View para admin_usuarios_arquivados.php
 ?>
 <!DOCTYPE html>
 <html lang="pt-BR">
@@ -375,7 +292,7 @@ if ($autenticado) {
             to { transform: translateX(0); }
         }
     </style>
-    <link rel="stylesheet" href="/api/admin_responsive.css">
+    <link rel="stylesheet" href="api/admin_responsive.css">
 </head>
 <body>
 
@@ -398,44 +315,44 @@ if ($autenticado) {
         </div>
         <ul class="sidebar-menu">
             <li class="sidebar-item">
-                <a href="/admin.php">📊 Dashboard</a>
+                <a href="<?= BASE_URL ?>/admin">📊 Dashboard</a>
             </li>
             <li class="sidebar-item">
-                <a href="/admin_chaves.php">🔑 Chaves/Salas</a>
+                <a href="<?= BASE_URL ?>/admin/chaves">🔑 Chaves/Salas</a>
             </li>
             <li class="sidebar-item">
-                <a href="/admin_usuarios.php">👤 Usuários</a>
+                <a href="<?= BASE_URL ?>/admin/usuarios">👤 Usuários</a>
             </li>
             <li class="sidebar-item active">
-                <a href="/admin_usuarios_arquivados.php">🗄️ Arquivados</a>
+                <a href="<?= BASE_URL ?>/admin/usuarios_arquivados">🗄️ Arquivados</a>
             </li>
             <li class="sidebar-item">
-                <a href="/admin_reservas.php">📅 Agendamentos</a>
+                <a href="<?= BASE_URL ?>/admin/reservas">📅 Agendamentos</a>
             </li>
             <li class="sidebar-item">
-                <a href="/admin_restricoes.php">🔒 Restrições</a>
+                <a href="<?= BASE_URL ?>/admin/restricoes">🔒 Restrições</a>
             </li>
             <li class="sidebar-item">
-                <a href="/admin_gerar_qr.php">🖨️ Gerar QR Codes</a>
+                <a href="<?= BASE_URL ?>/admin/gerar_qr">🖨️ Gerar QR Codes</a>
             </li>
             <li class="sidebar-item">
-                <a href="/admin_consulta.php">🔍 Consultar Disponibilidade</a>
+                <a href="<?= BASE_URL ?>/admin/consulta">🔍 Consultar Disponibilidade</a>
             </li>
             <li class="sidebar-item">
-                <a href="/admin_relatorio.php">📝 Relatório Geral</a>
+                <a href="<?= BASE_URL ?>/admin/relatorio">📝 Relatório Geral</a>
             </li>
             <li class="sidebar-item">
-                <a href="/admin_logs.php">📋 Logs de Auditoria</a>
+                <a href="<?= BASE_URL ?>/admin/logs">📋 Logs de Auditoria</a>
             </li>
             <li class="sidebar-item">
-                <a href="/admin_config.php">⚙️ Configurações</a>
+                <a href="<?= BASE_URL ?>/admin/config">⚙️ Configurações</a>
             </li>
             <li class="sidebar-item">
-                <a href="/admin_logout.php" style="color: #ef4444;">🚪 Sair</a>
+                <a href="<?= BASE_URL ?>/admin_logout.php" style="color: #ef4444;">🚪 Sair</a>
             </li>
         </ul>
         <div class="sidebar-footer">
-            <a href="/index.php" class="btn-kiosk">🖥️ Voltar ao Quiosque</a>
+            <a href="<?= BASE_URL ?>/" class="btn-kiosk">🖥️ Voltar ao Quiosque</a>
         </div>
     </aside>
 
@@ -456,7 +373,7 @@ if ($autenticado) {
                     <h2 style="margin-bottom: 10px; font-weight: 800;">Acesso Restrito</h2>
                     <p style="color: #64748b; font-size: 14px; margin-bottom: 25px;">Por questões de privacidade, digite sua senha de administrador para visualizar os dados históricos arquivados.</p>
                     
-                    <form method="POST" action="admin_usuarios_arquivados.php">
+                    <form method="POST" action="<?= BASE_URL ?>/admin/usuarios_arquivados">
                         <?php renderizar_csrf_input(); ?>
                         <input type="hidden" name="action" value="auth_arquivados">
                         
@@ -494,7 +411,7 @@ if ($autenticado) {
                                         <td><code><?php echo htmlspecialchars($user['matricula']); ?></code></td>
                                         <td><span class="badge badge-funcao"><?php echo htmlspecialchars($user['funcao']); ?></span></td>
                                         <td>
-                                            <form method="POST" action="admin_usuarios_arquivados.php" style="display:inline;">
+                                            <form method="POST" action="<?= BASE_URL ?>/admin/usuarios_arquivados" style="display:inline;">
                                                 <?php renderizar_csrf_input(); ?>
                                                 <input type="hidden" name="action" value="restore_usuario">
                                                 <input type="hidden" name="id" value="<?php echo $user['id']; ?>">

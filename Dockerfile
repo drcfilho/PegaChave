@@ -9,6 +9,11 @@ RUN docker-php-ext-install pdo pdo_mysql
 # Copiar os arquivos do projeto para o diretório padrão do Apache
 COPY . /var/www/html/
 
+# Instalar o Composer e rodar dump-autoload
+COPY --from=composer:latest /usr/bin/composer /usr/local/bin/composer
+RUN composer dump-autoload -o
+
+
 # Ajustar permissões para o servidor web
 RUN chown -R www-data:www-data /var/www/html/
 

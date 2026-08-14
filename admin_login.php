@@ -1,11 +1,12 @@
 <?php
 // admin_login.php
 session_start();
+if (!defined('BASE_URL')) { define('BASE_URL', rtrim(dirname($_SERVER['SCRIPT_NAME']), '/\\')); }
 require_once __DIR__ . '/api/db.php';
 
 // Se já estiver logado, redireciona para o admin.php
 if (isset($_SESSION['admin_logged_in']) && $_SESSION['admin_logged_in'] === true) {
-    header("Location: admin.php");
+    header("Location: " . BASE_URL . "/admin");
     exit;
 }
 
@@ -29,7 +30,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 $_SESSION['admin_user_id'] = $admin['id'];
                 $_SESSION['admin_name'] = $admin['nome'];
                 
-                header("Location: admin.php");
+                header("Location: " . BASE_URL . "/admin");
                 exit;
             } else {
                 $error = "Usuário ou senha incorretos.";
@@ -219,7 +220,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             <button type="submit" class="btn-login">Entrar</button>
         </form>
 
-        <a href="/index.php" class="btn-kiosk">
+        <a href="index.php" class="btn-kiosk">
             🖥️ Voltar ao Quiosque
         </a>
     </div>

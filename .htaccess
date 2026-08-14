@@ -1,0 +1,8 @@
+RewriteEngine On
+
+# Não redirecionar se o arquivo/pasta existir fisicamente (como css, js, imagens)
+RewriteCond %{REQUEST_FILENAME} !-f
+RewriteCond %{REQUEST_FILENAME} !-d
+
+# Redirecionar tudo para o index.php
+RewriteRule ^ index.php [QSA,L]

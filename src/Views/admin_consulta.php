@@ -1,37 +1,5 @@
 <?php
-session_start();
-if (!isset($_SESSION['admin_logged_in']) || $_SESSION['admin_logged_in'] !== true) {
-    header("Location: admin_login.php");
-    exit;
-}
-require_once __DIR__ . '/api/db.php';
-
-try {
-    // Buscar todas as chaves e status atuais
-    $query = "
-        SELECT 
-            c.id, 
-            c.nome_sala, 
-            c.codigo_sala, 
-            c.status_disponivel, 
-            c.descricao,
-            u.nome AS reservado_por_nome, 
-            p.nome AS reservado_por_perfil,
-            DATE_FORMAT(m.data_retirada, '%d/%m/%Y às %H:%i') AS data_retirada_formatada
-        FROM chaves c
-        LEFT JOIN movimentacoes m ON c.id = m.chave_id AND m.data_devolucao IS NULL
-        LEFT JOIN usuarios u ON m.usuario_id = u.id
-        LEFT JOIN perfis p ON u.perfil_id = p.id
-        ORDER BY c.nome_sala ASC
-    ";
-
-    $stmt = $pdo->query($query);
-    $chaves = $stmt->fetchAll();
-
-} catch (\PDOException $e) {
-    echo "Erro ao carregar dados: " . $e->getMessage();
-    exit;
-}
+// View para admin_consulta.php
 ?>
 <!DOCTYPE html>
 <html lang="pt-BR">
@@ -282,7 +250,7 @@ try {
             color: #0f172a;
         }
     </style>
-    <link rel="stylesheet" href="/api/admin_responsive.css">
+    <link rel="stylesheet" href="api/admin_responsive.css">
 </head>
 <body>
 
@@ -293,44 +261,44 @@ try {
         </div>
         <ul class="sidebar-menu">
             <li class="sidebar-item">
-                <a href="/admin.php">📊 Dashboard</a>
+                <a href="<?= BASE_URL ?>/admin">📊 Dashboard</a>
             </li>
             <li class="sidebar-item">
-                <a href="/admin_chaves.php">🔑 Chaves/Salas</a>
+                <a href="<?= BASE_URL ?>/admin/chaves">🔑 Chaves/Salas</a>
             </li>
             <li class="sidebar-item">
-                <a href="/admin_usuarios.php">👤 Usuários</a>
+                <a href="<?= BASE_URL ?>/admin/usuarios">👤 Usuários</a>
             </li>
             <li class="sidebar-item">
-                <a href="/admin_usuarios_arquivados.php">🗄️ Arquivados</a>
+                <a href="<?= BASE_URL ?>/admin/usuarios_arquivados">🗄️ Arquivados</a>
             </li>
             <li class="sidebar-item">
-                <a href="/admin_reservas.php">📅 Agendamentos</a>
+                <a href="<?= BASE_URL ?>/admin/reservas">📅 Agendamentos</a>
             </li>
             <li class="sidebar-item">
-                <a href="/admin_restricoes.php">🔒 Restrições</a>
+                <a href="<?= BASE_URL ?>/admin/restricoes">🔒 Restrições</a>
             </li>
             <li class="sidebar-item">
-                <a href="/admin_gerar_qr.php">🖨️ Gerar QR Codes</a>
+                <a href="<?= BASE_URL ?>/admin/gerar_qr">🖨️ Gerar QR Codes</a>
             </li>
             <li class="sidebar-item active">
-                <a href="/admin_consulta.php">🔍 Consultar Disponibilidade</a>
+                <a href="<?= BASE_URL ?>/admin/consulta">🔍 Consultar Disponibilidade</a>
             </li>
             <li class="sidebar-item">
-                <a href="/admin_relatorio.php">📝 Relatório Geral</a>
+                <a href="<?= BASE_URL ?>/admin/relatorio">📝 Relatório Geral</a>
             </li>
             <li class="sidebar-item">
-                <a href="/admin_logs.php">📋 Logs de Auditoria</a>
+                <a href="<?= BASE_URL ?>/admin/logs">📋 Logs de Auditoria</a>
             </li>
             <li class="sidebar-item">
-                <a href="/admin_config.php">⚙️ Configurações</a>
+                <a href="<?= BASE_URL ?>/admin/config">⚙️ Configurações</a>
             </li>
             <li class="sidebar-item">
-                <a href="/admin_logout.php" style="color: #ef4444;">🚪 Sair</a>
+                <a href="<?= BASE_URL ?>/admin_logout.php" style="color: #ef4444;">🚪 Sair</a>
             </li>
         </ul>
         <div class="sidebar-footer">
-            <a href="/index.php" class="btn-kiosk">🖥️ Voltar ao Quiosque</a>
+            <a href="<?= BASE_URL ?>/" class="btn-kiosk">🖥️ Voltar ao Quiosque</a>
         </div>
     </aside>
 

@@ -1,112 +1,5 @@
 <?php
-session_start();
-if (!isset($_SESSION['admin_logged_in']) || $_SESSION['admin_logged_in'] !== true) {
-    header("Location: admin_login.php");
-    exit;
-}
-require_once __DIR__ . '/api/db.php';
-
-$message = '';
-$messageType = '';
-
-if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    if (!validar_csrf_token($_POST['csrf_token'] ?? '')) {
-        $message = "Token de segurança inválido. Tente novamente.";
-        $messageType = "error";
-    } else {
-        $action = $_POST['action'];
-
-    try {
-        if ($action === 'add_chave') {
-            $nome_sala = trim($_POST['nome_sala'] ?? '');
-            $bloco = trim($_POST['bloco'] ?? '');
-            $andar = trim($_POST['andar'] ?? '');
-            $matriculas_permitidas = trim($_POST['matriculas_permitidas'] ?? '');
-            $codigo_sala = trim($_POST['codigo_sala'] ?? '');
-            $descricao = trim($_POST['descricao'] ?? '');
-
-            // Saneamento básico e validações
-            $nome_sala = htmlspecialchars($nome_sala, ENT_QUOTES, 'UTF-8');
-            $bloco = htmlspecialchars($bloco, ENT_QUOTES, 'UTF-8');
-            $andar = htmlspecialchars($andar, ENT_QUOTES, 'UTF-8');
-            $matriculas_permitidas = htmlspecialchars($matriculas_permitidas, ENT_QUOTES, 'UTF-8');
-            $codigo_sala = preg_replace('/[^a-zA-Z0-9_-]/', '', $codigo_sala);
-            $descricao = htmlspecialchars($descricao, ENT_QUOTES, 'UTF-8');
-
-            // Gerar hash automaticamente
-            $qr_code_hash = 'chaves_' . $codigo_sala;
-
-            if (empty($nome_sala) || empty($codigo_sala) || empty($qr_code_hash)) {
-                throw new Exception("Por favor, preencha todos os campos obrigatórios.");
-            }
-
-            $stmt = $pdo->prepare("INSERT INTO chaves (nome_sala, bloco, andar, matriculas_permitidas, codigo_sala, qr_code_hash, descricao) VALUES (?, ?, ?, ?, ?, ?, ?)");
-            $stmt->execute([$nome_sala, $bloco, $andar, $matriculas_permitidas, $codigo_sala, $qr_code_hash, $descricao]);
-            registrar_log($pdo, 'Cadastro de Chave', "Chave '$nome_sala' ($codigo_sala) cadastrada. Bloco: '$bloco', Andar: '$andar'. Restrita para: '$matriculas_permitidas'. Hash automático: $qr_code_hash");
-            $message = "Chave '$nome_sala' cadastrada com sucesso!";
-            $messageType = "success";
-        } 
-        
-        elseif ($action === 'edit_chave') {
-            $id = filter_var($_POST['id'] ?? '', FILTER_VALIDATE_INT);
-            $nome_sala = trim($_POST['nome_sala'] ?? '');
-            $bloco = trim($_POST['bloco'] ?? '');
-            $andar = trim($_POST['andar'] ?? '');
-            $matriculas_permitidas = trim($_POST['matriculas_permitidas'] ?? '');
-            $codigo_sala = trim($_POST['codigo_sala'] ?? '');
-            $descricao = trim($_POST['descricao'] ?? '');
-
-            $nome_sala = htmlspecialchars($nome_sala, ENT_QUOTES, 'UTF-8');
-            $bloco = htmlspecialchars($bloco, ENT_QUOTES, 'UTF-8');
-            $andar = htmlspecialchars($andar, ENT_QUOTES, 'UTF-8');
-            $matriculas_permitidas = htmlspecialchars($matriculas_permitidas, ENT_QUOTES, 'UTF-8');
-            $codigo_sala = preg_replace('/[^a-zA-Z0-9_-]/', '', $codigo_sala);
-            $descricao = htmlspecialchars($descricao, ENT_QUOTES, 'UTF-8');
-
-            // Gerar hash automaticamente
-            $qr_code_hash = 'chaves_' . $codigo_sala;
-
-            if (!$id || empty($nome_sala) || empty($codigo_sala) || empty($qr_code_hash)) {
-                throw new Exception("Todos os campos obrigatórios devem ser preenchidos.");
-            }
-
-            $stmt = $pdo->prepare("UPDATE chaves SET nome_sala = ?, bloco = ?, andar = ?, matriculas_permitidas = ?, codigo_sala = ?, qr_code_hash = ?, descricao = ? WHERE id = ?");
-            $stmt->execute([$nome_sala, $bloco, $andar, $matriculas_permitidas, $codigo_sala, $qr_code_hash, $descricao, $id]);
-            registrar_log($pdo, 'Edição de Chave', "Chave ID $id atualizada para '$nome_sala' ($codigo_sala). Bloco: '$bloco', Andar: '$andar'. Restrita para: '$matriculas_permitidas'. Hash automático: $qr_code_hash");
-            $message = "Chave atualizada com sucesso!";
-            $messageType = "success";
-        } 
-        
-        elseif ($action === 'delete_chave') {
-            $id = $_POST['id'] ?? '';
-            // Obter nome antes de deletar
-            $stmtChave = $pdo->prepare("SELECT nome_sala, codigo_sala FROM chaves WHERE id = ?");
-            $stmtChave->execute([$id]);
-            $chaveInfo = $stmtChave->fetch();
-            $nomeExcluido = $chaveInfo ? $chaveInfo['nome_sala'] . ' (' . $chaveInfo['codigo_sala'] . ')' : "ID $id";
-
-            // Limpar movimentações associadas primeiro
-            $pdo->prepare("DELETE FROM movimentacoes WHERE chave_id = ?")->execute([$id]);
-            
-            $stmt = $pdo->prepare("DELETE FROM chaves WHERE id = ?");
-            $stmt->execute([$id]);
-            registrar_log($pdo, 'Remoção de Chave', "Chave '$nomeExcluido' e seu histórico foram removidos.");
-            $message = "Chave removida.";
-            $messageType = "success";
-        }
-    } catch (\PDOException $e) {
-        $message = "Erro ao salvar dados: " . $e->getMessage();
-        $messageType = "error";
-    }
-  }
-}
-
-try {
-    $chaves = $pdo->query("SELECT * FROM chaves ORDER BY codigo_sala ASC")->fetchAll();
-} catch (\PDOException $e) {
-    echo "Erro de Banco de Dados: " . $e->getMessage();
-    exit;
-}
+// View para admin_chaves.php
 ?>
 <!DOCTYPE html>
 <html lang="pt-BR">
@@ -443,7 +336,7 @@ try {
             100% { top: -60px; opacity: 0; }
         }
     </style>
-    <link rel="stylesheet" href="/api/admin_responsive.css">
+    <link rel="stylesheet" href="api/admin_responsive.css">
 </head>
 <body>
 
@@ -460,44 +353,44 @@ try {
         </div>
         <ul class="sidebar-menu">
             <li class="sidebar-item">
-                <a href="/admin.php">📊 Dashboard</a>
+                <a href="<?= BASE_URL ?>/admin">📊 Dashboard</a>
             </li>
             <li class="sidebar-item active">
-                <a href="/admin_chaves.php">🔑 Chaves/Salas</a>
+                <a href="<?= BASE_URL ?>/admin/chaves">🔑 Chaves/Salas</a>
             </li>
             <li class="sidebar-item">
-                <a href="/admin_usuarios.php">👤 Usuários</a>
+                <a href="<?= BASE_URL ?>/admin/usuarios">👤 Usuários</a>
             </li>
             <li class="sidebar-item">
-                <a href="/admin_usuarios_arquivados.php">🗄️ Arquivados</a>
+                <a href="<?= BASE_URL ?>/admin/usuarios_arquivados">🗄️ Arquivados</a>
             </li>
             <li class="sidebar-item">
-                <a href="/admin_reservas.php">📅 Agendamentos</a>
+                <a href="<?= BASE_URL ?>/admin/reservas">📅 Agendamentos</a>
             </li>
             <li class="sidebar-item">
-                <a href="/admin_restricoes.php">🔒 Restrições</a>
+                <a href="<?= BASE_URL ?>/admin/restricoes">🔒 Restrições</a>
             </li>
             <li class="sidebar-item">
-                <a href="/admin_gerar_qr.php">🖨️ Gerar QR Codes</a>
+                <a href="<?= BASE_URL ?>/admin/gerar_qr">🖨️ Gerar QR Codes</a>
             </li>
             <li class="sidebar-item">
-                <a href="/admin_consulta.php">🔍 Consultar Disponibilidade</a>
+                <a href="<?= BASE_URL ?>/admin/consulta">🔍 Consultar Disponibilidade</a>
             </li>
             <li class="sidebar-item">
-                <a href="/admin_relatorio.php">📝 Relatório Geral</a>
+                <a href="<?= BASE_URL ?>/admin/relatorio">📝 Relatório Geral</a>
             </li>
             <li class="sidebar-item">
-                <a href="/admin_logs.php">📋 Logs de Auditoria</a>
+                <a href="<?= BASE_URL ?>/admin/logs">📋 Logs de Auditoria</a>
             </li>
             <li class="sidebar-item">
-                <a href="/admin_config.php">⚙️ Configurações</a>
+                <a href="<?= BASE_URL ?>/admin/config">⚙️ Configurações</a>
             </li>
             <li class="sidebar-item">
-                <a href="/admin_logout.php" style="color: #ef4444;">🚪 Sair</a>
+                <a href="<?= BASE_URL ?>/admin_logout.php" style="color: #ef4444;">🚪 Sair</a>
             </li>
         </ul>
         <div class="sidebar-footer">
-            <a href="/index.php" class="btn-kiosk">🖥️ Voltar ao Quiosque</a>
+            <a href="<?= BASE_URL ?>/" class="btn-kiosk">🖥️ Voltar ao Quiosque</a>
         </div>
     </aside>
 
@@ -579,7 +472,7 @@ try {
     <div class="modal" id="key-modal">
         <div class="modal-content">
             <h3 class="modal-title-text" id="key-modal-title">Cadastrar Nova Chave</h3>
-            <form method="POST" action="admin_chaves.php">
+            <form method="POST" action="<?= BASE_URL ?>/admin/chaves">
                 <?php renderizar_csrf_input(); ?>
                 <input type="hidden" name="action" id="key-action" value="add_chave">
                 <input type="hidden" name="id" id="key-id">
@@ -627,7 +520,7 @@ try {
         </div>
     </div>
 
-    <form id="delete-form" method="POST" action="admin_chaves.php" style="display: none;">
+    <form id="delete-form" method="POST" action="<?= BASE_URL ?>/admin/chaves" style="display: none;">
         <?php renderizar_csrf_input(); ?>
         <input type="hidden" name="action" value="delete_chave">
         <input type="hidden" name="id" id="delete-id">

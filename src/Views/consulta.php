@@ -1,50 +1,5 @@
 <?php
-// consulta.php
-require_once __DIR__ . '/api/db.php';
-
-try {
-    // Buscar todas as chaves e seus status atuais de ocupação
-    $query = "
-        SELECT 
-            c.id, 
-            c.nome_sala, 
-            c.bloco,
-            c.andar,
-            c.codigo_sala, 
-            c.status_disponivel, 
-            c.descricao,
-            u.nome AS reservado_por_nome, 
-            p.nome AS reservado_por_perfil,
-            DATE_FORMAT(m.data_retirada, '%d/%m/%Y às %H:%i') AS data_retirada_formatada
-        FROM chaves c
-        LEFT JOIN movimentacoes m ON c.id = m.chave_id AND m.data_devolucao IS NULL
-        LEFT JOIN usuarios u ON m.usuario_id = u.id
-        LEFT JOIN perfis p ON u.perfil_id = p.id
-        ORDER BY c.nome_sala ASC
-    ";
-
-    $stmt = $pdo->query($query);
-    $chaves = $stmt->fetchAll();
-
-    // Buscar reservas/agendamentos de hoje agrupados por chave
-    $stmtReservas = $pdo->query("
-        SELECT r.chave_id, r.hora_inicio, r.hora_fim, u.nome AS reservado_nome
-        FROM reservas r
-        JOIN usuarios u ON r.usuario_id = u.id
-        WHERE r.data_reserva = CURDATE()
-        ORDER BY r.hora_inicio ASC
-    ");
-    $reservasHoje = [];
-    if ($stmtReservas) {
-        foreach ($stmtReservas->fetchAll() as $res) {
-            $reservasHoje[$res['chave_id']][] = $res;
-        }
-    }
-
-} catch (\PDOException $e) {
-    echo "Erro ao carregar dados: " . $e->getMessage();
-    exit;
-}
+// View da Consulta
 ?>
 <!DOCTYPE html>
 <html lang="pt-BR">
@@ -54,11 +9,11 @@ try {
     <title>Consulta de Chaves - <?php echo htmlspecialchars($nome_escola); ?></title>
     
     <!-- PWA Meta -->
-    <link rel="manifest" href="/manifest.json">
+    <link rel="manifest" href="manifest.json">
     <meta name="theme-color" content="#0284c7">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-    <link rel="apple-touch-icon" href="/logo_pwa.jpg">
+    <link rel="apple-touch-icon" href="logo_pwa.jpg">
 
     <!-- Google Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -408,7 +363,7 @@ try {
         <?php endforeach; ?>
     </div>
 
-    <a href="/index.php" class="btn-back">
+    <a href="<?= BASE_URL ?>/" class="btn-back">
         <span>↩</span> Voltar ao Quiosque
     </a>
 

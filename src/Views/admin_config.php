@@ -1,57 +1,5 @@
 <?php
-session_start();
-if (!isset($_SESSION['admin_logged_in']) || $_SESSION['admin_logged_in'] !== true) {
-    header("Location: admin_login.php");
-    exit;
-}
-require_once __DIR__ . '/api/db.php';
-
-$message = '';
-$messageType = '';
-
-if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    if (!validar_csrf_token($_POST['csrf_token'] ?? '')) {
-        $message = "Token de segurança inválido. Tente novamente.";
-        $messageType = "error";
-    } elseif (isset($_POST['action']) && $_POST['action'] === 'update_config') {
-    $nome_input = $_POST['nome_escola'] ?? 'Escola Lumiar';
-    $cor_p_input = $_POST['cor_primaria'] ?? '#0284c7';
-    $cor_s_input = $_POST['cor_secundaria'] ?? '#0f172a';
-    $limite_input = filter_var($_POST['limite_chaves'] ?? '0', FILTER_VALIDATE_INT);
-    if ($limite_input === false || $limite_input < 0) {
-        $limite_input = 0;
-    }
-
-    try {
-        $stmt1 = $pdo->prepare("INSERT INTO configuracoes (chave, valor) VALUES ('nome_escola', ?) ON DUPLICATE KEY UPDATE valor = VALUES(valor)");
-        $stmt1->execute([$nome_input]);
-
-        $stmt2 = $pdo->prepare("INSERT INTO configuracoes (chave, valor) VALUES ('cor_primaria', ?) ON DUPLICATE KEY UPDATE valor = VALUES(valor)");
-        $stmt2->execute([$cor_p_input]);
-
-        $stmt3 = $pdo->prepare("INSERT INTO configuracoes (chave, valor) VALUES ('cor_secundaria', ?) ON DUPLICATE KEY UPDATE valor = VALUES(valor)");
-        $stmt3->execute([$cor_s_input]);
-
-        $stmt4 = $pdo->prepare("INSERT INTO configuracoes (chave, valor) VALUES ('limite_chaves', ?) ON DUPLICATE KEY UPDATE valor = VALUES(valor)");
-        $stmt4->execute([$limite_input]);
-
-        registrar_log($pdo, 'Alteração de Configuração', "Nome da Escola: '$nome_input', Cor Primária: '$cor_p_input', Cor Secundária: '$cor_s_input', Limite de Chaves: $limite_input.");
-
-        $message = "Configurações atualizadas com sucesso!";
-        $messageType = "success";
-
-        // Recarregar variáveis locais após alteração
-        $nome_escola = $nome_input;
-        $cor_primaria = $cor_p_input;
-        $cor_secundaria = $cor_s_input;
-        $limite_chaves = $limite_input;
-
-    } catch (\PDOException $e) {
-        $message = "Erro ao salvar configurações: " . $e->getMessage();
-        $messageType = "error";
-    }
-  }
-}
+// View para admin_config.php
 ?>
 <!DOCTYPE html>
 <html lang="pt-BR">
@@ -285,7 +233,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             100% { top: -60px; opacity: 0; }
         }
     </style>
-    <link rel="stylesheet" href="/api/admin_responsive.css">
+    <link rel="stylesheet" href="api/admin_responsive.css">
 </head>
 <body>
 
@@ -302,44 +250,44 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         </div>
         <ul class="sidebar-menu">
             <li class="sidebar-item">
-                <a href="/admin.php">📊 Dashboard</a>
+                <a href="<?= BASE_URL ?>/admin">📊 Dashboard</a>
             </li>
             <li class="sidebar-item">
-                <a href="/admin_chaves.php">🔑 Chaves/Salas</a>
+                <a href="<?= BASE_URL ?>/admin/chaves">🔑 Chaves/Salas</a>
             </li>
             <li class="sidebar-item">
-                <a href="/admin_usuarios.php">👤 Usuários</a>
+                <a href="<?= BASE_URL ?>/admin/usuarios">👤 Usuários</a>
             </li>
             <li class="sidebar-item">
-                <a href="/admin_usuarios_arquivados.php">🗄️ Arquivados</a>
+                <a href="<?= BASE_URL ?>/admin/usuarios_arquivados">🗄️ Arquivados</a>
             </li>
             <li class="sidebar-item">
-                <a href="/admin_reservas.php">📅 Agendamentos</a>
+                <a href="<?= BASE_URL ?>/admin/reservas">📅 Agendamentos</a>
             </li>
             <li class="sidebar-item">
-                <a href="/admin_restricoes.php">🔒 Restrições</a>
+                <a href="<?= BASE_URL ?>/admin/restricoes">🔒 Restrições</a>
             </li>
             <li class="sidebar-item">
-                <a href="/admin_gerar_qr.php">🖨️ Gerar QR Codes</a>
+                <a href="<?= BASE_URL ?>/admin/gerar_qr">🖨️ Gerar QR Codes</a>
             </li>
             <li class="sidebar-item">
-                <a href="/admin_consulta.php">🔍 Consultar Disponibilidade</a>
+                <a href="<?= BASE_URL ?>/admin/consulta">🔍 Consultar Disponibilidade</a>
             </li>
             <li class="sidebar-item">
-                <a href="/admin_relatorio.php">📝 Relatório Geral</a>
+                <a href="<?= BASE_URL ?>/admin/relatorio">📝 Relatório Geral</a>
             </li>
             <li class="sidebar-item">
-                <a href="/admin_logs.php">📋 Logs de Auditoria</a>
+                <a href="<?= BASE_URL ?>/admin/logs">📋 Logs de Auditoria</a>
             </li>
             <li class="sidebar-item active">
-                <a href="/admin_config.php">⚙️ Configurações</a>
+                <a href="<?= BASE_URL ?>/admin/config">⚙️ Configurações</a>
             </li>
             <li class="sidebar-item">
-                <a href="/admin_logout.php" style="color: #ef4444;">🚪 Sair</a>
+                <a href="<?= BASE_URL ?>/admin_logout.php" style="color: #ef4444;">🚪 Sair</a>
             </li>
         </ul>
         <div class="sidebar-footer">
-            <a href="/index.php" class="btn-kiosk">🖥️ Voltar ao Quiosque</a>
+            <a href="<?= BASE_URL ?>/" class="btn-kiosk">🖥️ Voltar ao Quiosque</a>
         </div>
     </aside>
 
@@ -353,7 +301,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         </div>
 
         <div class="content-card">
-            <form method="POST" action="admin_config.php">
+            <form method="POST" action="<?= BASE_URL ?>/admin/config">
                 <?php renderizar_csrf_input(); ?>
                 <input type="hidden" name="action" value="update_config">
                 

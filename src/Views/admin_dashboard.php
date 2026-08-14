@@ -1,88 +1,5 @@
 <?php
-session_start();
-if (!isset($_SESSION['admin_logged_in']) || $_SESSION['admin_logged_in'] !== true) {
-    header("Location: admin_login.php");
-    exit;
-}
-require_once __DIR__ . '/api/db.php';
-
-try {
-    // 1. Obter Chaves em Uso (Atuais)
-    $stmtUso = $pdo->query("
-        SELECT 
-            c.id AS chave_id,
-            c.nome_sala,
-            c.codigo_sala,
-            u.nome AS usuario_nome,
-            p.nome AS usuario_perfil,
-            DATE_FORMAT(m.data_retirada, '%H:%i') AS desde,
-            IF(m.data_retirada < DATE_SUB(NOW(), INTERVAL 8 HOUR), 1, 0) AS atrasada,
-            m.id AS movimentacao_id
-        FROM chaves c
-        JOIN movimentacoes m ON c.id = m.chave_id AND m.data_devolucao IS NULL
-        JOIN usuarios u ON m.usuario_id = u.id
-        JOIN perfis p ON u.perfil_id = p.id
-        ORDER BY m.data_retirada DESC
-    ");
-    $chavesEmUso = $stmtUso->fetchAll();
-
-    // 2. Estatísticas
-    $totalChaves = $pdo->query("SELECT COUNT(*) FROM chaves")->fetchColumn();
-    $chavesEmUsoCount = count($chavesEmUso);
-    $chavesDisponiveis = $totalChaves - $chavesEmUsoCount;
-
-    // Contar devoluções de hoje
-    $devolucoesHoje = $pdo->query("
-        SELECT COUNT(*) FROM movimentacoes 
-        WHERE DATE(data_devolucao) = CURDATE()
-    ")->fetchColumn();
-
-    // Contar retiradas de hoje
-    $retiradasHoje = $pdo->query("
-        SELECT COUNT(*) FROM movimentacoes 
-        WHERE DATE(data_retirada) = CURDATE()
-    ")->fetchColumn();
-
-    // Contar pendentes
-    $pendentesCount = $pdo->query("
-        SELECT COUNT(*) FROM movimentacoes 
-        WHERE data_devolucao IS NULL 
-        AND data_retirada < DATE_SUB(NOW(), INTERVAL 8 HOUR)
-    ")->fetchColumn();
-
-    // 3. Analytics - Top 5 salas mais utilizadas
-    $topSalas = $pdo->query("
-        SELECT c.nome_sala, COUNT(m.id) AS total_retiradas
-        FROM movimentacoes m
-        JOIN chaves c ON m.chave_id = c.id
-        GROUP BY c.id
-        ORDER BY total_retiradas DESC
-        LIMIT 5
-    ")->fetchAll();
-
-    // 4. Analytics - Fluxo de retiradas nos últimos 7 dias
-    $fluxoSemanal = $pdo->query("
-        SELECT 
-            DATE_FORMAT(d.data, '%d/%m') AS dia_mes,
-            COALESCE(COUNT(m.id), 0) AS total
-        FROM (
-            SELECT CURDATE() - INTERVAL 6 DAY AS data UNION ALL
-            SELECT CURDATE() - INTERVAL 5 DAY UNION ALL
-            SELECT CURDATE() - INTERVAL 4 DAY UNION ALL
-            SELECT CURDATE() - INTERVAL 3 DAY UNION ALL
-            SELECT CURDATE() - INTERVAL 2 DAY UNION ALL
-            SELECT CURDATE() - INTERVAL 1 DAY UNION ALL
-            SELECT CURDATE()
-        ) d
-        LEFT JOIN movimentacoes m ON DATE(m.data_retirada) = d.data
-        GROUP BY d.data
-        ORDER BY d.data ASC
-    ")->fetchAll();
-
-} catch (\PDOException $e) {
-    echo "Erro de Banco de Dados: " . $e->getMessage();
-    exit;
-}
+// View do Dashboard Admin
 ?>
 <!DOCTYPE html>
 <html lang="pt-BR">
@@ -317,7 +234,7 @@ try {
             text-decoration: underline;
         }
     </style>
-    <link rel="stylesheet" href="/api/admin_responsive.css">
+    <link rel="stylesheet" href="api/admin_responsive.css">
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 </head>
 <body>
@@ -329,44 +246,44 @@ try {
         </div>
         <ul class="sidebar-menu">
             <li class="sidebar-item active">
-                <a href="/admin.php">📊 Dashboard</a>
+                <a href="<?= BASE_URL ?>/admin">📊 Dashboard</a>
             </li>
             <li class="sidebar-item">
-                <a href="/admin_chaves.php">🔑 Chaves/Salas</a>
+                <a href="<?= BASE_URL ?>/admin/chaves">🔑 Chaves/Salas</a>
             </li>
             <li class="sidebar-item">
-                <a href="/admin_usuarios.php">👤 Usuários</a>
+                <a href="<?= BASE_URL ?>/admin/usuarios">👤 Usuários</a>
             </li>
             <li class="sidebar-item">
-                <a href="/admin_usuarios_arquivados.php">🗄️ Arquivados</a>
+                <a href="<?= BASE_URL ?>/admin/usuarios_arquivados">🗄️ Arquivados</a>
             </li>
             <li class="sidebar-item">
-                <a href="/admin_reservas.php">📅 Agendamentos</a>
+                <a href="<?= BASE_URL ?>/admin/reservas">📅 Agendamentos</a>
             </li>
             <li class="sidebar-item">
-                <a href="/admin_restricoes.php">🔒 Restrições</a>
+                <a href="<?= BASE_URL ?>/admin/restricoes">🔒 Restrições</a>
             </li>
             <li class="sidebar-item">
-                <a href="/admin_gerar_qr.php">🖨️ Gerar QR Codes</a>
+                <a href="<?= BASE_URL ?>/admin/gerar_qr">🖨️ Gerar QR Codes</a>
             </li>
             <li class="sidebar-item">
-                <a href="/admin_consulta.php">🔍 Consultar Disponibilidade</a>
+                <a href="<?= BASE_URL ?>/admin/consulta">🔍 Consultar Disponibilidade</a>
             </li>
             <li class="sidebar-item">
-                <a href="/admin_relatorio.php">📝 Relatório Geral</a>
+                <a href="<?= BASE_URL ?>/admin/relatorio">📝 Relatório Geral</a>
             </li>
             <li class="sidebar-item">
-                <a href="/admin_logs.php">📋 Logs de Auditoria</a>
+                <a href="<?= BASE_URL ?>/admin/logs">📋 Logs de Auditoria</a>
             </li>
             <li class="sidebar-item">
-                <a href="/admin_config.php">⚙️ Configurações</a>
+                <a href="<?= BASE_URL ?>/admin/config">⚙️ Configurações</a>
             </li>
             <li class="sidebar-item">
-                <a href="/admin_logout.php" style="color: #ef4444;">🚪 Sair</a>
+                <a href="<?= BASE_URL ?>/admin_logout.php" style="color: #ef4444;">🚪 Sair</a>
             </li>
         </ul>
         <div class="sidebar-footer">
-            <a href="/index.php" class="btn-kiosk">🖥️ Voltar ao Quiosque</a>
+            <a href="<?= BASE_URL ?>/" class="btn-kiosk">🖥️ Voltar ao Quiosque</a>
         </div>
     </aside>
 
@@ -497,12 +414,12 @@ try {
         async function devolverChave(chaveId) {
             if (!confirm("Deseja forçar a devolução manual desta chave?")) return;
             try {
-                const response = await fetch('/api/status_chaves.php');
+                const response = await fetch('<?= BASE_URL ?>/api/status_chaves.php');
                 const result = await response.json();
                 const chaveObj = result.data.find(c => c.id == chaveId);
                 
                 if (chaveObj && chaveObj.qr_code_hash) {
-                    const scanRes = await fetch('/api/processar_scan.php', {
+                    const scanRes = await fetch('<?= BASE_URL ?>/api/processar_scan', {
                         method: 'POST',
                         headers: { 'Content-Type': 'application/json' },
                         body: JSON.stringify({ qr_code: chaveObj.qr_code_hash })
@@ -519,7 +436,7 @@ try {
 
         async function refreshDashboard() {
             try {
-                const response = await fetch('/api/dashboard_data.php');
+                const response = await fetch('<?= BASE_URL ?>/api/dashboard_data.php');
                 const result = await response.json();
                 if (result.status !== 'success') return;
 

@@ -1,5 +1,5 @@
 <?php
-require_once __DIR__ . '/api/db.php';
+require_once __DIR__ . '/../../api/db.php';
 ?>
 <!DOCTYPE html>
 <html lang="pt-BR">
@@ -9,11 +9,11 @@ require_once __DIR__ . '/api/db.php';
     <title>Regras e Instruções - <?php echo htmlspecialchars($nome_escola); ?></title>
     
     <!-- PWA Meta -->
-    <link rel="manifest" href="/manifest.json">
+    <link rel="manifest" href="manifest.json">
     <meta name="theme-color" content="#0284c7">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-    <link rel="apple-touch-icon" href="/logo_pwa.jpg">
+    <link rel="apple-touch-icon" href="logo_pwa.jpg">
 
     <!-- Google Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -175,7 +175,7 @@ require_once __DIR__ . '/api/db.php';
         <h2>⏳ Horários e Prazos</h2>
         <p>As chaves devem ser devolvidas ao final do expediente de cada turno ou assim que o ambiente correspondente não estiver mais em uso. O sistema emitirá alertas automáticos no painel do administrador para chaves que ficarem em uso por mais de 8 horas consecutivas.</p>
 
-        <a href="/index.php" class="btn-back">
+        <a href="<?= BASE_URL ?>/" class="btn-back">
             <span>↩</span> Voltar ao Quiosque
         </a>
     </div>

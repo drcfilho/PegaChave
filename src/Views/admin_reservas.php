@@ -1,157 +1,5 @@
 <?php
-// admin_reservas.php
-session_start();
-if (!isset($_SESSION['admin_logged_in']) || $_SESSION['admin_logged_in'] !== true) {
-    header("Location: admin_login.php");
-    exit;
-}
-require_once __DIR__ . '/api/db.php';
-
-$message = "";
-$messageType = "";
-
-if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    if (!validar_csrf_token($_POST['csrf_token'] ?? '')) {
-        $message = "Token de segurança inválido. Tente novamente.";
-        $messageType = "error";
-    } else {
-        $action = $_POST['action'] ?? '';
-
-        try {
-            if ($action === 'add_reserva') {
-                $chave_id = filter_var($_POST['chave_id'] ?? '', FILTER_VALIDATE_INT);
-                $usuario_id = filter_var($_POST['usuario_id'] ?? '', FILTER_VALIDATE_INT);
-                $data_reserva = $_POST['data_reserva'] ?? '';
-                $hora_inicio = $_POST['hora_inicio'] ?? '';
-                $hora_fim = $_POST['hora_fim'] ?? '';
-
-                if (!$chave_id || !$usuario_id || empty($data_reserva) || empty($hora_inicio) || empty($hora_fim)) {
-                    throw new Exception("Todos os campos de agendamento são obrigatórios.");
-                }
-
-                // Saneamento básico e validação de data/hora
-                $data_reserva = date('Y-m-d', strtotime($data_reserva));
-                $hora_inicio = date('H:i:s', strtotime($hora_inicio));
-                $hora_fim = date('H:i:s', strtotime($hora_fim));
-
-                if ($hora_inicio >= $hora_fim) {
-                    throw new Exception("A hora de início deve ser menor que a hora de término.");
-                }
-
-                // Verificar conflito de horário para a mesma chave/sala na data
-                $stmtCheck = $pdo->prepare("
-                    SELECT r.*, u.nome AS reservado_nome 
-                    FROM reservas r
-                    JOIN usuarios u ON r.usuario_id = u.id
-                    WHERE r.chave_id = ?
-                      AND r.data_reserva = ?
-                      AND (
-                          (? BETWEEN r.hora_inicio AND r.hora_fim)
-                          OR (? BETWEEN r.hora_inicio AND r.hora_fim)
-                          OR (r.hora_inicio BETWEEN ? AND ?)
-                      )
-                ");
-                $stmtCheck->execute([$chave_id, $data_reserva, $hora_inicio, $hora_fim, $hora_inicio, $hora_fim]);
-                $conflito = $stmtCheck->fetch();
-
-                if ($conflito) {
-                    throw new Exception("Conflito: A sala já está reservada por {$conflito['reservado_nome']} neste horário!");
-                }
-
-                // Inserir agendamento
-                $stmtInsert = $pdo->prepare("
-                    INSERT INTO reservas (chave_id, usuario_id, data_reserva, hora_inicio, hora_fim) 
-                    VALUES (?, ?, ?, ?, ?)
-                ");
-                $stmtInsert->execute([$chave_id, $usuario_id, $data_reserva, $hora_inicio, $hora_fim]);
-
-                // Obter nomes para o log
-                $nomeSala = $pdo->query("SELECT nome_sala FROM chaves WHERE id = $chave_id")->fetchColumn();
-                $nomeUser = $pdo->query("SELECT nome FROM usuarios WHERE id = $usuario_id")->fetchColumn();
-                
-                registrar_log($pdo, 'Agendamento de Sala', "Sala '$nomeSala' agendada para '$nomeUser' em $data_reserva das " . substr($hora_inicio, 0, 5) . " às " . substr($hora_fim, 0, 5));
-
-                $message = "Sala reservada com sucesso!";
-                $messageType = "success";
-            } 
-            
-            elseif ($action === 'delete_reserva') {
-                $id = filter_var($_POST['id'] ?? '', FILTER_VALIDATE_INT);
-                if (!$id) {
-                    throw new Exception("ID de agendamento inválido.");
-                }
-
-                // Obter informações para o log
-                $stmtInfo = $pdo->prepare("
-                    SELECT c.nome_sala, u.nome, r.data_reserva 
-                    FROM reservas r
-                    JOIN chaves c ON r.chave_id = c.id
-                    JOIN usuarios u ON r.usuario_id = u.id
-                    WHERE r.id = ?
-                ");
-                $stmtInfo->execute([$id]);
-                $info = $stmtInfo->fetch();
-
-                $stmtDelete = $pdo->prepare("DELETE FROM reservas WHERE id = ?");
-                $stmtDelete->execute([$id]);
-
-                if ($info) {
-                    registrar_log($pdo, 'Cancelamento de Reserva', "Reserva da sala '{$info['nome_sala']}' para '{$info['nome']}' no dia {$info['data_reserva']} foi cancelada.");
-                }
-
-                $message = "Reserva cancelada com sucesso.";
-                $messageType = "success";
-            }
-        } catch (Exception $e) {
-            $message = $e->getMessage();
-            $messageType = "error";
-        }
-    }
-}
-
-// Carregar chaves, usuários e reservas
-try {
-    $chaves = $pdo->query("SELECT id, nome_sala, codigo_sala FROM chaves ORDER BY nome_sala ASC")->fetchAll();
-    $usuarios = $pdo->query("SELECT id, nome FROM usuarios WHERE ativo = TRUE AND excluido = FALSE ORDER BY nome ASC")->fetchAll();
-    
-    // Obter reservas futuras e de hoje
-    $reservas = $pdo->query("
-        SELECT 
-            r.id,
-            r.data_reserva,
-            DATE_FORMAT(r.hora_inicio, '%H:%i') AS inicio,
-            DATE_FORMAT(r.hora_fim, '%H:%i') AS fim,
-            c.nome_sala,
-            c.codigo_sala,
-            u.nome AS usuario_nome
-        FROM reservas r
-        JOIN chaves c ON r.chave_id = c.id
-        JOIN usuarios u ON r.usuario_id = u.id
-        WHERE r.data_reserva >= CURDATE()
-        ORDER BY r.data_reserva ASC, r.hora_inicio ASC
-    ")->fetchAll();
-
-    // Obter reservas passadas (histórico)
-    $reservasPassadas = $pdo->query("
-        SELECT 
-            r.id,
-            r.data_reserva,
-            DATE_FORMAT(r.hora_inicio, '%H:%i') AS inicio,
-            DATE_FORMAT(r.hora_fim, '%H:%i') AS fim,
-            c.nome_sala,
-            c.codigo_sala,
-            u.nome AS usuario_nome
-        FROM reservas r
-        JOIN chaves c ON r.chave_id = c.id
-        JOIN usuarios u ON r.usuario_id = u.id
-        WHERE r.data_reserva < CURDATE()
-        ORDER BY r.data_reserva DESC, r.hora_inicio DESC
-        LIMIT 100
-    ")->fetchAll();
-} catch (\PDOException $e) {
-    echo "Erro de Banco de Dados: " . $e->getMessage();
-    exit;
-}
+// View para admin_reservas.php
 ?>
 <!DOCTYPE html>
 <html lang="pt-BR">
@@ -488,7 +336,7 @@ try {
             color: white;
         }
     </style>
-    <link rel="stylesheet" href="/api/admin_responsive.css">
+    <link rel="stylesheet" href="api/admin_responsive.css">
 </head>
 <body>
 
@@ -499,44 +347,44 @@ try {
         </div>
         <ul class="sidebar-menu">
             <li class="sidebar-item">
-                <a href="/admin.php">📊 Dashboard</a>
+                <a href="<?= BASE_URL ?>/admin">📊 Dashboard</a>
             </li>
             <li class="sidebar-item">
-                <a href="/admin_chaves.php">🔑 Chaves/Salas</a>
+                <a href="<?= BASE_URL ?>/admin/chaves">🔑 Chaves/Salas</a>
             </li>
             <li class="sidebar-item">
-                <a href="/admin_usuarios.php">👤 Usuários</a>
+                <a href="<?= BASE_URL ?>/admin/usuarios">👤 Usuários</a>
             </li>
             <li class="sidebar-item">
-                <a href="/admin_usuarios_arquivados.php">🗄️ Arquivados</a>
+                <a href="<?= BASE_URL ?>/admin/usuarios_arquivados">🗄️ Arquivados</a>
             </li>
             <li class="sidebar-item active">
-                <a href="/admin_reservas.php">📅 Agendamentos</a>
+                <a href="<?= BASE_URL ?>/admin/reservas">📅 Agendamentos</a>
             </li>
             <li class="sidebar-item">
-                <a href="/admin_restricoes.php">🔒 Restrições</a>
+                <a href="<?= BASE_URL ?>/admin/restricoes">🔒 Restrições</a>
             </li>
             <li class="sidebar-item">
-                <a href="/admin_gerar_qr.php">🖨️ Gerar QR Codes</a>
+                <a href="<?= BASE_URL ?>/admin/gerar_qr">🖨️ Gerar QR Codes</a>
             </li>
             <li class="sidebar-item">
-                <a href="/admin_consulta.php">🔍 Consultar Disponibilidade</a>
+                <a href="<?= BASE_URL ?>/admin/consulta">🔍 Consultar Disponibilidade</a>
             </li>
             <li class="sidebar-item">
-                <a href="/admin_relatorio.php">📝 Relatório Geral</a>
+                <a href="<?= BASE_URL ?>/admin/relatorio">📝 Relatório Geral</a>
             </li>
             <li class="sidebar-item">
-                <a href="/admin_logs.php">📋 Logs de Auditoria</a>
+                <a href="<?= BASE_URL ?>/admin/logs">📋 Logs de Auditoria</a>
             </li>
             <li class="sidebar-item">
-                <a href="/admin_config.php">⚙️ Configurações</a>
+                <a href="<?= BASE_URL ?>/admin/config">⚙️ Configurações</a>
             </li>
             <li class="sidebar-item">
-                <a href="/admin_logout.php" style="color: #ef4444;">🚪 Sair</a>
+                <a href="<?= BASE_URL ?>/admin_logout.php" style="color: #ef4444;">🚪 Sair</a>
             </li>
         </ul>
         <div class="sidebar-footer">
-            <a href="/index.php" class="btn-kiosk">🖥️ Voltar ao Quiosque</a>
+            <a href="<?= BASE_URL ?>/" class="btn-kiosk">🖥️ Voltar ao Quiosque</a>
         </div>
     </aside>
 
@@ -587,7 +435,7 @@ try {
                                     <td><strong><?php echo htmlspecialchars($r['nome_sala']); ?></strong> (<?php echo htmlspecialchars($r['codigo_sala']); ?>)</td>
                                     <td><?php echo htmlspecialchars($r['usuario_nome']); ?></td>
                                     <td>
-                                        <form method="POST" action="admin_reservas.php" onsubmit="return confirm('Deseja cancelar este agendamento?');" style="display:inline;">
+                                        <form method="POST" action="<?= BASE_URL ?>/admin/reservas" onsubmit="return confirm('Deseja cancelar este agendamento?');" style="display:inline;">
                                             <input type="hidden" name="csrf_token" value="<?php echo gerador_csrf_token(); ?>">
                                             <input type="hidden" name="action" value="delete_reserva">
                                             <input type="hidden" name="id" value="<?php echo $r['id']; ?>">
@@ -647,7 +495,7 @@ try {
                 <h2>Novo Agendamento</h2>
                 <button class="btn-close" onclick="fecharModal()">&times;</button>
             </div>
-            <form method="POST" action="admin_reservas.php">
+            <form method="POST" action="<?= BASE_URL ?>/admin/reservas">
                 <input type="hidden" name="csrf_token" value="<?php echo gerador_csrf_token(); ?>">
                 <input type="hidden" name="action" value="add_reserva">
 

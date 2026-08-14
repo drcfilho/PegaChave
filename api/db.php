@@ -1,6 +1,6 @@
 <?php
 // api/db.php
-
+global $pdo, $nome_escola, $cor_primaria, $cor_secundaria, $limite_chaves;
 
 if (!function_exists('carregarEnv')) {
     function carregarEnv($caminho) {

@@ -1,107 +1,5 @@
 <?php
-session_start();
-if (!isset($_SESSION['admin_logged_in']) || $_SESSION['admin_logged_in'] !== true) {
-    header("Location: admin_login.php");
-    exit;
-}
-require_once __DIR__ . '/api/db.php';
-
-$usuario_id = $_GET['usuario_id'] ?? null;
-$chave_id = $_GET['chave_id'] ?? null;
-$data_inicio = $_GET['data_inicio'] ?? null;
-$data_fim = $_GET['data_fim'] ?? null;
-
-try {
-    // Carregar filtros dinâmicos
-    $chaves = $pdo->query("SELECT id, nome_sala, codigo_sala FROM chaves ORDER BY nome_sala ASC")->fetchAll();
-    $usuarios = $pdo->query("SELECT id, nome FROM usuarios ORDER BY nome ASC")->fetchAll();
-
-    // Buscar Movimentações com filtros
-    $sql = "
-        SELECT 
-            m.id, 
-            m.data_retirada, 
-            m.data_devolucao, 
-            m.observacao,
-            u.nome AS usuario_nome, 
-            u.matricula AS usuario_matricula,
-            c.nome_sala, 
-            c.codigo_sala
-        FROM movimentacoes m
-        JOIN usuarios u ON m.usuario_id = u.id
-        JOIN chaves c ON m.chave_id = c.id
-        WHERE 1=1
-    ";
-    
-    $params = [];
-
-    if ($usuario_id) {
-        $sql .= " AND m.usuario_id = ?";
-        $params[] = $usuario_id;
-    }
-
-    if ($chave_id) {
-        $sql .= " AND m.chave_id = ?";
-        $params[] = $chave_id;
-    }
-
-    if ($data_inicio) {
-        $sql .= " AND m.data_retirada >= ?";
-        $params[] = $data_inicio . " 00:00:00";
-    }
-
-    if ($data_fim) {
-        $sql .= " AND m.data_retirada <= ?";
-        $params[] = $data_fim . " 23:59:59";
-    }
-
-    $sql .= " ORDER BY m.data_retirada DESC";
-
-    $stmt = $pdo->prepare($sql);
-    $stmt->execute($params);
-    $movimentacoes = $stmt->fetchAll();
-
-    // Exportação para CSV se solicitado
-    if (isset($_GET['export']) && $_GET['export'] === 'csv') {
-        if (ob_get_level()) {
-            ob_end_clean();
-        }
-        
-        header('Content-Type: text/csv; charset=UTF-8');
-        header('Content-Disposition: attachment; filename="relatorio_movimentacoes_' . date('Ymd_His') . '.csv"');
-        
-        $output = fopen('php://output', 'w');
-        
-        // UTF-8 BOM
-        fprintf($output, chr(0xEF).chr(0xBB).chr(0xBF));
-        
-        // Cabeçalhos
-        fputcsv($output, ['ID', 'Sala', 'Código Sala', 'Usuário', 'Matrícula', 'Data Retirada', 'Data Devolução', 'Observação'], ';');
-        
-        foreach ($movimentacoes as $row) {
-            $dataRetirada = $row['data_retirada'] ? date('d/m/Y H:i:s', strtotime($row['data_retirada'])) : '';
-            $dataDevolucao = $row['data_devolucao'] ? date('d/m/Y H:i:s', strtotime($row['data_devolucao'])) : 'Em aberto';
-            
-            fputcsv($output, [
-                $row['id'],
-                $row['nome_sala'],
-                $row['codigo_sala'],
-                $row['usuario_nome'],
-                $row['usuario_matricula'],
-                $dataRetirada,
-                $dataDevolucao,
-                $row['observacao']
-            ], ';');
-        }
-        
-        fclose($output);
-        exit;
-    }
-
-} catch (\PDOException $e) {
-    echo "Erro de Banco de Dados: " . $e->getMessage();
-    exit;
-}
+// View para admin_relatorio.php
 ?>
 <!DOCTYPE html>
 <html lang="pt-BR">
@@ -383,7 +281,7 @@ try {
             }
         }
     </style>
-    <link rel="stylesheet" href="/api/admin_responsive.css">
+    <link rel="stylesheet" href="api/admin_responsive.css">
 </head>
 <body>
 
@@ -394,44 +292,44 @@ try {
         </div>
         <ul class="sidebar-menu">
             <li class="sidebar-item">
-                <a href="/admin.php">📊 Dashboard</a>
+                <a href="<?= BASE_URL ?>/admin">📊 Dashboard</a>
             </li>
             <li class="sidebar-item">
-                <a href="/admin_chaves.php">🔑 Chaves/Salas</a>
+                <a href="<?= BASE_URL ?>/admin/chaves">🔑 Chaves/Salas</a>
             </li>
             <li class="sidebar-item">
-                <a href="/admin_usuarios.php">👤 Usuários</a>
+                <a href="<?= BASE_URL ?>/admin/usuarios">👤 Usuários</a>
             </li>
             <li class="sidebar-item">
-                <a href="/admin_usuarios_arquivados.php">🗄️ Arquivados</a>
+                <a href="<?= BASE_URL ?>/admin/usuarios_arquivados">🗄️ Arquivados</a>
             </li>
             <li class="sidebar-item">
-                <a href="/admin_reservas.php">📅 Agendamentos</a>
+                <a href="<?= BASE_URL ?>/admin/reservas">📅 Agendamentos</a>
             </li>
             <li class="sidebar-item">
-                <a href="/admin_restricoes.php">🔒 Restrições</a>
+                <a href="<?= BASE_URL ?>/admin/restricoes">🔒 Restrições</a>
             </li>
             <li class="sidebar-item">
-                <a href="/admin_gerar_qr.php">🖨️ Gerar QR Codes</a>
+                <a href="<?= BASE_URL ?>/admin/gerar_qr">🖨️ Gerar QR Codes</a>
             </li>
             <li class="sidebar-item">
-                <a href="/admin_consulta.php">🔍 Consultar Disponibilidade</a>
+                <a href="<?= BASE_URL ?>/admin/consulta">🔍 Consultar Disponibilidade</a>
             </li>
             <li class="sidebar-item active">
-                <a href="/admin_relatorio.php">📝 Relatório Geral</a>
+                <a href="<?= BASE_URL ?>/admin/relatorio">📝 Relatório Geral</a>
             </li>
             <li class="sidebar-item">
-                <a href="/admin_logs.php">📋 Logs de Auditoria</a>
+                <a href="<?= BASE_URL ?>/admin/logs">📋 Logs de Auditoria</a>
             </li>
             <li class="sidebar-item">
-                <a href="/admin_config.php">⚙️ Configurações</a>
+                <a href="<?= BASE_URL ?>/admin/config">⚙️ Configurações</a>
             </li>
             <li class="sidebar-item">
-                <a href="/admin_logout.php" style="color: #ef4444;">🚪 Sair</a>
+                <a href="<?= BASE_URL ?>/admin_logout.php" style="color: #ef4444;">🚪 Sair</a>
             </li>
         </ul>
         <div class="sidebar-footer">
-            <a href="/index.php" class="btn-kiosk">🖥️ Voltar ao Quiosque</a>
+            <a href="<?= BASE_URL ?>/" class="btn-kiosk">🖥️ Voltar ao Quiosque</a>
         </div>
     </aside>
 
@@ -454,7 +352,7 @@ try {
 
         <!-- Filtros -->
         <div class="filter-card">
-            <form method="GET" action="admin_relatorio.php" class="filter-form">
+            <form method="GET" action="<?= BASE_URL ?>/admin/relatorio" class="filter-form">
                 <div class="filter-group">
                     <label for="chave_id">Chave/Sala</label>
                     <select name="chave_id" id="chave_id" class="form-control">

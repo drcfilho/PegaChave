@@ -6,7 +6,14 @@ Este arquivo registra todo o histórico de desenvolvimento e as melhorias aplica
 
 ## 🚀 Versão Atual (Melhorias e Ajustes Recentes)
 
-### 🐳 1. Portabilidade e Ambientes de Execução
+### 🏗️ 1. Refatoração Arquitetural (MVC, Repositories e Roteador)
+* **Padrão MVC**: Os arquivos de frontend e backend, antes misturados na raiz, foram completamente divididos na nova estrutura `src/Controllers`, `src/Models` e `src/Views`, seguindo os mais altos padrões de arquitetura de software de forma limpa.
+* **Padrão Repository**: A comunicação com o banco de dados agora está totalmente blindada. Os Controllers não escrevem mais queries SQL (como `SELECT` e `INSERT`) diretamente; toda a camada de banco de dados foi movida para as classes em `src/Models/` (ex: `ChaveRepository`, `UsuarioRepository`), facilitando testes e futuras trocas de banco.
+* **Autoloading PSR-4**: Configuração do `composer.json` para carregar classes automaticamente na pasta `src/`, removendo a necessidade manual de importar arquivos por todo o projeto.
+* **Roteamento Centralizado e URLs Limpas**: Exclusão de mais de 12 arquivos físicos soltos na raiz (como `admin_chaves.php`). Todas as requisições agora batem no `index.php` (Front Controller) graças à edição do `.htaccess`. As URLs do sistema ficaram muito mais modernas (ex: `/admin/chaves` no lugar de `/admin_chaves.php`).
+* **Componentização com Alpine.js**: A View principal do Quiosque (`quiosque.php`) foi completamente refatorada utilizando o *framework* Alpine.js. O arquivo foi reduzido de quase 900 linhas para apenas cerca de 130 linhas declarativas. Toda a lógica de interatividade, câmera, alertas e offline foi separada para o script dedicado `assets/js/quiosque.js` e o layout movido para `assets/css/quiosque.css`.
+
+### 🐳 2. Portabilidade e Ambientes de Execução
 * **Ambiente Docker**: Criação dos arquivos `Dockerfile`, `.dockerignore` e `docker-compose.yml` para rodar o PHP 8.3 (Apache) e o MySQL 8.4 integrados com um único comando.
 * **Instalação Automatizada no Docker**: O contêiner de backend executa automaticamente o script de instalação no primeiro carregamento, aguardando a inicialização do MySQL para configurar as tabelas e dados iniciais.
 * **Script `iniciar.bat`**: Atalho simples de dois cliques para carregar localmente os servidores PHP e MySQL sem necessidade do Docker.

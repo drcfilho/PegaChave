@@ -1,73 +1,5 @@
 <?php
-// admin_restricoes.php
-session_start();
-if (!isset($_SESSION['admin_logged_in']) || $_SESSION['admin_logged_in'] !== true) {
-    header("Location: admin_login.php");
-    exit;
-}
-require_once __DIR__ . '/api/db.php';
-
-$message = '';
-$messageType = '';
-
-// Buscar perfis e chaves
-try {
-    $perfis = $pdo->query("SELECT id, nome FROM perfis ORDER BY id ASC")->fetchAll();
-    $chaves = $pdo->query("SELECT id, nome_sala, codigo_sala FROM chaves ORDER BY nome_sala ASC")->fetchAll();
-} catch (\PDOException $e) {
-    echo "Erro ao carregar dados: " . $e->getMessage();
-    exit;
-}
-
-// Processar formulário de atualização de restrições
-if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    if (!validar_csrf_token($_POST['csrf_token'] ?? '')) {
-        $message = "Token de segurança inválido. Tente novamente.";
-        $messageType = "error";
-    } elseif (isset($_POST['action']) && $_POST['action'] === 'save_restrictions') {
-        try {
-            $pdo->beginTransaction();
-
-            // Limpar restrições anteriores
-            $pdo->exec("DELETE FROM restricoes_acesso");
-
-            // Inserir novas restrições enviadas
-            $bloqueios = $_POST['bloqueio'] ?? []; // Array bidimensional [perfil_id][chave_id]
-            $stmtInsert = $pdo->prepare("INSERT INTO restricoes_acesso (perfil_id, chave_id) VALUES (?, ?)");
-
-            $count = 0;
-            foreach ($bloqueios as $perfil_id => $chaves_bloqueadas) {
-                foreach ($chaves_bloqueadas as $chave_id => $val) {
-                    $stmtInsert->execute([(int)$perfil_id, (int)$chave_id]);
-                    $count++;
-                }
-            }
-
-            $pdo->commit();
-            registrar_log($pdo, 'Configuração de Restrições', "Matriz de restrições de acesso atualizada. Total de bloqueios: $count.");
-            
-            $message = "Restrições de acesso salvas com sucesso!";
-            $messageType = "success";
-        } catch (\PDOException $e) {
-            $pdo->rollBack();
-            $message = "Erro ao salvar restrições: " . $e->getMessage();
-            $messageType = "error";
-        }
-    }
-}
-
-// Carregar restrições atuais para preencher a matriz
-$restricoes = [];
-try {
-    $stmtRest = $pdo->query("SELECT perfil_id, chave_id FROM restricoes_acesso");
-    if ($stmtRest) {
-        while ($row = $stmtRest->fetch()) {
-            $restricoes[$row['perfil_id']][$row['chave_id']] = true;
-        }
-    }
-} catch (\Exception $e) {
-    // Silencioso se tabela não existir
-}
+// View para admin_restricoes.php
 ?>
 <!DOCTYPE html>
 <html lang="pt-BR">
@@ -355,7 +287,7 @@ try {
             opacity: 0.9;
         }
     </style>
-    <link rel="stylesheet" href="/api/admin_responsive.css">
+    <link rel="stylesheet" href="api/admin_responsive.css">
 </head>
 <body>
 
@@ -366,44 +298,44 @@ try {
         </div>
         <ul class="sidebar-menu">
             <li class="sidebar-item">
-                <a href="/admin.php">📊 Dashboard</a>
+                <a href="<?= BASE_URL ?>/admin">📊 Dashboard</a>
             </li>
             <li class="sidebar-item">
-                <a href="/admin_chaves.php">🔑 Chaves/Salas</a>
+                <a href="<?= BASE_URL ?>/admin/chaves">🔑 Chaves/Salas</a>
             </li>
             <li class="sidebar-item">
-                <a href="/admin_usuarios.php">👤 Usuários</a>
+                <a href="<?= BASE_URL ?>/admin/usuarios">👤 Usuários</a>
             </li>
             <li class="sidebar-item">
-                <a href="/admin_usuarios_arquivados.php">🗄️ Arquivados</a>
+                <a href="<?= BASE_URL ?>/admin/usuarios_arquivados">🗄️ Arquivados</a>
             </li>
             <li class="sidebar-item">
-                <a href="/admin_reservas.php">📅 Agendamentos</a>
+                <a href="<?= BASE_URL ?>/admin/reservas">📅 Agendamentos</a>
             </li>
             <li class="sidebar-item active">
-                <a href="/admin_restricoes.php">🔒 Restrições</a>
+                <a href="<?= BASE_URL ?>/admin/restricoes">🔒 Restrições</a>
             </li>
             <li class="sidebar-item">
-                <a href="/admin_gerar_qr.php">🖨️ Gerar QR Codes</a>
+                <a href="<?= BASE_URL ?>/admin/gerar_qr">🖨️ Gerar QR Codes</a>
             </li>
             <li class="sidebar-item">
-                <a href="/admin_consulta.php">🔍 Consultar Disponibilidade</a>
+                <a href="<?= BASE_URL ?>/admin/consulta">🔍 Consultar Disponibilidade</a>
             </li>
             <li class="sidebar-item">
-                <a href="/admin_relatorio.php">📝 Relatório Geral</a>
+                <a href="<?= BASE_URL ?>/admin/relatorio">📝 Relatório Geral</a>
             </li>
             <li class="sidebar-item">
-                <a href="/admin_logs.php">📋 Logs de Auditoria</a>
+                <a href="<?= BASE_URL ?>/admin/logs">📋 Logs de Auditoria</a>
             </li>
             <li class="sidebar-item">
-                <a href="/admin_config.php">⚙️ Configurações</a>
+                <a href="<?= BASE_URL ?>/admin/config">⚙️ Configurações</a>
             </li>
             <li class="sidebar-item">
-                <a href="/admin_logout.php" style="color: #ef4444;">🚪 Sair</a>
+                <a href="<?= BASE_URL ?>/admin_logout.php" style="color: #ef4444;">🚪 Sair</a>
             </li>
         </ul>
         <div class="sidebar-footer">
-            <a href="/index.php" class="btn-kiosk">🖥️ Voltar ao Quiosque</a>
+            <a href="<?= BASE_URL ?>/" class="btn-kiosk">🖥️ Voltar ao Quiosque</a>
         </div>
     </aside>
 
@@ -425,7 +357,7 @@ try {
         <div class="content-card">
             <h2 class="card-title">Matriz de Perfis vs Salas (Marcado = Acesso Bloqueado)</h2>
             
-            <form method="POST" action="admin_restricoes.php">
+            <form method="POST" action="<?= BASE_URL ?>/admin/restricoes">
                 <?php renderizar_csrf_input(); ?>
                 <input type="hidden" name="action" value="save_restrictions">
 
