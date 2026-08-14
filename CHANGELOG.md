@@ -52,6 +52,12 @@ Este arquivo registra todo o histórico de desenvolvimento e as melhorias aplica
 * **Configuração no Panel**: Adicionado input numérico em `admin_config.php` que permite ao administrador definir o limite máximo de chaves que um usuário pode ter em posse simultaneamente (deixando 0 para ilimitadas).
 * **Travamento no Quiosque**: A API de escaneamento valida em tempo real se o usuário já atingiu seu limite de chaves e bloqueia novas retiradas caso necessário.
 
+### 📡 9. Funcionamento Offline no Quiosque (Sincronização PWA)
+* **Fila Offline no LocalStorage**: Quando a conexão cair ou a API falhar, o Quiosque grava os escaneamentos em uma fila offline local.
+* **Feedback de Registro Offline**: Emite feedback sonoro (bip) e exibe um status temporário informando que o registro foi gravado localmente.
+* **Sincronização Automática**: Loop de segundo plano que tenta enviar os escaneamentos offline salvos na fila ao servidor de forma automática a cada 10 segundos quando a conexão volta.
+* **Indicador de Status Dinâmico**: O indicador de rede exibe "Online" (verde) ou "Offline (X pendentes)" (amarelo) para informar a situação do sistema.
+
 ---
 
 ## 📜 Histórico de Commits (Git Log Atualizado)

@@ -11,6 +11,7 @@ O **PegaChave** é uma aplicação web moderna e inteligente projetada para auto
 * **Modo Inteligente (Smart Scan):** Reconhece automaticamente o tipo do QR Code escaneado (Usuário ou Chave) e executa a ação correspondente sem necessidade de cliques.
 * **Feedback de Áudio (Beep):** Retorno sonoro nativo via Web Audio API para operações com sucesso (bip agudo duplo), leitura de usuário (bip médio) ou erros (bip grave) para facilitar a operação do quiosque.
 * **Suporte a PWA (Progressive Web App):** Aplicativo instalável com Service Worker e manifesto para carregamento rápido e robustez mesmo com conexão oscilante.
+* **Funcionamento Offline & Sincronização:** Se a rede cair, o Quiosque salva as leituras localmente no LocalStorage e as sincroniza em segundo plano de forma automática assim que a conexão com o servidor retorna.
 * **Entrada Manual de Redundância e Tema:** Permite digitar o código da sala manualmente e alternar entre Tema Claro e Escuro.
 
 ### 📊 2. Painel de Administração Integrado

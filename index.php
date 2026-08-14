@@ -423,8 +423,8 @@ require_once __DIR__ . '/api/db.php';
             <button onclick="toggleDarkMode()" style="background: rgba(255,255,255,0.1); border: 1px solid rgba(255,255,255,0.2); color: white; padding: 6px 12px; border-radius: 6px; font-weight: 600; cursor: pointer; margin-right: 15px; font-size: 13px;">🌗 Tema</button>
             <button onclick="window.location.href='/consulta.php'" style="background: rgba(255,255,255,0.1); border: 1px solid rgba(255,255,255,0.2); color: white; padding: 6px 12px; border-radius: 6px; font-weight: 600; cursor: pointer; margin-right: 15px; font-size: 13px;">🔍 Consultar Chaves</button>
             <span id="quiosque-time">[10:45]</span>
-            <span style="display: flex; align-items: center; gap: 6px;">
-                <span class="status-dot"></span> Online
+            <span id="network-status" style="display: flex; align-items: center; gap: 6px;">
+                <span class="status-dot" id="status-dot"></span> <span id="status-text">Online</span>
             </span>
         </div>
     </header>
@@ -634,8 +634,98 @@ require_once __DIR__ . '/api/db.php';
             }
         }
 
+        // Controle de Fila Offline no LocalStorage
+        function getOfflineQueue() {
+            return JSON.parse(localStorage.getItem('offline_scans') || '[]');
+        }
+
+        function saveOfflineQueue(queue) {
+            localStorage.setItem('offline_scans', JSON.stringify(queue));
+            updateNetworkStatus();
+        }
+
+        function updateNetworkStatus() {
+            const dot = document.getElementById('status-dot');
+            const text = document.getElementById('status-text');
+            if (!dot || !text) return;
+
+            const queue = getOfflineQueue();
+            if (!navigator.onLine || queue.length > 0) {
+                dot.style.background = '#eab308'; // Amarelo/Laranja para offline/sincronizando
+                text.textContent = queue.length > 0 ? `Offline (${queue.length} pendentes)` : 'Offline';
+            } else {
+                dot.style.background = '#22c55e'; // Verde para online e limpo
+                text.textContent = 'Online';
+            }
+        }
+
+        window.addEventListener('online', () => {
+            updateNetworkStatus();
+            syncOfflineScans();
+        });
+        window.addEventListener('offline', updateNetworkStatus);
+
+        let isSyncing = false;
+        async function syncOfflineScans() {
+            if (isSyncing || !navigator.onLine) return;
+            const queue = getOfflineQueue();
+            if (queue.length === 0) return;
+
+            isSyncing = true;
+            console.log(`PegaChave: Sincronizando ${queue.length} leituras offline...`);
+
+            while (queue.length > 0) {
+                const item = queue[0];
+                try {
+                    const response = await fetch('/api/processar_scan.php', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ qr_code: item.code })
+                    });
+                    
+                    if (response.ok) {
+                        queue.shift();
+                        saveOfflineQueue(queue);
+                    } else {
+                        break;
+                    }
+                } catch (err) {
+                    console.error("PegaChave: Falha ao enviar leitura offline:", err);
+                    break;
+                }
+            }
+            isSyncing = false;
+            updateNetworkStatus();
+        }
+
+        function registerOfflineScan(code) {
+            playBeep('success');
+            const queue = getOfflineQueue();
+            queue.push({ code: code, timestamp: new Date().toISOString() });
+            saveOfflineQueue(queue);
+
+            // Mostrar mensagem de salvamento offline
+            const titleEl = document.getElementById('quiosque-title');
+            titleEl.innerHTML = `<span style="color: #eab308; font-weight: 800;">📶 Registro Gravado Offline!</span><br><span style="font-size: 14px; color: #64748b;">Sua leitura foi guardada localmente e será sincronizada em breve.</span>`;
+            
+            setTimeout(() => {
+                titleEl.textContent = "Aproxime o QR Code do Crachá ou da Chave";
+            }, 3500);
+        }
+
         async function processCode(code) {
             isProcessing = true;
+            
+            // Se estiver offline ou tiver fila pendente, salva direto no LocalStorage para preservar ordem
+            if (!navigator.onLine || getOfflineQueue().length > 0) {
+                registerOfflineScan(code);
+                setTimeout(() => {
+                    lastScannedCode = "";
+                    isProcessing = false;
+                }, 2000);
+                return;
+            }
+
             try {
                 const response = await fetch('/api/processar_scan.php', {
                     method: 'POST',
@@ -651,7 +741,6 @@ require_once __DIR__ . '/api/db.php';
                         showSuccessScreen(result);
                     } else if (result.tipo === 'usuario') {
                         playBeep('info');
-                        // Apenas atualiza o cabeçalho para orientar a leitura da chave
                         const titleEl = document.getElementById('quiosque-title');
                         titleEl.textContent = `Olá, ${result.usuario}! Agora aproxime a Chave.`;
                     }
@@ -663,8 +752,8 @@ require_once __DIR__ . '/api/db.php';
                     alert("Erro: " + result.message);
                 }
             } catch (err) {
-                playBeep('error');
-                console.error("Erro na API:", err);
+                console.warn("Servidor indisponível. Salvando leitura offline...", err);
+                registerOfflineScan(code);
             } finally {
                 setTimeout(() => {
                     lastScannedCode = "";
@@ -694,7 +783,12 @@ require_once __DIR__ . '/api/db.php';
             document.getElementById('quiosque-title').textContent = "Aproxime o QR Code do Crachá ou da Chave";
         }
 
-        window.addEventListener('DOMContentLoaded', initScanner);
+        window.addEventListener('DOMContentLoaded', () => {
+            initScanner();
+            updateNetworkStatus();
+            syncOfflineScans();
+            setInterval(syncOfflineScans, 10000); // Sincroniza a cada 10 segundos
+        });
     </script>
 </body>
 </html>
