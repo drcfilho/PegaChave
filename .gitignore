@@ -11,9 +11,10 @@ tmp/
 .vscode/
 .idea/
 
-# Ignorar arquivos Markdown de controle interno (exceto README)
+# Ignorar arquivos Markdown de controle interno (exceto README e CHANGELOG)
 *.md
 !README.md
+!CHANGELOG.md
 
 # Configurações sensíveis
 .env
