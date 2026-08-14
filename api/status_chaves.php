@@ -11,6 +11,7 @@ try {
             c.codigo_sala, 
             c.status_disponivel, 
             c.descricao,
+            c.qr_code_hash,
             u.nome AS reservado_por_nome, 
             m.data_retirada
         FROM chaves c
