@@ -1,4 +1,52 @@
 function quiosqueState() {
+    // Wrapper simples do IndexedDB
+    const DB_NAME = 'PegaChaveDB';
+    const STORE_NAME = 'offline_scans';
+
+    function openDB() {
+        return new Promise((resolve, reject) => {
+            const req = indexedDB.open(DB_NAME, 1);
+            req.onupgradeneeded = (e) => {
+                const db = e.target.result;
+                if (!db.objectStoreNames.contains(STORE_NAME)) {
+                    db.createObjectStore(STORE_NAME, { keyPath: 'id', autoIncrement: true });
+                }
+            };
+            req.onsuccess = () => resolve(req.result);
+            req.onerror = () => reject(req.error);
+        });
+    }
+
+    async function getOfflineScans() {
+        const db = await openDB();
+        return new Promise((resolve, reject) => {
+            const tx = db.transaction(STORE_NAME, 'readonly');
+            const req = tx.objectStore(STORE_NAME).getAll();
+            req.onsuccess = () => resolve(req.result);
+            req.onerror = () => reject(req.error);
+        });
+    }
+
+    async function addOfflineScan(scan) {
+        const db = await openDB();
+        return new Promise((resolve, reject) => {
+            const tx = db.transaction(STORE_NAME, 'readwrite');
+            const req = tx.objectStore(STORE_NAME).add(scan);
+            req.onsuccess = () => resolve(req.result);
+            req.onerror = () => reject(req.error);
+        });
+    }
+
+    async function deleteOfflineScan(id) {
+        const db = await openDB();
+        return new Promise((resolve, reject) => {
+            const tx = db.transaction(STORE_NAME, 'readwrite');
+            const req = tx.objectStore(STORE_NAME).delete(id);
+            req.onsuccess = () => resolve();
+            req.onerror = () => reject(req.error);
+        });
+    }
+
     return {
         isDark: false,
         currentTime: '',
@@ -25,21 +73,30 @@ function quiosqueState() {
         lastScannedCode: '',
         scanner: null,
 
-        init() {
+        async init() {
             this.initTheme();
             this.updateClock();
             setInterval(() => this.updateClock(), 1000);
             
-            this.updateNetworkStatus();
-            window.addEventListener('online', () => {
-                this.updateNetworkStatus();
+            await this.updateNetworkStatus();
+            
+            window.addEventListener('online', async () => {
+                await this.updateNetworkStatus();
                 this.syncOfflineScans();
             });
             window.addEventListener('offline', () => this.updateNetworkStatus());
             
             this.initScanner();
             this.syncOfflineScans();
-            setInterval(() => this.syncOfflineScans(), 10000);
+            
+            // Ouvir mensagens do Service Worker (ex: quando o background sync terminar)
+            if ('serviceWorker' in navigator) {
+                navigator.serviceWorker.addEventListener('message', async (event) => {
+                    if (event.data === 'sync-complete') {
+                        await this.updateNetworkStatus();
+                    }
+                });
+            }
         },
 
         initTheme() {
@@ -68,28 +125,30 @@ function quiosqueState() {
             this.currentTime = `[${hours}:${minutes}]`;
         },
 
-        updateNetworkStatus() {
+        async updateNetworkStatus() {
             this.isOnline = navigator.onLine;
-            const queue = this.getOfflineQueue();
-            this.offlineCount = queue.length;
-        },
-
-        getOfflineQueue() {
-            return JSON.parse(localStorage.getItem('offline_scans') || '[]');
-        },
-
-        saveOfflineQueue(queue) {
-            localStorage.setItem('offline_scans', JSON.stringify(queue));
-            this.updateNetworkStatus();
+            const scans = await getOfflineScans();
+            this.offlineCount = scans.length;
         },
 
         async syncOfflineScans() {
             if (!this.isOnline) return;
-            const queue = this.getOfflineQueue();
-            if (queue.length === 0) return;
+            const scans = await getOfflineScans();
+            if (scans.length === 0) return;
 
-            while (queue.length > 0) {
-                const item = queue[0];
+            // Se o browser suportar Background Sync, solicita e deixa o Service Worker cuidar
+            if ('serviceWorker' in navigator && 'SyncManager' in window) {
+                try {
+                    const registration = await navigator.serviceWorker.ready;
+                    await registration.sync.register('sync-pegachave-scans');
+                    return; // Retorna pois o Background Sync fará o trabalho em segundo plano
+                } catch (e) {
+                    console.warn("Background Sync não suportado ou falhou, usando fallback local", e);
+                }
+            }
+
+            // Fallback caso Background Sync não funcione (Safári ou Browsers antigos)
+            for (let item of scans) {
                 try {
                     const response = await fetch(`${window.BASE_URL}/api/processar_scan`, {
                         method: 'POST',
@@ -98,17 +157,16 @@ function quiosqueState() {
                     });
                     
                     if (response.ok) {
-                        queue.shift();
-                        this.saveOfflineQueue(queue);
+                        await deleteOfflineScan(item.id);
                     } else {
                         break;
                     }
                 } catch (err) {
-                    console.error("Falha ao sincronizar:", err);
+                    console.error("Falha ao sincronizar (fallback):", err);
                     break;
                 }
             }
-            this.updateNetworkStatus();
+            await this.updateNetworkStatus();
         },
 
         setMode(mode) {
@@ -196,12 +254,14 @@ function quiosqueState() {
             
             if (!this.isOnline || this.offlineCount > 0) {
                 this.playBeep('success');
-                const queue = this.getOfflineQueue();
-                queue.push({ code: code, timestamp: new Date().toISOString() });
-                this.saveOfflineQueue(queue);
+                await addOfflineScan({ code: code, timestamp: new Date().toISOString() });
+                await this.updateNetworkStatus();
                 
-                this.showAlert('Registro Gravado Offline! Será sincronizado em breve.', 'warning', 3500);
+                this.showAlert('Sincronização em Background: Registro gravado offline!', 'warning', 3500);
                 setTimeout(() => { this.lastScannedCode = ""; this.isProcessing = false; }, 2000);
+                
+                // Tenta chamar o Background Sync
+                this.syncOfflineScans();
                 return;
             }
 
@@ -235,10 +295,10 @@ function quiosqueState() {
                     this.showAlert(result.message, result.status === 'pending_user' ? 'info' : 'error');
                 }
             } catch (err) {
-                this.showAlert("Servidor indisponível. Salvando leitura offline...", 'warning');
-                const queue = this.getOfflineQueue();
-                queue.push({ code: code, timestamp: new Date().toISOString() });
-                this.saveOfflineQueue(queue);
+                this.showAlert("Servidor indisponível. Salvando leitura no Background Sync...", 'warning');
+                await addOfflineScan({ code: code, timestamp: new Date().toISOString() });
+                await this.updateNetworkStatus();
+                this.syncOfflineScans();
             } finally {
                 setTimeout(() => { this.lastScannedCode = ""; this.isProcessing = false; }, 2000);
             }

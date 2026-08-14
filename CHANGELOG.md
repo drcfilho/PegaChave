@@ -77,11 +77,10 @@ Este arquivo registra todo o histórico de desenvolvimento e as melhorias aplica
 * **Configuração no Panel**: Adicionado input numérico em `admin_config.php` que permite ao administrador definir o limite máximo de chaves que um usuário pode ter em posse simultaneamente (deixando 0 para ilimitadas).
 * **Travamento no Quiosque**: A API de escaneamento valida em tempo real se o usuário já atingiu seu limite de chaves e bloqueia novas retiradas caso necessário.
 
-### 📡 9. Funcionamento Offline no Quiosque (Sincronização PWA)
-* **Fila Offline no LocalStorage**: Quando a conexão cair ou a API falhar, o Quiosque grava os escaneamentos em uma fila offline local.
-* **Feedback de Registro Offline**: Emite feedback sonoro (bip) e exibe um status temporário informando que o registro foi gravado localmente.
-* **Sincronização Automática**: Loop de segundo plano que tenta enviar os escaneamentos offline salvos na fila ao servidor de forma automática a cada 10 segundos quando a conexão volta.
-* **Indicador de Status Dinâmico**: O indicador de rede exibe "Online" (verde) ou "Offline (X pendentes)" (amarelo) para informar a situação do sistema.
+### 📡 10. Funcionamento Offline e Progressive Web App (PWA) Avançado
+* **Migração de Fila Offline para IndexedDB**: Substituição do antigo `localStorage` frágil pelo robusto banco de dados do navegador `IndexedDB`. Isso garante alta performance, ausência de limites de armazenamento para leituras de chaves em fallback (semanas de trabalho offline sem perda) e segurança contra deleção acidental de cache da página.
+* **Sincronização Invisível em Segundo Plano (Background Sync)**: Habilitação da API nativa do `Service Worker` para gerenciar a fila offline. Mesmo que o usuário feche a aba do navegador do Quiosque após a internet cair, o navegador aguardará o sinal de rede retornar e enviará todas as leituras silenciosamente ao servidor em *background*.
+* **Feedback de Rede Aprimorado no Alpine.js**: As interações com o IndexedDB foram acopladas ao sistema reativo. O status da rede (Online/Offline) e o número de sincronizações pendentes são validados e atualizados em tempo real, sem refresh de página.
 
 ---
 
