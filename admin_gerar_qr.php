@@ -395,6 +395,9 @@ try {
                 border: 1px solid #000;
                 box-shadow: none;
             }
+            .no-print {
+                display: none !important;
+            }
         }
     </style>
     <link rel="stylesheet" href="/api/admin_responsive.css">
@@ -633,6 +636,9 @@ try {
                         ${cat === 'Chave' ? '🔑 CHAVE' : '👤 CRACHÁ'}
                     </div>
                     <img src="https://api.qrserver.com/v1/create-qr-code/?size=110x110&data=${encodeURIComponent(hash)}" alt="QR Code">
+                    <div class="no-print" style="margin-top: 6px; margin-bottom: 4px;">
+                        <button onclick="downloadQRCode('${hash}', '${cat}_${name.replace(/[^a-zA-Z0-9]/g, '_')}')" style="background: var(--primary); color: white; border: none; padding: 4px 8px; border-radius: 4px; font-size: 11px; font-weight: 600; cursor: pointer;">⬇️ Baixar</button>
+                    </div>
                     <div class="item-name">${name}</div>
                     <div class="item-id">${id}</div>
                     <div class="item-hash">${hash}</div>
@@ -642,6 +648,26 @@ try {
 
             document.getElementById('print-preview-section').style.display = 'block';
             window.scrollTo(0, 0);
+        }
+
+        async function downloadQRCode(hash, filename) {
+            try {
+                const url = `https://api.qrserver.com/v1/create-qr-code/?size=300x300&data=${encodeURIComponent(hash)}`;
+                const response = await fetch(url);
+                const blob = await response.blob();
+                const blobUrl = URL.createObjectURL(blob);
+                
+                const a = document.createElement('a');
+                a.href = blobUrl;
+                a.download = `${filename}.png`;
+                document.body.appendChild(a);
+                a.click();
+                document.body.removeChild(a);
+                URL.revokeObjectURL(blobUrl);
+            } catch (err) {
+                console.error("Erro ao baixar QR Code:", err);
+                window.open(`https://api.qrserver.com/v1/create-qr-code/?size=300x300&data=${encodeURIComponent(hash)}`, '_blank');
+            }
         }
 
         function closePreview() {
