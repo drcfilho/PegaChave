@@ -1,4 +1,4 @@
-const CACHE_NAME = 'pegachave-v1';
+const CACHE_NAME = 'pegachave-v2';
 const ASSETS = [
   '/',
   '/index.php',
@@ -34,31 +34,33 @@ self.addEventListener('activate', event => {
 });
 
 self.addEventListener('fetch', event => {
-  // Evitar interceptar requisições de API para que as operações dinâmicas sempre consultem o servidor
+  // Ignorar chamadas de API para evitar cacheamento de requisições dinâmicas
   if (event.request.url.includes('/api/')) {
     return;
   }
   
+  // Estratégia Network-First: Tenta buscar da rede primeiro. Se falhar, busca no cache.
   event.respondWith(
-    caches.match(event.request).then(cachedResponse => {
-      if (cachedResponse) {
-        return cachedResponse;
+    fetch(event.request).then(response => {
+      // Se a requisição for bem-sucedida, atualiza o cache local
+      if (response.status === 200 && event.request.url.startsWith(self.location.origin)) {
+        const responseClone = response.clone();
+        caches.open(CACHE_NAME).then(cache => {
+          cache.put(event.request, responseClone);
+        });
       }
-      return fetch(event.request).then(response => {
-        // Cachear novas páginas visitadas se forem seguras e do próprio domínio
-        if (response.status === 200 && event.request.url.startsWith(self.location.origin)) {
-          const responseClone = response.clone();
-          caches.open(CACHE_NAME).then(cache => {
-            cache.put(event.request, responseClone);
-          });
-        }
-        return response;
-      });
+      return response;
     }).catch(() => {
-      // Se estiver offline e tentar carregar uma página principal, tentar retornar o cache do index.php
-      if (event.request.mode === 'navigate') {
-        return caches.match('/index.php');
-      }
+      // Fallback para o cache se o dispositivo estiver offline
+      return caches.match(event.request).then(cachedResponse => {
+        if (cachedResponse) {
+          return cachedResponse;
+        }
+        // Se for navegação de página e não achar no cache, retorna o index.php
+        if (event.request.mode === 'navigate') {
+          return caches.match('/index.php');
+        }
+      });
     })
   );
 });
