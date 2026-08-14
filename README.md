@@ -29,6 +29,8 @@ O **PegaChave** é uma aplicação web moderna e inteligente projetada para auto
 
 ### 🔍 3. Consulta Pública de Disponibilidade
 * Página dedicada com busca rápida em tempo real para verificar a disponibilidade de salas.
+* **Alternador de Visualização**: Suporte a modo Cards (Grid) e modo Lista compacta, salvando a preferência do usuário localmente no navegador.
+* **Planejamento de Uso**: Exibição em tempo real de quem está com a chave (se em uso) e dos agendamentos programados para o dia de hoje.
 
 ---
 

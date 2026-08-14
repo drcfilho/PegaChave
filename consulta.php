@@ -264,6 +264,52 @@ try {
         .btn-back:hover {
             background-color: #1e293b;
         }
+        /* Estilos do Modo Listagem */
+        .grid-chaves.list-mode {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .grid-chaves.list-mode .card-chave {
+            flex-direction: column;
+            padding: 14px 20px;
+            gap: 10px;
+        }
+
+        .grid-chaves.list-mode .card-chave:hover {
+            transform: none;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
+        }
+
+        .grid-chaves.list-mode .card-header {
+            margin-bottom: 0;
+            align-items: center;
+            width: 100%;
+        }
+
+        .grid-chaves.list-mode .card-title {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .grid-chaves.list-mode .card-title h3 {
+            margin-bottom: 0;
+        }
+
+        .grid-chaves.list-mode .card-details {
+            margin-top: 0;
+            border-top: 1px dashed var(--border-color);
+            padding-top: 8px;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 20px;
+        }
+
+        .grid-chaves.list-mode .detail-row {
+            margin-bottom: 0;
+        }
     </style>
 </head>
 <body>
@@ -279,6 +325,15 @@ try {
         <input type="text" id="search" class="search-input" placeholder="Pesquisar por Sala, Código ou Professor..." onkeyup="filterCards()">
     </div>
 
+    <!-- Seletor de Modo de Exibição -->
+    <div style="display: flex; justify-content: flex-end; width: 100%; max-width: 900px; margin-bottom: 15px; gap: 8px;">
+        <button id="btn-view-grid" onclick="setViewMode('grid')" style="background: var(--primary); color: white; border: none; padding: 6px 12px; border-radius: 6px; font-weight: 600; cursor: pointer; font-size: 13px; display: inline-flex; align-items: center; gap: 6px; transition: all 0.2s;">
+            <span>🔲</span> Cards
+        </button>
+        <button id="btn-view-list" onclick="setViewMode('list')" style="background: rgba(0,0,0,0.05); color: var(--text-color); border: none; padding: 6px 12px; border-radius: 6px; font-weight: 600; cursor: pointer; font-size: 13px; display: inline-flex; align-items: center; gap: 6px; transition: all 0.2s;">
+            <span>☰</span> Lista
+        </button>
+    </div>
     <!-- Lista de Cards -->
     <div class="grid-chaves" id="keys-grid">
         <?php foreach ($chaves as $c): ?>
@@ -334,13 +389,45 @@ try {
     </a>
 
     <script>
-        // Inicializar Tema de acordo com a preferência salva
+        // Inicializar Tema e Modo de Exibição
         (function() {
             const savedTheme = localStorage.getItem('theme');
             if (savedTheme === 'dark' || (!savedTheme && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
                 document.body.classList.add('dark-theme');
             }
+            
+            const savedViewMode = localStorage.getItem('view_mode') || 'grid';
+            setViewMode(savedViewMode);
         })();
+
+        function setViewMode(mode) {
+            const grid = document.getElementById('keys-grid');
+            const btnGrid = document.getElementById('btn-view-grid');
+            const btnList = document.getElementById('btn-view-list');
+            if (!grid || !btnGrid || !btnList) return;
+            
+            const isDark = document.body.classList.contains('dark-theme');
+            const inactiveBg = isDark ? 'rgba(255, 255, 255, 0.08)' : 'rgba(0, 0, 0, 0.05)';
+            const activeBg = 'var(--primary)';
+            const activeColor = '#ffffff';
+            const inactiveColor = 'var(--text-color)';
+
+            if (mode === 'list') {
+                grid.classList.add('list-mode');
+                btnList.style.backgroundColor = activeBg;
+                btnList.style.color = activeColor;
+                btnGrid.style.backgroundColor = inactiveBg;
+                btnGrid.style.color = inactiveColor;
+                localStorage.setItem('view_mode', 'list');
+            } else {
+                grid.classList.remove('list-mode');
+                btnGrid.style.backgroundColor = activeBg;
+                btnGrid.style.color = activeColor;
+                btnList.style.backgroundColor = inactiveBg;
+                btnList.style.color = inactiveColor;
+                localStorage.setItem('view_mode', 'grid');
+            }
+        }
 
         function filterCards() {
             const query = document.getElementById('search').value.toLowerCase().trim();
