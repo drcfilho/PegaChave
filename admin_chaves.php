@@ -23,25 +23,26 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $andar = trim($_POST['andar'] ?? '');
             $matriculas_permitidas = trim($_POST['matriculas_permitidas'] ?? '');
             $codigo_sala = trim($_POST['codigo_sala'] ?? '');
-            $qr_code_hash = trim($_POST['qr_code_hash'] ?? '');
             $descricao = trim($_POST['descricao'] ?? '');
 
-            if (empty($nome_sala) || empty($codigo_sala) || empty($qr_code_hash)) {
-                throw new Exception("Por favor, preencha todos os campos obrigatórios.");
-            }
-
-            // Saneamento básico
+            // Saneamento básico e validações
             $nome_sala = htmlspecialchars($nome_sala, ENT_QUOTES, 'UTF-8');
             $bloco = htmlspecialchars($bloco, ENT_QUOTES, 'UTF-8');
             $andar = htmlspecialchars($andar, ENT_QUOTES, 'UTF-8');
             $matriculas_permitidas = htmlspecialchars($matriculas_permitidas, ENT_QUOTES, 'UTF-8');
             $codigo_sala = preg_replace('/[^a-zA-Z0-9_-]/', '', $codigo_sala);
-            $qr_code_hash = preg_replace('/[^a-zA-Z0-9_-]/', '', $qr_code_hash);
             $descricao = htmlspecialchars($descricao, ENT_QUOTES, 'UTF-8');
+
+            // Gerar hash automaticamente
+            $qr_code_hash = 'chaves_' . $codigo_sala;
+
+            if (empty($nome_sala) || empty($codigo_sala) || empty($qr_code_hash)) {
+                throw new Exception("Por favor, preencha todos os campos obrigatórios.");
+            }
 
             $stmt = $pdo->prepare("INSERT INTO chaves (nome_sala, bloco, andar, matriculas_permitidas, codigo_sala, qr_code_hash, descricao) VALUES (?, ?, ?, ?, ?, ?, ?)");
             $stmt->execute([$nome_sala, $bloco, $andar, $matriculas_permitidas, $codigo_sala, $qr_code_hash, $descricao]);
-            registrar_log($pdo, 'Cadastro de Chave', "Chave '$nome_sala' ($codigo_sala) cadastrada. Bloco: '$bloco', Andar: '$andar'. Restrita para: '$matriculas_permitidas'.");
+            registrar_log($pdo, 'Cadastro de Chave', "Chave '$nome_sala' ($codigo_sala) cadastrada. Bloco: '$bloco', Andar: '$andar'. Restrita para: '$matriculas_permitidas'. Hash automático: $qr_code_hash");
             $message = "Chave '$nome_sala' cadastrada com sucesso!";
             $messageType = "success";
         } 
@@ -53,24 +54,25 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $andar = trim($_POST['andar'] ?? '');
             $matriculas_permitidas = trim($_POST['matriculas_permitidas'] ?? '');
             $codigo_sala = trim($_POST['codigo_sala'] ?? '');
-            $qr_code_hash = trim($_POST['qr_code_hash'] ?? '');
             $descricao = trim($_POST['descricao'] ?? '');
-
-            if (!$id || empty($nome_sala) || empty($codigo_sala) || empty($qr_code_hash)) {
-                throw new Exception("Todos os campos obrigatórios devem ser preenchidos.");
-            }
 
             $nome_sala = htmlspecialchars($nome_sala, ENT_QUOTES, 'UTF-8');
             $bloco = htmlspecialchars($bloco, ENT_QUOTES, 'UTF-8');
             $andar = htmlspecialchars($andar, ENT_QUOTES, 'UTF-8');
             $matriculas_permitidas = htmlspecialchars($matriculas_permitidas, ENT_QUOTES, 'UTF-8');
             $codigo_sala = preg_replace('/[^a-zA-Z0-9_-]/', '', $codigo_sala);
-            $qr_code_hash = preg_replace('/[^a-zA-Z0-9_-]/', '', $qr_code_hash);
             $descricao = htmlspecialchars($descricao, ENT_QUOTES, 'UTF-8');
+
+            // Gerar hash automaticamente
+            $qr_code_hash = 'chaves_' . $codigo_sala;
+
+            if (!$id || empty($nome_sala) || empty($codigo_sala) || empty($qr_code_hash)) {
+                throw new Exception("Todos os campos obrigatórios devem ser preenchidos.");
+            }
 
             $stmt = $pdo->prepare("UPDATE chaves SET nome_sala = ?, bloco = ?, andar = ?, matriculas_permitidas = ?, codigo_sala = ?, qr_code_hash = ?, descricao = ? WHERE id = ?");
             $stmt->execute([$nome_sala, $bloco, $andar, $matriculas_permitidas, $codigo_sala, $qr_code_hash, $descricao, $id]);
-            registrar_log($pdo, 'Edição de Chave', "Chave ID $id atualizada para '$nome_sala' ($codigo_sala). Bloco: '$bloco', Andar: '$andar'. Restrita para: '$matriculas_permitidas'.");
+            registrar_log($pdo, 'Edição de Chave', "Chave ID $id atualizada para '$nome_sala' ($codigo_sala). Bloco: '$bloco', Andar: '$andar'. Restrita para: '$matriculas_permitidas'. Hash automático: $qr_code_hash");
             $message = "Chave atualizada com sucesso!";
             $messageType = "success";
         } 
@@ -582,8 +584,8 @@ try {
                 </div>
                 
                 <div class="form-group">
-                    <label for="key_qr_code_hash">QR Code Hash (Texto codificado)</label>
-                    <input type="text" name="qr_code_hash" id="key_qr_code_hash" class="form-control" placeholder="Ex: chave_sala12_456" required>
+                    <label for="key_qr_code_hash">QR Code Hash (Gerado Automaticamente)</label>
+                    <input type="text" name="qr_code_hash" id="key_qr_code_hash" class="form-control" style="background-color: rgba(0,0,0,0.05); cursor: not-allowed;" placeholder="chaves_SALA-12" readonly required>
                 </div>
 
                 <div class="form-group">
@@ -644,6 +646,12 @@ try {
                 document.getElementById('delete-form').submit();
             }
         }
+
+        // Preenchimento de Hash Automático
+        document.getElementById('codigo_sala').addEventListener('input', function() {
+            this.value = this.value.replace(/[^a-zA-Z0-9_-]/g, '');
+            document.getElementById('key_qr_code_hash').value = this.value ? 'chaves_' + this.value : '';
+        });
     </script>
     <script src="/api/admin_responsive.js"></script>
 </body>

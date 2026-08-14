@@ -22,7 +22,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $email = trim($_POST['email'] ?? '');
             $matricula = trim($_POST['matricula'] ?? '');
             $perfil_id = filter_var($_POST['perfil_id'] ?? '', FILTER_VALIDATE_INT);
-            $qr_code_hash = trim($_POST['qr_code_hash'] ?? '');
+
+            // Saneamento básico
+            $nome = htmlspecialchars($nome, ENT_QUOTES, 'UTF-8');
+            $matricula = preg_replace('/[^a-zA-Z0-9_-]/', '', $matricula);
+
+            // Gerar hash automaticamente
+            $qr_code_hash = 'user_' . $matricula;
 
             if (empty($nome) || empty($matricula) || empty($qr_code_hash) || !$perfil_id) {
                 throw new Exception("Por favor, preencha todos os campos obrigatórios corretamente.");
@@ -31,14 +37,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 throw new Exception("Formato de e-mail inválido.");
             }
 
-            // Saneamento básico
-            $nome = htmlspecialchars($nome, ENT_QUOTES, 'UTF-8');
-            $matricula = preg_replace('/[^a-zA-Z0-9_-]/', '', $matricula);
-            $qr_code_hash = preg_replace('/[^a-zA-Z0-9_-]/', '', $qr_code_hash);
-
             $stmt = $pdo->prepare("INSERT INTO usuarios (nome, email, matricula, perfil_id, qr_code_hash) VALUES (?, ?, ?, ?, ?)");
             $stmt->execute([$nome, $email, $matricula, $perfil_id, $qr_code_hash]);
-            registrar_log($pdo, 'Cadastro de Usuário', "Usuário '$nome' (Matrícula: $matricula) cadastrado.");
+            registrar_log($pdo, 'Cadastro de Usuário', "Usuário '$nome' (Matrícula: $matricula) cadastrado. Hash automático: $qr_code_hash");
             $message = "Usuário '$nome' cadastrado com sucesso!";
             $messageType = "success";
         }
@@ -49,8 +50,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $email = trim($_POST['email'] ?? '');
             $matricula = trim($_POST['matricula'] ?? '');
             $perfil_id = filter_var($_POST['perfil_id'] ?? '', FILTER_VALIDATE_INT);
-            $qr_code_hash = trim($_POST['qr_code_hash'] ?? '');
             $ativo = isset($_POST['ativo']) ? 1 : 0;
+
+            $nome = htmlspecialchars($nome, ENT_QUOTES, 'UTF-8');
+            $matricula = preg_replace('/[^a-zA-Z0-9_-]/', '', $matricula);
+
+            // Gerar hash automaticamente
+            $qr_code_hash = 'user_' . $matricula;
 
             if (!$id || empty($nome) || empty($matricula) || empty($qr_code_hash) || !$perfil_id) {
                 throw new Exception("Todos os campos obrigatórios devem ser preenchidos.");
@@ -59,13 +65,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 throw new Exception("Formato de e-mail inválido.");
             }
 
-            $nome = htmlspecialchars($nome, ENT_QUOTES, 'UTF-8');
-            $matricula = preg_replace('/[^a-zA-Z0-9_-]/', '', $matricula);
-            $qr_code_hash = preg_replace('/[^a-zA-Z0-9_-]/', '', $qr_code_hash);
-
             $stmt = $pdo->prepare("UPDATE usuarios SET nome = ?, email = ?, matricula = ?, perfil_id = ?, qr_code_hash = ?, ativo = ? WHERE id = ?");
             $stmt->execute([$nome, $email, $matricula, $perfil_id, $qr_code_hash, $ativo, $id]);
-            registrar_log($pdo, 'Edição de Usuário', "Usuário ID $id atualizado para '$nome' (Matrícula: $matricula). Ativo: $ativo.");
+            registrar_log($pdo, 'Edição de Usuário', "Usuário ID $id atualizado para '$nome' (Matrícula: $matricula). Ativo: $ativo. Hash automático: $qr_code_hash");
             $message = "Usuário '$nome' atualizado com sucesso!";
             $messageType = "success";
         }
@@ -571,8 +573,8 @@ try {
                 </div>
                 
                 <div class="form-group">
-                    <label for="user_qr_code_hash">QR Code Hash (Texto codificado)</label>
-                    <input type="text" name="qr_code_hash" id="user_qr_code_hash" class="form-control" placeholder="Ex: user_carlos_123" required>
+                    <label for="user_qr_code_hash">QR Code Hash (Gerado Automaticamente)</label>
+                    <input type="text" name="qr_code_hash" id="user_qr_code_hash" class="form-control" style="background-color: rgba(0,0,0,0.05); cursor: not-allowed;" placeholder="user_101" readonly required>
                 </div>
 
                 <div class="form-group" id="group-ativo" style="display: none; align-items: center; gap: 8px;">
@@ -632,6 +634,12 @@ try {
                 document.getElementById('delete-form').submit();
             }
         }
+
+        // Preenchimento de Hash Automático
+        document.getElementById('matricula').addEventListener('input', function() {
+            this.value = this.value.replace(/[^a-zA-Z0-9_-]/g, '');
+            document.getElementById('user_qr_code_hash').value = this.value ? 'user_' + this.value : '';
+        });
     </script>
     <script src="/api/admin_responsive.js"></script>
 </body>

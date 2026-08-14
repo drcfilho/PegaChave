@@ -30,7 +30,10 @@ Este arquivo registra todo o histórico de desenvolvimento e as melhorias aplica
 * **Arquivamento Seguro (Soft Delete)**: O botão de excluir usuário foi alterado para desativar e arquivar o registro. Isso mantém o histórico de logs e movimentações de chaves íntegro no banco de dados.
 * **Aba de Auditoria com Senha**: Criação da tela `admin_usuarios_arquivados.php`, onde os administradores acessam os dados de usuários arquivados inserindo a sua senha de login.
 * **Sistema de Migrações Automáticas**: O instalador `bin/install.php` agora possui controle de versões para aplicar alterações de estrutura (como novas colunas e tabelas) de forma incremental e sem perda de dados.
-* **Validação Estrita de Dados**: Sanitização e validações avançadas (incluindo tipo, e-mail e expressões regulares de segurança) de todas as entradas do painel para cadastros e edições.
+* **Validação Estrita de Dados & Geração de Hashes Automática**: Sanitização e validações avançadas (incluindo tipo, e-mail e expressões regulares de segurança) de todas as entradas do painel para cadastros e edições. Os campos de QR Code Hash de usuários e chaves foram alterados para "somente leitura" e são gerados automaticamente:
+  * **Usuários**: `user_` + matrícula (ex: `user_101`).
+  * **Chaves**: `chaves_` + código da sala (ex: `chaves_CPD`).
+  * A geração ocorre dinamicamente no frontend (enquanto o administrador digita) e é forçada e validada no backend (PHP) por segurança.
 
 ### 📊 4. Relatórios e Exportações
 * **Registro de Operador em Devoluções Manuais**: Ao efetuar uma devolução manual pelo painel administrativo, o sistema captura e armazena na coluna `observacao` da movimentação qual usuário administrativo (ex: Administrador, Recepcionista) realizou a ação. Essa informação é agora exibida na tabela do relatório de movimentações (`admin_relatorio.php`) e incluída na exportação CSV.
