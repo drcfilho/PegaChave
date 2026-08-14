@@ -46,9 +46,16 @@ try {
             $mov = $stmtMov->fetch();
 
             if ($mov) {
+                // Registrar observação se for devolução manual por admin logado
+                $observacao = null;
+                if (isset($_SESSION['admin_logged_in']) && $_SESSION['admin_logged_in'] === true) {
+                    $admin_nome = $_SESSION['admin_name'] ?? 'Administrador';
+                    $observacao = "Devolvida manualmente por: " . $admin_nome;
+                }
+
                 // Registrar devolução
-                $stmtUpdateMov = $pdo->prepare("UPDATE movimentacoes SET data_devolucao = NOW() WHERE id = ?");
-                $stmtUpdateMov->execute([$mov['id']]);
+                $stmtUpdateMov = $pdo->prepare("UPDATE movimentacoes SET data_devolucao = NOW(), observacao = ? WHERE id = ?");
+                $stmtUpdateMov->execute([$observacao, $mov['id']]);
 
                 // Atualizar status da chave
                 $stmtUpdateChave = $pdo->prepare("UPDATE chaves SET status_disponivel = TRUE WHERE id = ?");

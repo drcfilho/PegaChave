@@ -33,6 +33,7 @@ Este arquivo registra todo o histórico de desenvolvimento e as melhorias aplica
 * **Validação Estrita de Dados**: Sanitização e validações avançadas (incluindo tipo, e-mail e expressões regulares de segurança) de todas as entradas do painel para cadastros e edições.
 
 ### 📊 4. Relatórios e Exportações
+* **Registro de Operador em Devoluções Manuais**: Ao efetuar uma devolução manual pelo painel administrativo, o sistema captura e armazena na coluna `observacao` da movimentação qual usuário administrativo (ex: Administrador, Recepcionista) realizou a ação. Essa informação é agora exibida na tabela do relatório de movimentações (`admin_relatorio.php`) e incluída na exportação CSV.
 * **Exportação de Movimentações (CSV)**: Botão na tela de relatórios gerais (`admin_relatorio.php`) para baixar o histórico atual filtrado em formato `.csv` (com suporte a UTF-8/BOM para Excel).
 * **Exportação de Logs de Auditoria (CSV)**: Botão na tela de logs administrativos (`admin_logs.php`) para baixar os registros de auditoria em formato `.csv`.
 

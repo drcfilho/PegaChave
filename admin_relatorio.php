@@ -504,12 +504,13 @@ try {
                             <th>Data Retirada</th>
                             <th>Data Devolução</th>
                             <th>Status</th>
+                            <th>Observação</th>
                         </tr>
                     </thead>
                     <tbody>
                         <?php if (empty($movimentacoes)): ?>
                             <tr>
-                                <td colspan="5" style="text-align: center; color: #64748b; padding: 25px;">
+                                <td colspan="6" style="text-align: center; color: #64748b; padding: 25px;">
                                     Nenhum registro de movimentação encontrado para os filtros selecionados.
                                 </td>
                             </tr>
@@ -525,6 +526,7 @@ try {
                                             <?php echo $m['data_devolucao'] ? 'Devolvida' : 'Em Uso'; ?>
                                         </span>
                                     </td>
+                                    <td><small><?php echo htmlspecialchars($m['observacao'] ?? '-'); ?></small></td>
                                 </tr>
                             <?php endforeach; ?>
                         <?php endif; ?>
