@@ -7,14 +7,9 @@ use App\Models\MovimentacaoRepository;
 use App\Models\ReservaRepository;
 use App\Models\RestricaoRepository;
 
-class ScanController {
+class ScanController extends BaseController {
     protected $pdo;
-    protected $config;
 
-    public function __construct($pdo, $config) {
-        $this->pdo = $pdo;
-        $this->config = $config;
-    }
 
     public function processar() {
         $pdo = $this->pdo;
