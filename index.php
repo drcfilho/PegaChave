@@ -26,9 +26,13 @@ $router->post('/api/processar_scan', 'ScanController', 'processar');
 // === Rotas Administrativas ===
 $router->get('/admin', 'AdminDashboardController', 'index');
 $router->get('/admin/chaves', 'AdminChavesController', 'index');
-$router->post('/admin/chaves', 'AdminChavesController', 'index'); // Para formulários
+$router->post('/admin/chaves/create', 'AdminChavesController', 'store');
+$router->post('/admin/chaves/update', 'AdminChavesController', 'update');
+$router->post('/admin/chaves/delete', 'AdminChavesController', 'destroy');
 $router->get('/admin/usuarios', 'AdminUsuariosController', 'index');
-$router->post('/admin/usuarios', 'AdminUsuariosController', 'index');
+$router->post('/admin/usuarios/create', 'AdminUsuariosController', 'store');
+$router->post('/admin/usuarios/update', 'AdminUsuariosController', 'update');
+$router->post('/admin/usuarios/delete', 'AdminUsuariosController', 'destroy');
 $router->get('/admin/usuarios_arquivados', 'AdminUsuariosArquivadosController', 'index');
 $router->post('/admin/usuarios_arquivados', 'AdminUsuariosArquivadosController', 'index');
 $router->get('/admin/reservas', 'AdminReservasController', 'index');

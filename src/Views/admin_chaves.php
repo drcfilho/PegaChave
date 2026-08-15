@@ -195,7 +195,7 @@
         </div>
     </div>
 
-    <form id="delete-form" method="POST" action="<?= BASE_URL ?>/admin/chaves" style="display: none;">
+    <form id="delete-form" method="POST" action="<?= BASE_URL ?>/admin/chaves/delete" style="display: none;">
         <?php renderizar_csrf_input(); ?>
         <input type="hidden" name="action" value="delete_chave">
         <input type="hidden" name="id" id="delete-id">
@@ -203,6 +203,7 @@
 
     <script>
         function openKeyModal() {
+            document.querySelector('#key-modal form').action = "<?= BASE_URL ?>/admin/chaves/create";
             document.getElementById('key-modal-title').textContent = "Cadastrar Nova Chave";
             document.getElementById('key-action').value = "add_chave";
             document.getElementById('key-id').value = "";
@@ -217,6 +218,7 @@
         }
 
         function openEditKeyModal(chave) {
+            document.querySelector('#key-modal form').action = "<?= BASE_URL ?>/admin/chaves/update";
             document.getElementById('key-modal-title').textContent = "Editar Chave";
             document.getElementById('key-action').value = "edit_chave";
             document.getElementById('key-id').value = chave.id;

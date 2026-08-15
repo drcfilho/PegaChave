@@ -1,38 +1,41 @@
 <?php
 namespace App\Controllers;
 
+use Exception;
+
 class AdminUsuariosController extends AdminBaseController {
-    public function index() {
+    public function index($message = '', $messageType = '') {
         $pdo = $this->pdo;
         extract($this->config);
         $usuarioRepo = new \App\Models\UsuarioRepository($pdo);
         
+        try {
+            $usuarios = $usuarioRepo->buscarTodosNaoExcluidos();
+            $perfis = $usuarioRepo->buscarTodosPerfis();
+        } catch (\PDOException $e) {
+            echo "Erro de Banco de Dados: " . $e->getMessage();
+            exit;
+        }
 
+        require_once __DIR__ . '/../Views/admin_usuarios.php';
+    }
 
+    public function store() {
+        if (!validar_csrf_token($_POST['csrf_token'] ?? '')) {
+            return $this->index("Token de segurança inválido. Tente novamente.", "error");
+        }
 
+        $pdo = $this->pdo;
+        $usuarioRepo = new \App\Models\UsuarioRepository($pdo);
 
-$message = '';
-$messageType = '';
-
-if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    if (!validar_csrf_token($_POST['csrf_token'] ?? '')) {
-        $message = "Token de segurança inválido. Tente novamente.";
-        $messageType = "error";
-    } else {
-        $action = $_POST['action'];
-
-    try {
-        if ($action === 'add_usuario') {
+        try {
             $nome = trim($_POST['nome'] ?? '');
             $email = trim($_POST['email'] ?? '');
             $matricula = trim($_POST['matricula'] ?? '');
             $perfil_id = filter_var($_POST['perfil_id'] ?? '', FILTER_VALIDATE_INT);
 
-            // Saneamento básico
             $nome = htmlspecialchars($nome, ENT_QUOTES, 'UTF-8');
             $matricula = preg_replace('/[^a-zA-Z0-9_-]/', '', $matricula);
-
-            // Gerar hash automaticamente
             $qr_code_hash = 'user_' . $matricula;
 
             if (empty($nome) || empty($matricula) || empty($qr_code_hash) || !$perfil_id) {
@@ -44,11 +47,22 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
             $usuarioRepo->cadastrar($nome, $email, $matricula, $perfil_id, $qr_code_hash);
             registrar_log($pdo, 'Cadastro de Usuário', "Usuário '$nome' (Matrícula: $matricula) cadastrado. Hash automático: $qr_code_hash");
-            $message = "Usuário '$nome' cadastrado com sucesso!";
-            $messageType = "success";
+            
+            return $this->index("Usuário '$nome' cadastrado com sucesso!", "success");
+        } catch (\Exception $e) {
+            return $this->index($e->getMessage(), "error");
+        }
+    }
+
+    public function update() {
+        if (!validar_csrf_token($_POST['csrf_token'] ?? '')) {
+            return $this->index("Token de segurança inválido. Tente novamente.", "error");
         }
 
-        elseif ($action === 'edit_usuario') {
+        $pdo = $this->pdo;
+        $usuarioRepo = new \App\Models\UsuarioRepository($pdo);
+
+        try {
             $id = filter_var($_POST['id'] ?? '', FILTER_VALIDATE_INT);
             $nome = trim($_POST['nome'] ?? '');
             $email = trim($_POST['email'] ?? '');
@@ -58,8 +72,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
             $nome = htmlspecialchars($nome, ENT_QUOTES, 'UTF-8');
             $matricula = preg_replace('/[^a-zA-Z0-9_-]/', '', $matricula);
-
-            // Gerar hash automaticamente
             $qr_code_hash = 'user_' . $matricula;
 
             if (!$id || empty($nome) || empty($matricula) || empty($qr_code_hash) || !$perfil_id) {
@@ -71,38 +83,32 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
             $usuarioRepo->atualizar($id, $nome, $email, $matricula, $perfil_id, $qr_code_hash, $ativo);
             registrar_log($pdo, 'Edição de Usuário', "Usuário ID $id atualizado para '$nome' (Matrícula: $matricula). Ativo: $ativo. Hash automático: $qr_code_hash");
-            $message = "Usuário '$nome' atualizado com sucesso!";
-            $messageType = "success";
+            
+            return $this->index("Usuário '$nome' atualizado com sucesso!", "success");
+        } catch (\Exception $e) {
+            return $this->index($e->getMessage(), "error");
+        }
+    }
+
+    public function destroy() {
+        if (!validar_csrf_token($_POST['csrf_token'] ?? '')) {
+            return $this->index("Token de segurança inválido. Tente novamente.", "error");
         }
 
-        elseif ($action === 'delete_usuario') {
+        $pdo = $this->pdo;
+        $usuarioRepo = new \App\Models\UsuarioRepository($pdo);
+
+        try {
             $id = $_POST['id'] ?? '';
-            // Obter nome antes de excluir
             $userInfo = $usuarioRepo->buscarDadosBasicos($id);
             $nomeExcluido = $userInfo ? $userInfo['nome'] . ' (Matrícula: ' . $userInfo['matricula'] . ')' : "ID $id";
 
-            // Não apagamos mais as movimentações para manter o histórico de auditoria intacto.
             $usuarioRepo->arquivar($id);
             registrar_log($pdo, 'Arquivamento de Usuário', "Usuário '$nomeExcluido' foi arquivado.");
-            $message = "Usuário arquivado para auditoria com sucesso.";
-            $messageType = "success";
+            
+            return $this->index("Usuário arquivado para auditoria com sucesso.", "success");
+        } catch (\Exception $e) {
+            return $this->index($e->getMessage(), "error");
         }
-    } catch (\PDOException $e) {
-        $message = "Erro ao salvar dados: " . $e->getMessage();
-        $messageType = "error";
-    }
-  }
-}
-
-try {
-    $usuarios = $usuarioRepo->buscarTodosNaoExcluidos();
-
-    $perfis = $usuarioRepo->buscarTodosPerfis();
-} catch (\PDOException $e) {
-    echo "Erro de Banco de Dados: " . $e->getMessage();
-    exit;
-}
-
-        require_once __DIR__ . '/../Views/admin_usuarios.php';
     }
 }

@@ -177,7 +177,7 @@
         </div>
     </div>
 
-    <form id="delete-form" method="POST" action="<?= BASE_URL ?>/admin/usuarios" style="display: none;">
+    <form id="delete-form" method="POST" action="<?= BASE_URL ?>/admin/usuarios/delete" style="display: none;">
         <?php renderizar_csrf_input(); ?>
         <input type="hidden" name="action" value="delete_usuario">
         <input type="hidden" name="id" id="delete-id">
@@ -185,6 +185,7 @@
 
     <script>
         function openUserModal() {
+            document.querySelector('#user-modal form').action = "<?= BASE_URL ?>/admin/usuarios/create";
             document.getElementById('user-modal-title').textContent = "Cadastrar Novo Usuário";
             document.getElementById('user-action').value = "add_usuario";
             document.getElementById('user-id').value = "";
@@ -198,6 +199,7 @@
         }
 
         function openEditUserModal(user) {
+            document.querySelector('#user-modal form').action = "<?= BASE_URL ?>/admin/usuarios/update";
             document.getElementById('user-modal-title').textContent = "Editar Usuário";
             document.getElementById('user-action').value = "edit_usuario";
             document.getElementById('user-id').value = user.id;
