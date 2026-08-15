@@ -3,7 +3,7 @@
         'name' => 'drcfilho/pegachave',
         'pretty_version' => 'dev-master',
         'version' => 'dev-master',
-        'reference' => 'ac531cc4be08f5eb90f6af3bb167dfda5937b453',
+        'reference' => '5d583be0e230691f4d6c1c56edcdf4ca6424f9e7',
         'type' => 'project',
         'install_path' => __DIR__ . '/../../',
         'aliases' => array(),
@@ -94,7 +94,7 @@
         'drcfilho/pegachave' => array(
             'pretty_version' => 'dev-master',
             'version' => 'dev-master',
-            'reference' => 'ac531cc4be08f5eb90f6af3bb167dfda5937b453',
+            'reference' => '5d583be0e230691f4d6c1c56edcdf4ca6424f9e7',
             'type' => 'project',
             'install_path' => __DIR__ . '/../../',
             'aliases' => array(),
@@ -132,6 +132,15 @@
             'replaced' => array(
                 0 => '~2.0',
             ),
+        ),
+        'phpmailer/phpmailer' => array(
+            'pretty_version' => 'v7.1.1',
+            'version' => '7.1.1.0',
+            'reference' => '1bc1716a507a65e039d4ac9d9adebbbd0d346e15',
+            'type' => 'library',
+            'install_path' => __DIR__ . '/../phpmailer/phpmailer',
+            'aliases' => array(),
+            'dev_requirement' => false,
         ),
         'psr/clock' => array(
             'pretty_version' => '1.0.0',

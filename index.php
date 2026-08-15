@@ -41,6 +41,9 @@ $router->post('/api/processar_scan', 'ScanController', 'processar');
 $router->get('/install', 'InstallController', 'index');
 $router->post('/install/run', 'InstallController', 'runInstall');
 
+// === Rotas de Cron Jobs (Servidor Web) ===
+$router->get('/api/cron/alertas', 'CronController', 'processarAlertas');
+
 // === Middlewares ===
 $auth = ['AuthMiddleware'];
 $authCsrf = ['AuthMiddleware', 'CsrfMiddleware'];

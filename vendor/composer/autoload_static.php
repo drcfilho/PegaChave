@@ -126,6 +126,7 @@ class ComposerStaticInit971c87c42dea56212a3f2183f065131c
             'Psr\\Container\\' => 14,
             'Psr\\Clock\\' => 10,
             'Phinx\\' => 6,
+            'PHPMailer\\PHPMailer\\' => 20,
         ),
         'M' =>
         array (
@@ -230,6 +231,10 @@ class ComposerStaticInit971c87c42dea56212a3f2183f065131c
         'Phinx\\' =>
         array (
             0 => __DIR__ . '/..' . '/robmorgan/phinx/src/Phinx',
+        ),
+        'PHPMailer\\PHPMailer\\' =>
+        array (
+            0 => __DIR__ . '/..' . '/phpmailer/phpmailer/src',
         ),
         'Masterminds\\' =>
         array (

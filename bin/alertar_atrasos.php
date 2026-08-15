@@ -1,43 +1,39 @@
 <?php
-// bin/alertar_atrasos.php
+/**
+ * Robô de Verificação de Atrasos
+ * Deve ser executado via Cron Job / Tarefa Agendada do Windows
+ * Exemplo: php bin/alertar_atrasos.php
+ */
 
-require_once dirname(__DIR__) . '/api/db.php';
+require __DIR__ . '/../vendor/autoload.php';
+require_once __DIR__ . '/../api/db.php'; // Para ter acesso ao $pdo e outras funções
+
+use App\Models\MovimentacaoRepository;
+use App\Core\EmailService;
+use eftec\bladeone\BladeOne;
 
 echo "=== Iniciando Verificação de Chaves em Atraso ===\n";
 
 try {
-    // Buscar movimentações sem devolução iniciadas há mais de 8 horas
-    $limiteHoras = 8;
-    $query = "
-        SELECT 
-            m.id AS movimentacao_id,
-            m.data_retirada,
-            u.nome AS usuario_nome,
-            u.email AS usuario_email,
-            u.matricula AS usuario_matricula,
-            c.nome_sala,
-            c.codigo_sala
-        FROM movimentacoes m
-        JOIN usuarios u ON m.usuario_id = u.id
-        JOIN chaves c ON m.chave_id = c.id
-        WHERE m.data_devolucao IS NULL
-          AND m.data_retirada < NOW() - INTERVAL ? HOUR
-    ";
+    $movRepo = new MovimentacaoRepository($pdo);
+    $emailService = new EmailService();
 
-    $stmt = $pdo->prepare($query);
-    $stmt->execute([$limiteHoras]);
-    $atrasos = $stmt->fetchAll();
+    // Configuração do BladeOne para renderizar o e-mail
+    $views = __DIR__ . '/../src/Views';
+    $cache = __DIR__ . '/../cache';
+    $blade = new BladeOne($views, $cache, BladeOne::MODE_AUTO);
 
-    if (empty($atrasos)) {
+    // Buscar movimentações sem devolução iniciadas há mais de 6 horas
+    $limiteHoras = $_ENV['LIMITE_HORAS_ATRASO'] ?? getenv('LIMITE_HORAS_ATRASO') ?: 6;
+    $atrasadas = $movRepo->buscarAtrasadas($limiteHoras);
+
+    if (empty($atrasadas)) {
         echo "Nenhuma chave em atraso encontrada (limite: $limiteHoras horas).\n";
         exit(0);
     }
 
-    echo "Encontrada(s) " . count($atrasos) . " chave(s) em atraso.\n";
+    echo "Encontrada(s) " . count($atrasadas) . " chave(s) em atraso com e-mail cadastrado.\n";
 
-    // Configurações do remetente
-    $mailFrom = $_ENV['MAIL_FROM'] ?? getenv('MAIL_FROM') ?: 'alerta@pegachave.local';
-    
     // Pasta de logs de alertas
     $logsDir = dirname(__DIR__) . '/tmp';
     if (!is_dir($logsDir)) {
@@ -45,52 +41,62 @@ try {
     }
     $logFile = $logsDir . '/email_alerts.log';
 
-    foreach ($atrasos as $registro) {
+    $enviados = 0;
+    $falhas = 0;
+
+    foreach ($atrasadas as $registro) {
         $destinatario = $registro['usuario_email'];
         $nome = $registro['usuario_nome'];
         $sala = $registro['nome_sala'];
-        $codigo = $registro['codigo_sala'];
-        $retirada = date('d/m/Y H:i', strtotime($registro['data_retirada']));
+        
+        $dataRetirada = new DateTime($registro['data_retirada']);
+        $agora = new DateTime();
+        $diferenca = $dataRetirada->diff($agora);
+        $horasTotais = ($diferenca->days * 24) + $diferenca->h;
 
-        if (empty($destinatario)) {
-            echo "Aviso: O usuário '$nome' não possui e-mail cadastrado. Pulando envio.\n";
-            continue;
-        }
+        // Prepara as variáveis para o Blade
+        $dadosTemplate = [
+            'nome' => $nome,
+            'sala' => $sala,
+            'data_retirada' => $dataRetirada->format('d/m/Y H:i'),
+            'tempo_posse' => $horasTotais
+        ];
 
-        $assunto = "⚠️ PegaChave - Alerta de Chave em Atraso: Sala $sala";
-        $mensagem = "Olá, $nome,\n\n";
-        $mensagem .= "Identificamos que você retirou a chave da sala $sala ($codigo) no dia $retirada e ela ainda não foi devolvida.\n";
-        $mensagem .= "Por favor, realize a devolução da chave no Quiosque o quanto antes para liberar o acesso a outros usuários.\n\n";
-        $mensagem .= "Atenciosamente,\nEquipe de Controle de Chaves - PegaChave";
-
-        $headers = "From: $mailFrom\r\n";
-        $headers .= "Reply-To: $mailFrom\r\n";
-        $headers .= "X-Mailer: PHP/" . phpversion();
-
-        // Tentar enviar e-mail usando a função mail do PHP
-        $enviado = false;
         try {
-            // Em ambientes de desenvolvimento/local sem servidor SMTP configurado no php.ini,
-            // isso pode retornar falso ou gerar avisos. Nós silenciamos com @ e registramos.
-            $enviado = @mail($destinatario, $assunto, $mensagem, $headers);
+            $corpoHtml = $blade->run("emails.alerta_atraso", $dadosTemplate);
+            $assunto = "⚠️ PegaChave - Alerta de Chave Pendente: Sala $sala";
+            
+            echo "Enviando e-mail para $destinatario... ";
+            
+            if ($emailService->enviar($destinatario, $nome, $assunto, $corpoHtml)) {
+                echo "ENVIADO!\n";
+                $enviados++;
+                $statusStr = "ENVIADO";
+            } else {
+                echo "FALHA!\n";
+                $falhas++;
+                $statusStr = "FALHA_ENVIO";
+            }
         } catch (Exception $e) {
-            $enviado = false;
+            echo "ERRO DE RENDERIZAÇÃO: " . $e->getMessage() . "\n";
+            $falhas++;
+            $statusStr = "ERRO_SISTEMA";
         }
 
         // Registrar o resultado da operação no log
-        $statusStr = $enviado ? "ENVIADO" : "SIMULADO (Sem SMTP)";
-        $logMsg = "[" . date('Y-m-d H:i:s') . "] [$statusStr] Para: $destinatario | Sala: $sala | Retirada: $retirada\n";
+        $logMsg = "[" . date('Y-m-d H:i:s') . "] [$statusStr] Para: $destinatario | Sala: $sala | Posse: $horasTotais horas\n";
         file_put_contents($logFile, $logMsg, FILE_APPEND);
-
-        echo "Alerta de atraso para '$nome' ($destinatario) - Status: $statusStr.\n";
         
         // Registrar log de auditoria no banco
-        registrar_log($pdo, 'Alerta de Atraso', "E-mail de alerta enviado para '$nome' referente à chave '$sala' ($statusStr).");
+        if (function_exists('registrar_log')) {
+            registrar_log($pdo, 'Alerta de Atraso', "E-mail de alerta disparado para '$nome' referente à chave '$sala' ($statusStr).");
+        }
     }
 
     echo "=== Processamento de Alertas Concluído ===\n";
+    echo "Sucessos: $enviados | Falhas: $falhas\n";
 
 } catch (Exception $e) {
-    echo "Erro: " . $e->getMessage() . "\n";
+    echo "Erro Fatal: " . $e->getMessage() . "\n";
     exit(1);
 }

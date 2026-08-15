@@ -28,5 +28,19 @@ services:
     depends_on:
       - db
 
+  cron:
+    build: .
+    container_name: pegachave-cron
+    restart: always
+    command: /bin/bash -c "while true; do php bin/alertar_atrasos.php; sleep 3600; done"
+    environment:
+      - DB_HOST=db
+      - DB_PORT=3306
+      - DB_NAME=controle_chaves
+      - DB_USER=root
+      - DB_PASS=
+    depends_on:
+      - db
+
 volumes:
   db_data:
