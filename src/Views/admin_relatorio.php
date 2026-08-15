@@ -10,283 +10,12 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
-    <style>
-        :root {
-            --bg-color: #f1f5f9;
-            --text-color: #1e293b;
-            --sidebar-bg: #0f172a;
-            --sidebar-active: <?php echo $cor_primaria; ?>;
-            --card-bg: #ffffff;
-            --border-color: #e2e8f0;
-            --primary: <?php echo $cor_primaria; ?>;
-            --success: #22c55e;
-            --error: #ef4444;
-        }
-
-        * {
-            box-sizing: border-box;
-            margin: 0;
-            padding: 0;
-            font-family: 'Inter', sans-serif;
-        }
-
-        body {
-            background-color: var(--bg-color);
-            color: var(--text-color);
-            display: flex;
-            min-height: 100vh;
-        }
-
-        /* Sidebar */
-        aside {
-            width: 260px;
-            background-color: var(--sidebar-bg);
-            color: #ffffff;
-            display: flex;
-            flex-direction: column;
-            border-right: 1px solid rgba(255, 255, 255, 0.05);
-            position: fixed;
-            top: 0;
-            bottom: 0;
-            left: 0;
-            z-index: 10;
-        }
-
-        .sidebar-header {
-            padding: 24px;
-            font-size: 20px;
-            font-weight: 800;
-            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
-            display: flex;
-            align-items: center;
-            gap: 10px;
-        }
-
-        .sidebar-menu {
-            list-style: none;
-            padding: 20px 0;
-            flex: 1;
-        }
-
-        .sidebar-item a {
-            display: flex;
-            align-items: center;
-            gap: 12px;
-            padding: 14px 24px;
-            color: #94a3b8;
-            text-decoration: none;
-            font-weight: 600;
-            font-size: 15px;
-            transition: all 0.2s;
-            border-left: 4px solid transparent;
-        }
-
-        .sidebar-item a:hover {
-            color: #ffffff;
-            background: rgba(255, 255, 255, 0.02);
-        }
-
-        .sidebar-item.active a {
-            color: #ffffff;
-            background: rgba(2, 132, 199, 0.1);
-            border-left-color: var(--sidebar-active);
-        }
-
-        .sidebar-footer {
-            padding: 20px 24px;
-            border-top: 1px solid rgba(255, 255, 255, 0.05);
-        }
-
-        .btn-kiosk {
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 8px;
-            background-color: rgba(255,255,255,0.05);
-            color: #fff;
-            text-decoration: none;
-            padding: 10px;
-            border-radius: 8px;
-            font-size: 14px;
-            font-weight: 700;
-            transition: background 0.2s;
-        }
-
-        .btn-kiosk:hover {
-            background-color: var(--sidebar-active);
-        }
-
-        /* Main Content */
-        main {
-            margin-left: 260px;
-            flex: 1;
-            padding: 40px;
-        }
-
-        .page-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 30px;
-        }
-
-        .page-title h1 {
-            font-size: 24px;
-            font-weight: 800;
-            color: #0f172a;
-        }
-
-        .btn-print {
-            background-color: var(--primary);
-            color: white;
-            border: none;
-            padding: 10px 20px;
-            font-size: 14px;
-            font-weight: 700;
-            border-radius: 8px;
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            gap: 6px;
-        }
-
-        .btn-print:hover {
-            background-color: var(--sidebar-active);
-        }
-
-        /* Formulário de Filtros */
-        .filter-card {
-            background-color: var(--card-bg);
-            border-radius: 12px;
-            border: 1px solid var(--border-color);
-            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
-            padding: 20px;
-            margin-bottom: 25px;
-        }
-
-        .filter-form {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)) auto;
-            gap: 16px;
-            align-items: flex-end;
-        }
-
-        .filter-group {
-            display: flex;
-            flex-direction: column;
-            gap: 6px;
-        }
-
-        .filter-group label {
-            font-size: 12px;
-            font-weight: 700;
-            color: #64748b;
-            text-transform: uppercase;
-        }
-
-        .form-control {
-            width: 100%;
-            border: 1px solid #cbd5e1;
-            border-radius: 6px;
-            padding: 10px 12px;
-            font-size: 14px;
-            outline: none;
-            background-color: #f8fafc;
-        }
-
-        .btn-filter {
-            background-color: #334155;
-            color: white;
-            border: none;
-            padding: 11px 24px;
-            font-size: 14px;
-            font-weight: 700;
-            border-radius: 6px;
-            cursor: pointer;
-        }
-
-        .btn-filter:hover {
-            background-color: #1e293b;
-        }
-
-        /* Relatório Card */
-        .content-card {
-            background-color: var(--card-bg);
-            border-radius: 12px;
-            border: 1px solid var(--border-color);
-            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
-            padding: 24px;
-        }
-
-        /* Tables */
-        table {
-            width: 100%;
-            border-collapse: collapse;
-            text-align: left;
-        }
-
-        th {
-            font-size: 12px;
-            font-weight: 700;
-            color: #64748b;
-            padding: 12px 16px;
-            border-bottom: 2px solid #e2e8f0;
-            text-transform: uppercase;
-        }
-
-        td {
-            font-size: 14px;
-            padding: 14px 16px;
-            border-bottom: 1px solid #f1f5f9;
-        }
-
-        .status-badge {
-            font-size: 11px;
-            font-weight: 700;
-            padding: 4px 10px;
-            border-radius: 9999px;
-            text-transform: uppercase;
-        }
-
-        .status-badge.retirada {
-            background-color: rgba(239,68,68,0.1);
-            color: var(--error);
-        }
-
-        .status-badge.devolvida {
-            background-color: rgba(34,197,94,0.1);
-            color: var(--success);
-        }
-
-        /* Estilo de Impressão */
-        @media print {
-            aside {
-                display: none !important;
-            }
-            main {
-                margin-left: 0 !important;
-                padding: 0 !important;
-            }
-            .filter-card, .btn-print {
-                display: none !important;
-            }
-            .content-card {
-                border: none !important;
-                box-shadow: none !important;
-                padding: 0 !important;
-            }
-            th, td {
-                padding: 8px 10px !important;
-                border-bottom: 1px solid #000 !important;
-            }
-        }
-    </style>
     <link rel="stylesheet" href="<?= BASE_URL ?>/api/admin_responsive.css?v=<?= time() ?>">
     <script src="https://cdn.tailwindcss.com"></script>
     <script>
       tailwind.config = {
         corePlugins: {
-          preflight: false,
+          preflight: true,
         },
         theme: {
           extend: {
@@ -299,37 +28,37 @@
       }
     </script>
 </head>
-<body>
+<body class="bg-slate-50 text-slate-800 font-sans flex min-h-screen">
 
     <!-- Sidebar -->
     <?php include __DIR__ . '/partials/sidebar.php'; ?>
 
     <!-- Main Content -->
-    <main>
-        <div class="page-header">
-            <div class="page-title">
-                <h1>Relatório de Movimentação</h1>
-                <p>Monitore e audite o histórico completo de retiradas e devoluções.</p>
+    <main class="flex-1 ml-0 lg:ml-[260px] p-6 md:p-10 transition-all duration-300 print:ml-0 print:p-0">
+        <div class="flex justify-between items-center mb-8 flex-wrap gap-4 print:hidden">
+            <div>
+                <h1 class="text-2xl font-extrabold text-slate-900 mb-1">Relatório de Movimentação</h1>
+                <p class="text-sm text-slate-500">Monitore e audite o histórico completo de retiradas e devoluções.</p>
             </div>
-            <div style="display: flex; gap: 10px;">
-                <button class="btn-print" onclick="exportarCSV()" style="background-color: var(--primary); border-color: var(--primary); color: white;">
+            <div class="flex gap-2.5 print-hidden">
+                <button onclick="exportarCSV()" class="bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-lg shadow-sm transition-colors flex items-center gap-2">
                     📊 Exportar CSV
                 </button>
-                <button class="btn-print" onclick="exportarPDF()" style="background-color: #dc2626; border-color: #dc2626; color: white;">
+                <button onclick="exportarPDF()" class="bg-red-600 hover:bg-red-700 text-white font-bold py-2 px-4 rounded-lg shadow-sm transition-colors flex items-center gap-2">
                     📄 Exportar PDF
                 </button>
-                <button class="btn-print" onclick="window.print()">
+                <button onclick="window.print()" class="bg-slate-800 hover:bg-slate-900 text-white font-bold py-2 px-4 rounded-lg shadow-sm transition-colors flex items-center gap-2">
                     🖨️ Imprimir Página
                 </button>
             </div>
         </div>
 
         <!-- Filtros -->
-        <div class="filter-card">
-            <form method="GET" action="<?= BASE_URL ?>/admin/relatorio" class="filter-form">
-                <div class="filter-group">
-                    <label for="chave_id">Chave/Sala</label>
-                    <select name="chave_id" id="chave_id" class="form-control">
+        <div class="bg-white rounded-2xl border border-slate-200 shadow-sm px-6 py-5 mb-6 print-hidden">
+            <form method="GET" action="<?= BASE_URL ?>/admin/relatorio" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 lg:grid-cols-[repeat(auto-fit,minmax(200px,1fr))_auto] gap-4 items-end">
+                <div class="flex flex-col gap-1.5">
+                    <label for="chave_id" class="text-xs font-bold text-slate-500 uppercase">Chave/Sala</label>
+                    <select name="chave_id" id="chave_id" class="w-full border border-slate-300 rounded-lg px-4 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-green-500 bg-slate-50">
                         <option value="">Todas</option>
                         <?php foreach ($chaves as $c): ?>
                             <option value="<?php echo $c['id']; ?>" <?php echo $chave_id == $c['id'] ? 'selected' : ''; ?>>
@@ -339,9 +68,9 @@
                     </select>
                 </div>
 
-                <div class="filter-group">
-                    <label for="usuario_id">Usuário</label>
-                    <select name="usuario_id" id="usuario_id" class="form-control">
+                <div class="flex flex-col gap-1.5">
+                    <label for="usuario_id" class="text-xs font-bold text-slate-500 uppercase">Usuário</label>
+                    <select name="usuario_id" id="usuario_id" class="w-full border border-slate-300 rounded-lg px-4 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-green-500 bg-slate-50">
                         <option value="">Todos</option>
                         <?php foreach ($usuarios as $u): ?>
                             <option value="<?php echo $u['id']; ?>" <?php echo $usuario_id == $u['id'] ? 'selected' : ''; ?>>
@@ -351,32 +80,32 @@
                     </select>
                 </div>
 
-                <div class="filter-group">
-                    <label for="data_inicio">Data Início</label>
-                    <input type="date" name="data_inicio" id="data_inicio" class="form-control" value="<?php echo htmlspecialchars($data_inicio ?? ''); ?>">
+                <div class="flex flex-col gap-1.5">
+                    <label for="data_inicio" class="text-xs font-bold text-slate-500 uppercase">Data Início</label>
+                    <input type="date" name="data_inicio" id="data_inicio" class="w-full border border-slate-300 rounded-lg px-4 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-green-500 bg-slate-50" value="<?php echo htmlspecialchars($data_inicio ?? ''); ?>">
                 </div>
 
-                <div class="filter-group">
-                    <label for="data_fim">Data Fim</label>
-                    <input type="date" name="data_fim" id="data_fim" class="form-control" value="<?php echo htmlspecialchars($data_fim ?? ''); ?>">
+                <div class="flex flex-col gap-1.5">
+                    <label for="data_fim" class="text-xs font-bold text-slate-500 uppercase">Data Fim</label>
+                    <input type="date" name="data_fim" id="data_fim" class="w-full border border-slate-300 rounded-lg px-4 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-green-500 bg-slate-50" value="<?php echo htmlspecialchars($data_fim ?? ''); ?>">
                 </div>
 
-                <button type="submit" class="btn-filter">Filtrar</button>
+                <button type="submit" class="bg-slate-800 hover:bg-slate-900 text-white font-bold py-2 px-5 rounded-lg transition-colors">Filtrar</button>
             </form>
         </div>
 
         <!-- Tabela de Resultados -->
-        <div class="content-card">
+        <div class="content-card bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden px-6 py-5 mb-8">
             <div style="overflow-x: auto;">
-                <table>
+                <table class="w-full text-left border-collapse">
                     <thead>
                         <tr>
-                            <th>Chave/Sala</th>
-                            <th>Usuário (Matrícula)</th>
-                            <th>Data Retirada</th>
-                            <th>Data Devolução</th>
-                            <th>Status</th>
-                            <th>Observação</th>
+                            <th class="bg-slate-50 text-slate-500 border-b border-slate-200 text-xs uppercase tracking-wider px-4 py-3 font-semibold">Chave/Sala</th>
+                            <th class="bg-slate-50 text-slate-500 border-b border-slate-200 text-xs uppercase tracking-wider px-4 py-3 font-semibold">Usuário (Matrícula)</th>
+                            <th class="bg-slate-50 text-slate-500 border-b border-slate-200 text-xs uppercase tracking-wider px-4 py-3 font-semibold">Data Retirada</th>
+                            <th class="bg-slate-50 text-slate-500 border-b border-slate-200 text-xs uppercase tracking-wider px-4 py-3 font-semibold">Data Devolução</th>
+                            <th class="bg-slate-50 text-slate-500 border-b border-slate-200 text-xs uppercase tracking-wider px-4 py-3 font-semibold">Status</th>
+                            <th class="bg-slate-50 text-slate-500 border-b border-slate-200 text-xs uppercase tracking-wider px-4 py-3 font-semibold">Observação</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -388,17 +117,19 @@
                             </tr>
                         <?php else: ?>
                             <?php foreach ($movimentacoes as $m): ?>
-                                <tr>
-                                    <td><strong><?php echo htmlspecialchars($m['nome_sala']); ?></strong> (<?php echo htmlspecialchars($m['codigo_sala']); ?>)</td>
-                                    <td><?php echo htmlspecialchars($m['usuario_nome']); ?> (<?php echo htmlspecialchars($m['usuario_matricula']); ?>)</td>
-                                    <td><?php echo date('d/m/Y H:i', strtotime($m['data_retirada'])); ?></td>
-                                    <td><?php echo $m['data_devolucao'] ? date('d/m/Y H:i', strtotime($m['data_devolucao'])) : '-'; ?></td>
-                                    <td>
-                                        <span class="status-badge <?php echo $m['data_devolucao'] ? 'devolvida' : 'retirada'; ?>">
-                                            <?php echo $m['data_devolucao'] ? 'Devolvida' : 'Em Uso'; ?>
-                                        </span>
+                                <tr class="hover:bg-slate-50 transition-colors">
+                                    <td class="px-4 py-3 border-b border-slate-100 text-sm"><strong><?php echo htmlspecialchars($m['nome_sala']); ?></strong> (<?php echo htmlspecialchars($m['codigo_sala']); ?>)</td>
+                                    <td class="px-4 py-3 border-b border-slate-100 text-sm"><?php echo htmlspecialchars($m['usuario_nome']); ?> (<?php echo htmlspecialchars($m['usuario_matricula']); ?>)</td>
+                                    <td class="px-4 py-3 border-b border-slate-100 text-sm"><?php echo date('d/m/Y H:i', strtotime($m['data_retirada'])); ?></td>
+                                    <td class="px-4 py-3 border-b border-slate-100 text-sm"><?php echo $m['data_devolucao'] ? date('d/m/Y H:i', strtotime($m['data_devolucao'])) : '-'; ?></td>
+                                    <td class="px-4 py-3 border-b border-slate-100 text-sm">
+                                        <?php if($m['data_devolucao']): ?>
+                                            <span class="text-[11px] font-bold px-2.5 py-1 rounded-full uppercase bg-green-100 text-green-700">Devolvida</span>
+                                        <?php else: ?>
+                                            <span class="text-[11px] font-bold px-2.5 py-1 rounded-full uppercase bg-red-100 text-red-700">Em Uso</span>
+                                        <?php endif; ?>
                                     </td>
-                                    <td><small><?php echo htmlspecialchars($m['observacao'] ?? '-'); ?></small></td>
+                                    <td class="px-4 py-3 border-b border-slate-100 text-sm"><small><?php echo htmlspecialchars($m['observacao'] ?? '-'); ?></small></td>
                                 </tr>
                             <?php endforeach; ?>
                         <?php endif; ?>

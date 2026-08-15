@@ -17,67 +17,11 @@ $isMaster = ($_SESSION['admin_role'] ?? '') === 'admin_master';
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="<?= BASE_URL ?>/assets/css/quiosque.css">
-    <style>
-        /* Mesmos estilos globais do admin_config (reduzidos para espaço) */
-        :root {
-            --bg-color: #f1f5f9;
-            --text-color: #1e293b;
-            --sidebar-bg: #0f172a;
-            --sidebar-active: #0284c7;
-            --card-bg: #ffffff;
-            --border-color: #e2e8f0;
-            --primary: <?php echo $cor_primaria; ?>;
-            --success: #22c55e;
-            --error: #ef4444;
-        }
-        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Inter', sans-serif; }
-        body { background-color: var(--bg-color); color: var(--text-color); display: flex; min-height: 100vh; }
-        
-        aside { width: 260px; background-color: var(--sidebar-bg); color: #ffffff; display: flex; flex-direction: column; border-right: 1px solid rgba(255, 255, 255, 0.05); position: fixed; top: 0; bottom: 0; left: 0; z-index: 10; overflow-y: auto; }
-        .sidebar-header { padding: 24px; font-size: 20px; font-weight: 800; border-bottom: 1px solid rgba(255, 255, 255, 0.05); display: flex; align-items: center; gap: 10px; }
-        .sidebar-menu { list-style: none; padding: 20px 0; flex: 1; }
-        .sidebar-item a { display: flex; align-items: center; gap: 12px; padding: 14px 24px; color: #94a3b8; text-decoration: none; font-weight: 600; font-size: 15px; transition: all 0.2s; border-left: 4px solid transparent; }
-        .sidebar-item a:hover { color: #ffffff; background: rgba(255, 255, 255, 0.02); }
-        .sidebar-item.active a { color: #ffffff; background: rgba(2, 132, 199, 0.1); border-left-color: var(--sidebar-active); }
-        .sidebar-footer { padding: 20px 24px; border-top: 1px solid rgba(255, 255, 255, 0.05); }
-        .btn-kiosk { display: flex; align-items: center; justify-content: center; gap: 8px; background-color: rgba(255,255,255,0.05); color: #fff; text-decoration: none; padding: 10px; border-radius: 8px; font-size: 14px; font-weight: 700; transition: background 0.2s; }
-        .btn-kiosk:hover { background-color: var(--sidebar-active); }
-
-        main { margin-left: 260px; flex: 1; padding: 40px; }
-        .page-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 30px; }
-        .page-title h1 { font-size: 24px; font-weight: 800; color: #0f172a; }
-        
-        .content-card { background-color: var(--card-bg); border-radius: 12px; border: 1px solid var(--border-color); box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05); padding: 28px; margin-bottom: 30px; }
-        
-        table { width: 100%; border-collapse: collapse; margin-top: 20px; }
-        th, td { text-align: left; padding: 14px 16px; border-bottom: 1px solid var(--border-color); }
-        th { background-color: #f8fafc; font-weight: 700; color: #475569; font-size: 13px; text-transform: uppercase; }
-        td { font-size: 14px; color: #1e293b; }
-        .badge { padding: 4px 10px; border-radius: 20px; font-size: 12px; font-weight: 700; }
-        .badge-master { background-color: #fef08a; color: #854d0e; }
-        .badge-op { background-color: #e0f2fe; color: #0369a1; }
-
-        .btn { padding: 10px 16px; border-radius: 8px; font-size: 14px; font-weight: 600; cursor: pointer; text-decoration: none; display: inline-flex; align-items: center; gap: 6px; border: none; }
-        .btn-primary { background-color: var(--primary); color: white; }
-        .btn-primary:hover { filter: brightness(0.9); }
-        .btn-danger { background-color: var(--error); color: white; }
-        .btn-sm { padding: 6px 12px; font-size: 13px; }
-
-        .modal-overlay { position: fixed; inset: 0; background: rgba(15, 23, 42, 0.7); display: none; align-items: center; justify-content: center; z-index: 100; }
-        .modal-overlay.active { display: flex; }
-        .modal-content { background: var(--card-bg); border-radius: 16px; width: 100%; max-width: 500px; padding: 30px; }
-        .form-group { margin-bottom: 16px; }
-        .form-group label { display: block; font-size: 13px; font-weight: 700; color: #475569; margin-bottom: 6px; }
-        .form-control { width: 100%; border: 1px solid #cbd5e1; border-radius: 8px; padding: 10px 14px; font-size: 14px; outline: none; }
-        
-        .perm-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-top: 10px; }
-        .perm-item { display: flex; align-items: center; gap: 8px; font-size: 14px; }
-    </style>
     <script src="https://cdn.tailwindcss.com"></script>
     <script>
       tailwind.config = {
         corePlugins: {
-          preflight: false,
+          preflight: true,
         },
         theme: {
           extend: {
@@ -90,91 +34,93 @@ $isMaster = ($_SESSION['admin_role'] ?? '') === 'admin_master';
       }
     </script>
 </head>
-<body>
+<body class="bg-slate-50 text-slate-800 font-sans flex min-h-screen">
 
     <!-- Sidebar Dinâmica -->
     <?php include __DIR__ . '/partials/sidebar.php'; ?>
 
-    <main>
-        <div class="page-header">
-            <div class="page-title">
-                <h1>Gestão de Acessos (Operadores)</h1>
-                <p>Crie logins e defina permissões específicas para recepcionistas ou seguranças.</p>
+    <main class="flex-1 ml-0 lg:ml-[260px] p-6 md:p-10 transition-all duration-300">
+        <div class="flex justify-between items-center mb-8 flex-wrap gap-4">
+            <div>
+                <h1 class="text-2xl font-extrabold text-slate-900 mb-1">Gestão de Acessos (Operadores)</h1>
+                <p class="text-sm text-slate-500">Crie logins e defina permissões específicas para recepcionistas ou seguranças.</p>
             </div>
-            <button class="btn btn-primary" onclick="openModal()">+ Novo Operador</button>
+            <button class="bg-green-600 hover:bg-green-700 text-white font-bold py-2 px-4 rounded-lg shadow-sm transition-colors" onclick="openModal()">+ Novo Operador</button>
         </div>
 
-        <div class="content-card">
-            <table>
-                <thead>
-                    <tr>
-                        <th>Nome</th>
-                        <th>Usuário (Login)</th>
-                        <th>Perfil</th>
-                        <th>Ações</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <?php foreach ($operadores as $op): 
-                        $isThisMaster = $op['role'] === 'admin_master';
-                        $badgeClass = $isThisMaster ? 'badge-master' : 'badge-op';
-                        $roleName = $isThisMaster ? 'Master' : 'Operador';
-                        $permsJson = htmlspecialchars($op['permissoes'] ?? '[]');
-                    ?>
-                    <tr>
-                        <td><strong><?= htmlspecialchars($op['nome']) ?></strong></td>
-                        <td><?= htmlspecialchars($op['usuario']) ?></td>
-                        <td><span class="badge <?= $badgeClass ?>"><?= $roleName ?></span></td>
-                        <td>
-                            <button class="btn btn-primary btn-sm" onclick="editOp(<?= $op['id'] ?>, '<?= htmlspecialchars($op['usuario']) ?>', '<?= htmlspecialchars($op['nome']) ?>', '<?= $op['role'] ?>', <?= htmlspecialchars($permsJson, ENT_QUOTES) ?>)">Editar</button>
-                            <?php if ($_SESSION['admin_user_id'] != $op['id']): ?>
-                            <form method="POST" action="<?= BASE_URL ?>/admin/operadores/delete" style="display:inline;">
-                                <?php renderizar_csrf_input(); ?>
-                                <input type="hidden" name="id" value="<?= $op['id'] ?>">
-                                <button class="btn btn-danger btn-sm" onclick="return confirm('Excluir este operador?');">Apagar</button>
-                            </form>
-                            <?php endif; ?>
-                        </td>
-                    </tr>
-                    <?php endforeach; ?>
-                </tbody>
-            </table>
+        <div class="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden px-6 py-5 mb-8">
+            <div style="overflow-x: auto;">
+                <table class="w-full text-left border-collapse">
+                    <thead>
+                        <tr>
+                            <th class="bg-slate-50 text-slate-500 border-b border-slate-200 text-xs uppercase tracking-wider px-4 py-3 font-semibold">Nome</th>
+                            <th class="bg-slate-50 text-slate-500 border-b border-slate-200 text-xs uppercase tracking-wider px-4 py-3 font-semibold">Usuário (Login)</th>
+                            <th class="bg-slate-50 text-slate-500 border-b border-slate-200 text-xs uppercase tracking-wider px-4 py-3 font-semibold">Perfil</th>
+                            <th class="bg-slate-50 text-slate-500 border-b border-slate-200 text-xs uppercase tracking-wider px-4 py-3 font-semibold">Ações</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <?php foreach ($operadores as $op): 
+                            $isThisMaster = $op['role'] === 'admin_master';
+                            $badgeClass = $isThisMaster ? 'bg-yellow-200 text-yellow-800' : 'bg-sky-100 text-sky-800';
+                            $roleName = $isThisMaster ? 'Master' : 'Operador';
+                            $permsJson = htmlspecialchars($op['permissoes'] ?? '[]');
+                        ?>
+                        <tr class="hover:bg-slate-50 transition-colors">
+                            <td class="px-4 py-3 border-b border-slate-100 text-sm"><strong><?= htmlspecialchars($op['nome']) ?></strong></td>
+                            <td class="px-4 py-3 border-b border-slate-100 text-sm"><?= htmlspecialchars($op['usuario']) ?></td>
+                            <td class="px-4 py-3 border-b border-slate-100 text-sm"><span class="px-2.5 py-1 rounded-full text-xs font-bold <?= $badgeClass ?>"><?= $roleName ?></span></td>
+                            <td class="px-4 py-3 border-b border-slate-100 text-sm">
+                                <button class="bg-blue-600 hover:bg-blue-700 text-white font-bold py-1.5 px-3 rounded-md shadow-sm transition-colors text-xs" onclick="editOp(<?= $op['id'] ?>, '<?= htmlspecialchars($op['usuario']) ?>', '<?= htmlspecialchars($op['nome']) ?>', '<?= $op['role'] ?>', <?= htmlspecialchars($permsJson, ENT_QUOTES) ?>)">Editar</button>
+                                <?php if ($_SESSION['admin_user_id'] != $op['id']): ?>
+                                <form method="POST" action="<?= BASE_URL ?>/admin/operadores/delete" style="display:inline;">
+                                    <?php renderizar_csrf_input(); ?>
+                                    <input type="hidden" name="id" value="<?= $op['id'] ?>">
+                                    <button class="bg-red-500 hover:bg-red-600 text-white font-bold py-1.5 px-3 rounded-md shadow-sm transition-colors text-xs" onclick="return confirm('Excluir este operador?');">Apagar</button>
+                                </form>
+                                <?php endif; ?>
+                            </td>
+                        </tr>
+                        <?php endforeach; ?>
+                    </tbody>
+                </table>
+            </div>
         </div>
     </main>
 
     <!-- Modal Cadastro/Edição -->
-    <div class="modal-overlay" id="opModal">
-        <div class="modal-content">
-            <h2 id="modalTitle" style="margin-bottom: 20px;">Novo Operador</h2>
+    <div class="fixed inset-0 bg-slate-900/70 backdrop-blur-sm z-[200] items-center justify-center hidden [&.active]:flex" id="opModal">
+        <div class="bg-white rounded-2xl p-6 w-[95%] max-w-[500px] shadow-2xl">
+            <h2 id="modalTitle" class="text-xl font-bold mb-5">Novo Operador</h2>
             <form id="opForm" method="POST" action="<?= BASE_URL ?>/admin/operadores/create">
                 <?php renderizar_csrf_input(); ?>
                 <input type="hidden" name="id" id="op_id">
                 
-                <div class="form-group">
-                    <label>Nome Completo</label>
+                <div class="mb-4">
+                    <label class="block text-[13px] font-semibold text-slate-600 mb-1.5">Nome Completo</label>
                     <div class="tooltip-container" style="display: block;">
-                        <input type="text" name="nome" id="op_nome" class="form-control" required>
+                        <input type="text" name="nome" id="op_nome" class="w-full border border-slate-300 rounded-lg px-4 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-green-500" required>
                         <span class="tooltip-text">Nome real do administrador/operador.</span>
                     </div>
                 </div>
-                <div class="form-group">
-                    <label>Usuário de Login</label>
+                <div class="mb-4">
+                    <label class="block text-[13px] font-semibold text-slate-600 mb-1.5">Usuário de Login</label>
                     <div class="tooltip-container" style="display: block;">
-                        <input type="text" name="usuario" id="op_usuario" class="form-control" required>
+                        <input type="text" name="usuario" id="op_usuario" class="w-full border border-slate-300 rounded-lg px-4 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-green-500" required>
                         <span class="tooltip-text">Apelido usado para acessar o painel (sem espaços).</span>
                     </div>
                 </div>
-                <div class="form-group">
-                    <label>Senha <span id="senhaHint" style="font-weight:normal; font-size:12px; color:#94a3b8; display:none;">(Deixe em branco para não alterar)</span></label>
+                <div class="mb-4">
+                    <label class="block text-[13px] font-semibold text-slate-600 mb-1.5">Senha <span id="senhaHint" style="font-weight:normal; font-size:12px; color:#94a3b8; display:none;">(Deixe em branco para não alterar)</span></label>
                     <div class="tooltip-container" style="display: block;">
-                        <input type="password" name="senha" id="op_senha" class="form-control" required>
+                        <input type="password" name="senha" id="op_senha" class="w-full border border-slate-300 rounded-lg px-4 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-green-500" required>
                         <span class="tooltip-text">Senha de acesso ao painel (criptografada no banco).</span>
                     </div>
                 </div>
-                <div class="form-group">
-                    <label>Nível de Acesso</label>
+                <div class="mb-4">
+                    <label class="block text-[13px] font-semibold text-slate-600 mb-1.5">Nível de Acesso</label>
                     <div class="tooltip-container" style="display: block;">
-                        <select name="role" id="op_role" class="form-control" onchange="togglePerms()">
+                        <select name="role" id="op_role" class="w-full border border-slate-300 rounded-lg px-4 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-green-500" onchange="togglePerms()">
                             <option value="operador">Operador (Restrito)</option>
                             <option value="admin_master">Administrador Master (Poder Total)</option>
                         </select>
@@ -182,22 +128,22 @@ $isMaster = ($_SESSION['admin_role'] ?? '') === 'admin_master';
                     </div>
                 </div>
 
-                <div class="form-group" id="permsSection">
-                    <label>Permissões (Apenas para Operador)</label>
+                <div class="mb-4" id="permsSection">
+                    <label class="block text-[13px] font-semibold text-slate-600 mb-1.5">Permissões (Apenas para Operador)</label>
                     <div class="tooltip-container" style="display: block;">
-                        <div class="perm-grid">
-                            <label class="perm-item"><input type="checkbox" name="permissoes[]" value="gerenciar_chaves" class="perm-cb"> Gerenciar Chaves e Reservas</label>
-                            <label class="perm-item"><input type="checkbox" name="permissoes[]" value="gerenciar_usuarios" class="perm-cb"> Gerenciar Usuários</label>
-                            <label class="perm-item"><input type="checkbox" name="permissoes[]" value="ver_relatorios" class="perm-cb"> Relatórios e Logs</label>
-                            <label class="perm-item"><input type="checkbox" name="permissoes[]" value="gerenciar_configuracoes" class="perm-cb"> Configurações do Sistema</label>
+                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 mt-2">
+                            <label class="flex items-center gap-2 text-sm"><input type="checkbox" name="permissoes[]" value="gerenciar_chaves" class="perm-cb"> Gerenciar Chaves e Reservas</label>
+                            <label class="flex items-center gap-2 text-sm"><input type="checkbox" name="permissoes[]" value="gerenciar_usuarios" class="perm-cb"> Gerenciar Usuários</label>
+                            <label class="flex items-center gap-2 text-sm"><input type="checkbox" name="permissoes[]" value="ver_relatorios" class="perm-cb"> Relatórios e Logs</label>
+                            <label class="flex items-center gap-2 text-sm"><input type="checkbox" name="permissoes[]" value="gerenciar_configuracoes" class="perm-cb"> Configurações do Sistema</label>
                         </div>
                         <span class="tooltip-text">As áreas que o operador pode acessar no menu lateral.</span>
                     </div>
                 </div>
 
                 <div style="display: flex; gap: 10px; margin-top: 25px;">
-                    <button type="button" class="btn" style="background:#e2e8f0; color:#334155; flex:1;" onclick="closeModal()">Cancelar</button>
-                    <button type="submit" class="btn btn-primary" style="flex:1;">Salvar</button>
+                    <button type="button" class="px-4 py-2 text-sm font-bold rounded-lg cursor-pointer transition-colors" style="background:#e2e8f0; color:#334155; flex:1;" onclick="closeModal()">Cancelar</button>
+                    <button type="submit" class="bg-green-600 hover:bg-green-700 text-white px-4 py-2 text-sm font-bold rounded-lg cursor-pointer transition-colors shadow-sm" style="flex:1;">Salvar</button>
                 </div>
             </form>
         </div>

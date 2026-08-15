@@ -10,181 +10,12 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
-    <style>
-        :root {
-            --bg-color: #f1f5f9;
-            --text-color: #1e293b;
-            --sidebar-bg: #0f172a;
-            --sidebar-active: <?php echo $cor_primaria; ?>;
-            --card-bg: #ffffff;
-            --border-color: #e2e8f0;
-            --primary: <?php echo $cor_primaria; ?>;
-            --success: #22c55e;
-            --error: #ef4444;
-        }
-
-        * {
-            box-sizing: border-box;
-            margin: 0;
-            padding: 0;
-            font-family: 'Inter', sans-serif;
-        }
-
-        body {
-            background-color: var(--bg-color);
-            color: var(--text-color);
-            display: flex;
-            min-height: 100vh;
-        }
-
-        /* Sidebar */
-        aside {
-            width: 260px;
-            background-color: var(--sidebar-bg);
-            color: #ffffff;
-            display: flex;
-            flex-direction: column;
-            border-right: 1px solid rgba(255, 255, 255, 0.05);
-            position: fixed;
-            top: 0;
-            bottom: 0;
-            left: 0;
-            z-index: 10;
-        }
-
-        .sidebar-header {
-            padding: 24px;
-            font-size: 20px;
-            font-weight: 800;
-            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
-            display: flex;
-            align-items: center;
-            gap: 10px;
-        }
-
-        .sidebar-menu {
-            list-style: none;
-            padding: 20px 0;
-            flex: 1;
-        }
-
-        .sidebar-item a {
-            display: flex;
-            align-items: center;
-            gap: 12px;
-            padding: 14px 24px;
-            color: #94a3b8;
-            text-decoration: none;
-            font-weight: 600;
-            font-size: 15px;
-            transition: all 0.2s;
-            border-left: 4px solid transparent;
-        }
-
-        .sidebar-item a:hover {
-            color: #ffffff;
-            background: rgba(255, 255, 255, 0.02);
-        }
-
-        .sidebar-item.active a {
-            color: #ffffff;
-            background: rgba(2, 132, 199, 0.1);
-            border-left-color: var(--sidebar-active);
-        }
-
-        .sidebar-footer {
-            padding: 20px 24px;
-            border-top: 1px solid rgba(255, 255, 255, 0.05);
-        }
-
-        .btn-kiosk {
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 8px;
-            background-color: rgba(255,255,255,0.05);
-            color: #fff;
-            text-decoration: none;
-            padding: 10px;
-            border-radius: 8px;
-            font-size: 14px;
-            font-weight: 700;
-            transition: background 0.2s;
-        }
-
-        .btn-kiosk:hover {
-            background-color: var(--sidebar-active);
-        }
-
-        /* Main Content */
-        main {
-            margin-left: 260px;
-            flex: 1;
-            padding: 40px;
-        }
-
-        .page-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 30px;
-        }
-
-        .page-title h1 {
-            font-size: 24px;
-            font-weight: 800;
-            color: #0f172a;
-        }
-
-        .content-card {
-            background-color: var(--card-bg);
-            border-radius: 12px;
-            border: 1px solid var(--border-color);
-            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
-            padding: 24px;
-        }
-
-        table {
-            width: 100%;
-            border-collapse: collapse;
-            text-align: left;
-            font-size: 14px;
-        }
-
-        th {
-            padding: 14px 16px;
-            background-color: #f8fafc;
-            color: #475569;
-            font-weight: 700;
-            border-bottom: 2px solid var(--border-color);
-        }
-
-        td {
-            padding: 14px 16px;
-            border-bottom: 1px solid var(--border-color);
-            color: #334155;
-        }
-
-        tr:hover td {
-            background-color: #f8fafc;
-        }
-
-        .badge-acao {
-            font-size: 11px;
-            font-weight: 700;
-            padding: 4px 8px;
-            border-radius: 6px;
-            background-color: #e2e8f0;
-            color: #475569;
-            display: inline-block;
-        }
-    </style>
     <link rel="stylesheet" href="<?= BASE_URL ?>/api/admin_responsive.css?v=<?= time() ?>">
     <script src="https://cdn.tailwindcss.com"></script>
     <script>
       tailwind.config = {
         corePlugins: {
-          preflight: false,
+          preflight: true,
         },
         theme: {
           extend: {
@@ -197,54 +28,54 @@
       }
     </script>
 </head>
-<body>
+<body class="bg-slate-50 text-slate-800 font-sans flex min-h-screen">
 
     <!-- Sidebar -->
     <?php include __DIR__ . '/partials/sidebar.php'; ?>
 
     <!-- Main Content -->
-    <main>
-        <div class="page-header">
-            <div class="page-title">
-                <h1>Logs de Auditoria</h1>
-                <p>Histórico completo de ações administrativas e alterações realizadas no sistema.</p>
+    <main class="flex-1 ml-0 lg:ml-[260px] p-6 md:p-10 transition-all duration-300">
+        <div class="flex justify-between items-center mb-8 flex-wrap gap-4">
+            <div>
+                <h1 class="text-2xl font-extrabold text-slate-900 mb-1">Logs de Auditoria</h1>
+                <p class="text-sm text-slate-500">Histórico completo de ações administrativas e alterações realizadas no sistema.</p>
             </div>
-            <button onclick="exportarCSV()" style="background-color: var(--primary); border: 1px solid var(--primary); color: white; padding: 10px 20px; border-radius: 8px; font-weight: 600; cursor: pointer; font-size: 14px; transition: opacity 0.2s;">
+            <button onclick="exportarCSV()" class="bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-lg shadow-sm transition-colors flex items-center gap-2">
                 📊 Exportar CSV
             </button>
         </div>
 
-        <div class="content-card">
+        <div class="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden px-6 py-5 mb-8">
             <div style="overflow-x: auto;">
-                <table>
+                <table class="w-full text-left border-collapse">
                     <thead>
                         <tr>
-                            <th>Data/Hora</th>
-                            <th>Administrador</th>
-                            <th>Ação</th>
-                            <th>Detalhes</th>
+                            <th class="bg-slate-50 text-slate-500 border-b border-slate-200 text-xs uppercase tracking-wider px-4 py-3 font-semibold">Data/Hora</th>
+                            <th class="bg-slate-50 text-slate-500 border-b border-slate-200 text-xs uppercase tracking-wider px-4 py-3 font-semibold">Administrador</th>
+                            <th class="bg-slate-50 text-slate-500 border-b border-slate-200 text-xs uppercase tracking-wider px-4 py-3 font-semibold">Ação</th>
+                            <th class="bg-slate-50 text-slate-500 border-b border-slate-200 text-xs uppercase tracking-wider px-4 py-3 font-semibold">Detalhes</th>
                         </tr>
                     </thead>
                     <tbody>
                         <?php if (empty($logs)): ?>
                             <tr>
-                                <td colspan="4" style="text-align: center; color: #64748b; padding: 20px;">
+                                <td colspan="4" style="text-align: center; color: #64748b; padding: 25px;">
                                     Nenhum log registrado ainda.
                                 </td>
                             </tr>
                         <?php else: ?>
                             <?php foreach ($logs as $log): ?>
-                                <tr>
-                                    <td style="white-space: nowrap; color: #64748b; font-size: 13px;">
+                                <tr class="hover:bg-slate-50 transition-colors">
+                                    <td class="px-4 py-3 border-b border-slate-100 text-sm" style="white-space: nowrap; color: #64748b; font-size: 13px;">
                                         <?php echo $log['data_formatada']; ?>
                                     </td>
-                                    <td>
+                                    <td class="px-4 py-3 border-b border-slate-100 text-sm">
                                         <strong><?php echo htmlspecialchars($log['admin_nome'] ?? 'Sistema/Público'); ?></strong>
                                     </td>
-                                    <td>
-                                        <span class="badge-acao"><?php echo htmlspecialchars($log['acao']); ?></span>
+                                    <td class="px-4 py-3 border-b border-slate-100 text-sm">
+                                        <span class="text-[11px] font-bold px-2 py-1 rounded-md bg-slate-200 text-slate-700"><?php echo htmlspecialchars($log['acao']); ?></span>
                                     </td>
-                                    <td style="color: #475569;">
+                                    <td class="px-4 py-3 border-b border-slate-100 text-sm" style="color: #475569;">
                                         <?php echo htmlspecialchars($log['detalhes']); ?>
                                     </td>
                                 </tr>
