@@ -7,15 +7,18 @@ class AdminOperadoresController extends AdminBaseController {
     private $operadorRepo;
 
     public function __construct() {
+        $pdo = $this->pdo;
+        extract($this->config);
         parent::__construct();
         // Apenas Master ou quem tem a permissão específica pode gerenciar operadores
         $this->requirePermission('gerenciar_operadores');
         
-        global $pdo;
         $this->operadorRepo = new OperadorRepository($pdo);
     }
 
     public function index() {
+        $pdo = $this->pdo;
+        extract($this->config);
         $operadores = $this->operadorRepo->getAll();
         
         // Passar variáveis globais necessárias para a view
@@ -24,6 +27,8 @@ class AdminOperadoresController extends AdminBaseController {
     }
 
     public function create() {
+        $pdo = $this->pdo;
+        extract($this->config);
         if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             if (!validar_csrf_token($_POST['csrf_token'] ?? '')) {
                 die("Token CSRF inválido.");
@@ -37,7 +42,6 @@ class AdminOperadoresController extends AdminBaseController {
 
             try {
                 $this->operadorRepo->insert($usuario, $senha, $nome, $role, $permissoes);
-                global $pdo;
                 registrar_log($pdo, 'Cadastro de Operador', "Operador {$usuario} cadastrado.");
                 header("Location: " . BASE_URL . "/admin/operadores?success=1");
                 exit;
@@ -48,6 +52,8 @@ class AdminOperadoresController extends AdminBaseController {
     }
 
     public function update() {
+        $pdo = $this->pdo;
+        extract($this->config);
         if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             if (!validar_csrf_token($_POST['csrf_token'] ?? '')) {
                 die("Token CSRF inválido.");
@@ -67,7 +73,6 @@ class AdminOperadoresController extends AdminBaseController {
 
             try {
                 $this->operadorRepo->update($id, $usuario, $senha, $nome, $role, $permissoes);
-                global $pdo;
                 registrar_log($pdo, 'Edição de Operador', "Operador ID {$id} ({$usuario}) atualizado.");
                 header("Location: " . BASE_URL . "/admin/operadores?success=2");
                 exit;
@@ -78,6 +83,8 @@ class AdminOperadoresController extends AdminBaseController {
     }
 
     public function delete() {
+        $pdo = $this->pdo;
+        extract($this->config);
         if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             if (!validar_csrf_token($_POST['csrf_token'] ?? '')) {
                 die("Token CSRF inválido.");
@@ -91,7 +98,6 @@ class AdminOperadoresController extends AdminBaseController {
 
             try {
                 $this->operadorRepo->delete($id);
-                global $pdo;
                 registrar_log($pdo, 'Exclusão de Operador', "Operador ID {$id} excluído.");
                 header("Location: " . BASE_URL . "/admin/operadores?success=3");
                 exit;

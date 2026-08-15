@@ -8,7 +8,17 @@ use App\Models\ReservaRepository;
 use App\Models\RestricaoRepository;
 
 class ScanController {
+    protected $pdo;
+    protected $config;
+
+    public function __construct($pdo, $config) {
+        $this->pdo = $pdo;
+        $this->config = $config;
+    }
+
     public function processar() {
+        $pdo = $this->pdo;
+        extract($this->config);
         header("Content-Type: application/json; charset=UTF-8");
         if (session_status() === PHP_SESSION_NONE) {
             session_start();
@@ -28,9 +38,7 @@ class ScanController {
         }
         $_SESSION['scan_attempts'][] = $currentTime;
 
-        require_once __DIR__ . '/../../api/db.php';
-        global $pdo, $limite_chaves;
-
+        
         // Instanciar repositórios
         $chaveRepo = new ChaveRepository($pdo);
         $usuarioRepo = new UsuarioRepository($pdo);

@@ -2,12 +2,18 @@
 namespace App\Controllers;
 
 class AdminBaseController {
-    public function __construct() {
+    protected $pdo;
+    protected $config;
+
+    public function __construct($pdo, $config) {
+        $this->pdo = $pdo;
+        $this->config = $config;
+
         if (session_status() === PHP_SESSION_NONE) {
             session_start();
         }
         $this->checkAuth();
-        require_once __DIR__ . '/../../api/db.php';
+        
     }
 
     protected function checkAuth() {

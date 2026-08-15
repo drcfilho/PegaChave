@@ -3,8 +3,8 @@ namespace App\Controllers;
 
 class AdminUsuariosController extends AdminBaseController {
     public function index() {
-        global $pdo, $nome_escola, $cor_primaria, $cor_secundaria;
-        
+        $pdo = $this->pdo;
+        extract($this->config);
         $usuarioRepo = new \App\Models\UsuarioRepository($pdo);
         
 

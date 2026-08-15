@@ -5,13 +5,9 @@ use App\Models\ConfigRepository;
 
 class AdminConfigController extends AdminBaseController {
     public function index() {
-        global $pdo, $nome_escola, $cor_primaria, $cor_secundaria;
-        
-
-
-
-
-$message = '';
+        $pdo = $this->pdo;
+        extract($this->config);
+        $message = '';
 $messageType = '';
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {

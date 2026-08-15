@@ -2,10 +2,20 @@
 // index.php (Front Controller e Roteador)
 
 require_once __DIR__ . '/vendor/autoload.php';
+require_once __DIR__ . '/api/db.php';
 
 use App\Core\Router;
 
 $router = new Router();
+$router->setDependencies([
+    'pdo' => $pdo,
+    'config' => [
+        'nome_escola' => $nome_escola,
+        'cor_primaria' => $cor_primaria,
+        'cor_secundaria' => $cor_secundaria,
+        'limite_chaves' => $limite_chaves
+    ]
+]);
 
 // === Rotas Públicas ===
 $router->get('/', 'QuiosqueController', 'index');

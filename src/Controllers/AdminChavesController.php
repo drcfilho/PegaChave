@@ -6,8 +6,8 @@ use Exception;
 
 class AdminChavesController extends AdminBaseController {
     public function index() {
-        global $pdo, $nome_escola, $cor_primaria, $cor_secundaria;
-        
+        $pdo = $this->pdo;
+        extract($this->config);
         $chaveRepository = new ChaveRepository($pdo);
         
         $message = '';

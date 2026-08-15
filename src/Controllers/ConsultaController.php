@@ -2,10 +2,17 @@
 namespace App\Controllers;
 
 class ConsultaController {
+    protected $pdo;
+    protected $config;
+
+    public function __construct($pdo, $config) {
+        $this->pdo = $pdo;
+        $this->config = $config;
+    }
+
     public function index() {
-        global $pdo, $nome_escola, $cor_primaria, $cor_secundaria;
-        require_once __DIR__ . '/../../api/db.php';
-        
+        $pdo = $this->pdo;
+        extract($this->config);
         try {
             $consultaRepo = new \App\Models\ConsultaRepository($pdo);
             $chaves = $consultaRepo->buscarChavesPublico();

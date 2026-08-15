@@ -3,8 +3,8 @@ namespace App\Controllers;
 
 class AdminUsuariosArquivadosController extends AdminBaseController {
     public function index() {
-        global $pdo, $nome_escola, $cor_primaria, $cor_secundaria;
-        
+        $pdo = $this->pdo;
+        extract($this->config);
         $usuarioRepo = new \App\Models\UsuarioRepository($pdo);
         
 // admin_usuarios_arquivados.php

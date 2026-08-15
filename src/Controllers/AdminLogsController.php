@@ -5,9 +5,9 @@ use App\Models\LogRepository;
 
 class AdminLogsController extends AdminBaseController {
     public function index() {
-        global $pdo, $nome_escola, $cor_primaria, $cor_secundaria;
-        
-// admin_logs.php
+        $pdo = $this->pdo;
+        extract($this->config);
+        // admin_logs.php
 
 try {
     // Buscar logs de auditoria ordenados por data decrescente

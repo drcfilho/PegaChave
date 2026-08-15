@@ -3,6 +3,11 @@ namespace App\Core;
 
 class Router {
     private array $routes = [];
+    private array $dependencies = [];
+
+    public function setDependencies(array $deps) {
+        $this->dependencies = $deps;
+    }
 
     public function add($method, $path, $controller, $action) {
         $path = preg_replace('/\{([a-zA-Z0-9_]+)\}/', '(?P<\1>[a-zA-Z0-9_-]+)', $path);
@@ -42,7 +47,7 @@ class Router {
             if ($route['method'] === strtoupper($requestMethod) && preg_match($route['path'], $uri, $matches)) {
                 $controllerClass = "App\\Controllers\\" . $route['controller'];
                 if (class_exists($controllerClass)) {
-                    $controllerInstance = new $controllerClass();
+                    $controllerInstance = new $controllerClass($this->dependencies['pdo'] ?? null, $this->dependencies['config'] ?? []);
                     $action = $route['action'];
                     if (method_exists($controllerInstance, $action)) {
                         $params = array_filter($matches, 'is_string', ARRAY_FILTER_USE_KEY);

@@ -6,9 +6,9 @@ use App\Models\UsuarioRepository;
 
 class AdminGerarQrController extends AdminBaseController {
     public function index() {
-        global $pdo, $nome_escola, $cor_primaria, $cor_secundaria;
-        
-// admin_gerar_qr.php
+        $pdo = $this->pdo;
+        extract($this->config);
+        // admin_gerar_qr.php
 
 try {
     $chaveRepo = new ChaveRepository($pdo);

@@ -5,8 +5,8 @@ use App\Models\RelatorioRepository;
 
 class AdminRelatorioController extends AdminBaseController {
     public function index() {
-        global $pdo, $nome_escola, $cor_primaria, $cor_secundaria;
-        
+        $pdo = $this->pdo;
+        extract($this->config);
         $relatorioRepo = new RelatorioRepository($pdo);
 
 $usuario_id = $_GET['usuario_id'] ?? null;
