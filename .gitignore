@@ -21,6 +21,7 @@ cache/*
 *.md
 !README.md
 !CHANGELOG.md
+!docs/wiki/*.md
 
 # Arquivos de IDE e testes soltos
 test*.php
