@@ -37,7 +37,8 @@ class AdminOperadoresController extends AdminBaseController {
 
             try {
                 $this->operadorRepo->insert($usuario, $senha, $nome, $role, $permissoes);
-                registrar_log($this->operadorRepo->pdo, 'Cadastro de Operador', "Operador {$usuario} cadastrado.");
+                global $pdo;
+                registrar_log($pdo, 'Cadastro de Operador', "Operador {$usuario} cadastrado.");
                 header("Location: " . BASE_URL . "/admin/operadores?success=1");
                 exit;
             } catch (\Exception $e) {
@@ -66,7 +67,8 @@ class AdminOperadoresController extends AdminBaseController {
 
             try {
                 $this->operadorRepo->update($id, $usuario, $senha, $nome, $role, $permissoes);
-                registrar_log($this->operadorRepo->pdo, 'Edição de Operador', "Operador ID {$id} ({$usuario}) atualizado.");
+                global $pdo;
+                registrar_log($pdo, 'Edição de Operador', "Operador ID {$id} ({$usuario}) atualizado.");
                 header("Location: " . BASE_URL . "/admin/operadores?success=2");
                 exit;
             } catch (\Exception $e) {
@@ -89,7 +91,8 @@ class AdminOperadoresController extends AdminBaseController {
 
             try {
                 $this->operadorRepo->delete($id);
-                registrar_log($this->operadorRepo->pdo, 'Exclusão de Operador', "Operador ID {$id} excluído.");
+                global $pdo;
+                registrar_log($pdo, 'Exclusão de Operador', "Operador ID {$id} excluído.");
                 header("Location: " . BASE_URL . "/admin/operadores?success=3");
                 exit;
             } catch (\Exception $e) {
