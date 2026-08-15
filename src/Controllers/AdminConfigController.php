@@ -18,6 +18,19 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     if (!validar_csrf_token($_POST['csrf_token'] ?? '')) {
         $message = "Token de segurança inválido. Tente novamente.";
         $messageType = "error";
+    } elseif (isset($_POST['action']) && $_POST['action'] === 'download_backup') {
+        $called_from_web = true;
+        require_once __DIR__ . '/../../bin/backup_db.php';
+        $dump = generate_mysql_dump($pdo);
+        
+        if (ob_get_level()) {
+            ob_end_clean();
+        }
+        
+        header('Content-Type: application/sql; charset=UTF-8');
+        header('Content-Disposition: attachment; filename="backup_pegachave_' . date('Ymd_His') . '.sql"');
+        echo $dump;
+        exit;
     } elseif (isset($_POST['action']) && $_POST['action'] === 'update_config') {
     $nome_input = $_POST['nome_escola'] ?? 'Escola Lumiar';
     $cor_p_input = $_POST['cor_primaria'] ?? '#0284c7';

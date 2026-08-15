@@ -292,6 +292,19 @@
                 <button type="submit" class="btn-save">Salvar Alterações</button>
             </form>
         </div>
+        <div class="content-card" style="margin-top: 30px;">
+            <h2 style="font-size: 18px; margin-bottom: 10px;">💾 Backup do Banco de Dados</h2>
+            <p style="font-size: 14px; color: #64748b; margin-bottom: 20px;">
+                Gere um arquivo de dump SQL com todas as tabelas e dados atuais do sistema para guardar com segurança.
+            </p>
+            <form method="POST" action="<?= BASE_URL ?>/admin/config" target="_blank">
+                <?php renderizar_csrf_input(); ?>
+                <input type="hidden" name="action" value="download_backup">
+                <button type="submit" class="btn-save" style="background-color: #22c55e;">
+                    📥 Baixar Backup (.sql)
+                </button>
+            </form>
+        </div>
     </main>
 
     <script>
