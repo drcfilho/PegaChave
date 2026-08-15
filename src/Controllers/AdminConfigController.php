@@ -109,6 +109,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     if ($limite_input === false || $limite_input < 0) {
         $limite_input = 0;
     }
+    
+    $limite_atraso_input = filter_var($_POST['limite_atraso_horas'] ?? '0', FILTER_VALIDATE_INT);
+    if ($limite_atraso_input === false || $limite_atraso_input < 0) {
+        $limite_atraso_input = 0;
+    }
 
     try {
         $configRepo = new ConfigRepository($pdo);
@@ -117,8 +122,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $configRepo->salvarOuAtualizar('cor_secundaria', $cor_s_input);
         $configRepo->salvarOuAtualizar('limite_chaves', $limite_input);
         $configRepo->salvarOuAtualizar('modo_portaria', $modo_portaria_input);
+        $configRepo->salvarOuAtualizar('limite_atraso_horas', $limite_atraso_input);
 
-        registrar_log($pdo, 'Alteração de Configuração', "Nome da Escola: '$nome_input', Cor Primária: '$cor_p_input', Cor Secundária: '$cor_s_input', Limite de Chaves: $limite_input, Modo Portaria: '$modo_portaria_input'.");
+        registrar_log($pdo, 'Alteração de Configuração', "Nome: '$nome_input', Primária: '$cor_p_input', Secundária: '$cor_s_input', Limite Chaves: $limite_input, Modo Portaria: '$modo_portaria_input', Limite Atraso Horas: $limite_atraso_input.");
 
         $message = "Configurações atualizadas com sucesso!";
         $messageType = "success";
@@ -129,6 +135,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $cor_secundaria = $cor_s_input;
         $limite_chaves = $limite_input;
         $modo_portaria = $modo_portaria_input;
+        $limite_atraso_horas = $limite_atraso_input;
 
     } catch (\PDOException $e) {
         $message = "Erro ao salvar configurações: " . $e->getMessage();

@@ -10,8 +10,10 @@ class AdminDashboardController extends AdminBaseController {
         $dashboardRepo = new DashboardRepository($pdo);
 
         try {
+            $limite_horas = $limite_atraso_horas ?? 6;
+
             // 1. Obter Chaves em Uso (Atuais)
-            $chavesEmUso = $dashboardRepo->getChavesEmUso();
+            $chavesEmUso = $dashboardRepo->getChavesEmUso($limite_horas);
         
             // 2. Estatísticas
             $totalChaves = $dashboardRepo->getTotalChaves();
@@ -25,7 +27,7 @@ class AdminDashboardController extends AdminBaseController {
             $retiradasHoje = $dashboardRepo->getRetiradasHoje();
         
             // Contar pendentes
-            $pendentesCount = $dashboardRepo->getPendentesCount();
+            $pendentesCount = $dashboardRepo->getPendentesCount($limite_horas);
         
             // 3. Analytics - Top 5 salas mais utilizadas
             $topSalas = $dashboardRepo->getTopSalas();
@@ -39,5 +41,33 @@ class AdminDashboardController extends AdminBaseController {
         }
 
         $this->render('admin_dashboard', get_defined_vars());
+    }
+
+    public function data() {
+        $pdo = $this->pdo;
+        extract($this->config);
+        $dashboardRepo = new DashboardRepository($pdo);
+        
+        header('Content-Type: application/json');
+        
+        try {
+            $limite_horas = $limite_atraso_horas ?? 6;
+            
+            $data = [
+                'chavesEmUso' => $dashboardRepo->getChavesEmUso($limite_horas),
+                'chavesDisponiveis' => $dashboardRepo->getTotalChaves() - count($dashboardRepo->getChavesEmUso($limite_horas)),
+                'chavesEmUsoCount' => count($dashboardRepo->getChavesEmUso($limite_horas)),
+                'pendentesCount' => $dashboardRepo->getPendentesCount($limite_horas),
+                'retiradasHoje' => $dashboardRepo->getRetiradasHoje(),
+                'devolucoesHoje' => $dashboardRepo->getDevolucoesHoje(),
+                'fluxoSemanal' => $dashboardRepo->getFluxoSemanal(),
+                'topSalas' => $dashboardRepo->getTopSalas()
+            ];
+            
+            echo json_encode(['status' => 'success', 'data' => $data]);
+        } catch (\Exception $e) {
+            echo json_encode(['status' => 'error', 'message' => $e->getMessage()]);
+        }
+        exit;
     }
 }

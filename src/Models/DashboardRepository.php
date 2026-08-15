@@ -2,16 +2,21 @@
 namespace App\Models;
 
 class DashboardRepository extends BaseRepository {
-    public function getChavesEmUso() {
+    public function getChavesEmUso($limiteAtrasoHoras = 8) {
+        $horas = (int)$limiteAtrasoHoras;
+        // Se 0, desativa o alerta de atraso
+        $strInterval = $horas > 0 ? "INTERVAL {$horas} HOUR" : "INTERVAL 999999 HOUR";
+        
         return $this->pdo->query("
             SELECT 
                 c.id AS chave_id,
                 c.nome_sala,
                 c.codigo_sala,
+                c.qr_code_hash,
                 u.nome AS usuario_nome,
                 p.nome AS usuario_perfil,
                 DATE_FORMAT(m.data_retirada, '%H:%i') AS desde,
-                IF(m.data_retirada < DATE_SUB(NOW(), INTERVAL 8 HOUR), 1, 0) AS atrasada,
+                IF(m.data_retirada < DATE_SUB(NOW(), $strInterval), 1, 0) AS atrasada,
                 m.id AS movimentacao_id
             FROM chaves c
             JOIN movimentacoes m ON c.id = m.chave_id AND m.data_devolucao IS NULL
@@ -39,11 +44,14 @@ class DashboardRepository extends BaseRepository {
         ")->fetchColumn();
     }
 
-    public function getPendentesCount() {
+    public function getPendentesCount($limiteAtrasoHoras = 8) {
+        $horas = (int)$limiteAtrasoHoras;
+        if ($horas <= 0) return 0; // Desativado
+        
         return $this->pdo->query("
             SELECT COUNT(*) FROM movimentacoes 
             WHERE data_devolucao IS NULL 
-            AND data_retirada < DATE_SUB(NOW(), INTERVAL 8 HOUR)
+            AND data_retirada < DATE_SUB(NOW(), INTERVAL {$horas} HOUR)
         ")->fetchColumn();
     }
 

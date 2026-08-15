@@ -67,12 +67,20 @@
                     </div>
                 </div>
 
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-5 mb-6">
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-5 mb-6">
                     <div>
-                        <label for="limite_chaves" class="block text-[13px] font-bold text-slate-600 uppercase mb-2">Limite Máximo de Chaves (por Usuário)</label>
+                        <label for="limite_chaves" class="block text-[13px] font-bold text-slate-600 uppercase mb-2">Máximo de Chaves (por Usuário)</label>
                         <div class="tooltip-container inline-block w-full">
                             <input type="number" name="limite_chaves" id="limite_chaves" class="w-full border border-slate-300 bg-slate-50 rounded-lg px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-[var(--primary)] focus:border-[var(--primary)]" min="0" value="<?php echo htmlspecialchars($limite_chaves ?? 0); ?>" required>
                             <span class="tooltip-text">Quantas chaves um único crachá pode retirar ao mesmo tempo. 0 = ilimitado.</span>
+                        </div>
+                    </div>
+
+                    <div>
+                        <label for="limite_atraso_horas" class="block text-[13px] font-bold text-slate-600 uppercase mb-2">Tempo p/ Atraso (Horas)</label>
+                        <div class="tooltip-container inline-block w-full">
+                            <input type="number" name="limite_atraso_horas" id="limite_atraso_horas" class="w-full border border-slate-300 bg-slate-50 rounded-lg px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-[var(--primary)] focus:border-[var(--primary)]" min="0" value="<?php echo htmlspecialchars($limite_atraso_horas ?? 6); ?>" required>
+                            <span class="tooltip-text">Quantas horas após a retirada a chave é considerada em atraso (usado para envio de alertas). 0 = desativado.</span>
                         </div>
                     </div>
                     
@@ -80,8 +88,8 @@
                         <label for="modo_portaria" class="block text-[13px] font-bold text-slate-600 uppercase mb-2">Modo do Quiosque</label>
                         <div class="tooltip-container inline-block w-full">
                             <select name="modo_portaria" id="modo_portaria" class="w-full border border-slate-300 bg-slate-50 rounded-lg px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-[var(--primary)] focus:border-[var(--primary)]" required>
-                                <option value="geral" <?php echo ($modo_portaria ?? 'geral') === 'geral' ? 'selected' : ''; ?>>Portaria Central Única</option>
-                                <option value="blocos" <?php echo ($modo_portaria ?? 'geral') === 'blocos' ? 'selected' : ''; ?>>Múltiplas Portarias (Por Bloco)</option>
+                                <option value="geral" <?php echo ($modo_portaria ?? 'geral') === 'geral' ? 'selected' : ''; ?>>Portaria Única</option>
+                                <option value="blocos" <?php echo ($modo_portaria ?? 'geral') === 'blocos' ? 'selected' : ''; ?>>Por Bloco</option>
                             </select>
                             <span class="tooltip-text">Modo Geral lista todas as chaves. Modo Blocos restringe cada Quiosque ao seu prédio específico.</span>
                         </div>

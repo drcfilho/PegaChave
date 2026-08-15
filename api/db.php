@@ -64,6 +64,7 @@ try {
              if (isset($configs['cor_secundaria'])) $cor_secundaria = $configs['cor_secundaria'];
              if (isset($configs['limite_chaves'])) $limite_chaves = (int)$configs['limite_chaves'];
              if (isset($configs['modo_portaria'])) $modo_portaria = $configs['modo_portaria'];
+             if (isset($configs['limite_atraso_horas'])) $limite_atraso_horas = (int)$configs['limite_atraso_horas'];
          }
      } catch (\Exception $exConfig) {
          // Fallback silencioso se a tabela de configurações não existir

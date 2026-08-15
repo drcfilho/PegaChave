@@ -7,16 +7,12 @@ use App\Core\EmailService;
 use Exception;
 use DateTime;
 
-class CronController {
-    private $blade;
-    private $pdo;
-
-    public function __construct($blade, $pdo) {
-        $this->blade = $blade;
-        $this->pdo = $pdo;
-    }
-
+class CronController extends BaseController {
     public function processarAlertas() {
+        $pdo = $this->pdo;
+        $blade = $this->blade;
+        extract($this->config);
+        
         // Proteção opcional: exigir uma secret key via GET para evitar chamadas abusivas
         // Exemplo: /api/cron/alertas?secret=minha_senha_secreta
         $secretEnv = $_ENV['CRON_SECRET'] ?? getenv('CRON_SECRET');
@@ -29,10 +25,16 @@ class CronController {
         }
 
         try {
-            $movRepo = new MovimentacaoRepository($this->pdo);
+            $movRepo = new MovimentacaoRepository($pdo);
             $emailService = new EmailService();
 
-            $limiteHoras = $_ENV['LIMITE_HORAS_ATRASO'] ?? getenv('LIMITE_HORAS_ATRASO') ?: 6;
+            $limiteHoras = $limite_atraso_horas ?? 6;
+            
+            if ($limiteHoras <= 0) {
+                echo json_encode(["status" => "success", "message" => "Sistema de alertas de atraso está desativado (limite = 0)."]);
+                return;
+            }
+            
             $atrasadas = $movRepo->buscarAtrasadas($limiteHoras);
 
             if (empty($atrasadas)) {

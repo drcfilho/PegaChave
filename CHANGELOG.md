@@ -62,11 +62,13 @@ Este arquivo registra todo o histórico de desenvolvimento e as melhorias aplica
 * **Exportação de Logs de Auditoria (CSV)**: Botão na tela de logs administrativos (`admin_logs.php`) para baixar os registros de auditoria em formato `.csv`.
 
 ### 📧 5. Alertas de Atraso por E-mail
-* **Script de Varredura Automatizada**: Script `bin/alertar_atrasos.php` que varre o banco localizando retiradas ativas de chaves com mais de X horas de duração (configurável via `.env`).
+* **Script de Varredura Automatizada**: Script `bin/alertar_atrasos.php` que varre o banco localizando retiradas ativas de chaves com mais de X horas de duração (configurável no painel administrativo).
 * **Design e Motor de Envio**: Integração do `PHPMailer` (via Composer) protegido pela classe `EmailService`, que utiliza o motor `BladeOne` para renderizar e-mails profissionais em formato HTML com as cores institucionais do PegaChave.
+* **Configuração de Tempo de Atraso no Painel**: O administrador pode agora definir pelo painel visual quantas horas (limite de atraso) disparam os alertas de devolução e atualizam o Dashboard.
 * **Múltiplas Vias de Disparo Automático**: O robô de envios pode ser disparado de 3 formas: (1) Oculto em background via contêiner Docker `pegachave-cron`; (2) Via Web através do novo endpoint `/api/cron/alertas` (protegido opcionalmente via token); (3) Diretamente via Agendador de Tarefas do Windows/Linux.
 
 ### 📈 6. Gráficos Analíticos de Inteligência (Dashboard Avançado)
+* **API de Dados Centralizada**: Os antigos endpoints `.php` separados foram convertidos em uma API JSON unificada (`/api/admin/dashboard_data`) integrada ao Router, retornando todas as estatísticas para o polling do frontend num formato rápido e leve.
 * **Status do Inventário em Tempo Real**: Novo gráfico de proporção (Pizza/Doughnut) categorizando chaves `Disponíveis`, `Em Uso Normal` e `Atrasadas`, permitindo ao gestor bater o olho e ver o percentual exato da saúde do claviculário na escola.
 * **Fluxo de Movimentação Semanal**: Gráfico de linha interativo exibindo a quantidade de chaves retiradas nos últimos 7 dias.
 * **Top 5 Salas Mais Utilizadas**: Gráfico de barras horizontais indicando quais salas tiveram mais acessos e retiradas no sistema.

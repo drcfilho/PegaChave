@@ -28,7 +28,8 @@ $router->setDependencies([
         'cor_primaria' => $cor_primaria,
         'cor_secundaria' => $cor_secundaria,
         'limite_chaves' => $limite_chaves,
-        'modo_portaria' => $modo_portaria ?? 'geral'
+        'modo_portaria' => $modo_portaria ?? 'geral',
+        'limite_atraso_horas' => $limite_atraso_horas ?? 6
     ]
 ]);
 
@@ -51,6 +52,7 @@ $authCsrf = ['AuthMiddleware', 'CsrfMiddleware'];
 
 // === Rotas Administrativas ===
 $router->get('/admin', 'AdminDashboardController', 'index', $auth);
+$router->get('/api/admin/dashboard_data', 'AdminDashboardController', 'data', $auth);
 $router->get('/admin/chaves', 'AdminChavesController', 'index', $auth);
 $router->post('/admin/chaves/create', 'AdminChavesController', 'store', $authCsrf);
 $router->post('/admin/chaves/update', 'AdminChavesController', 'update', $authCsrf);

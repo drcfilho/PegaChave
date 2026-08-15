@@ -181,14 +181,18 @@
         let chartSalasInstance = null;
         let chartStatusInstance = null;
 
+        let currentData = null; // Guardar dados para devolução manual
+
         async function devolverChave(chaveId) {
             const observacao = prompt("Registrar Ocorrência / Avaria? (Deixe em branco se a chave/sala foi devolvida em perfeito estado):");
             if (observacao === null) return; // Cancelado
             
             try {
-                const response = await fetch('<?= BASE_URL ?>/api/status_chaves.php');
-                const result = await response.json();
-                const chaveObj = result.data.find(c => c.id == chaveId);
+                if (!currentData) {
+                    alert("Dados não carregados ainda.");
+                    return;
+                }
+                const chaveObj = currentData.chavesEmUso.find(c => c.chave_id == chaveId);
                 
                 if (chaveObj && chaveObj.qr_code_hash) {
                     const scanRes = await fetch('<?= BASE_URL ?>/api/processar_scan', {
@@ -203,6 +207,8 @@
                     const scanData = await scanRes.json();
                     alert(scanData.message);
                     refreshDashboard();
+                } else {
+                    alert("Chave não encontrada ou sem QR Code.");
                 }
             } catch (err) {
                 console.error(err);
@@ -212,11 +218,12 @@
 
         async function refreshDashboard() {
             try {
-                const response = await fetch('<?= BASE_URL ?>/api/dashboard_data.php');
+                const response = await fetch('<?= BASE_URL ?>/api/admin/dashboard_data');
                 const result = await response.json();
                 if (result.status !== 'success') return;
 
                 const data = result.data;
+                currentData = data;
 
                 // 1. Atualizar cards de estatísticas
                 document.getElementById('stat-disponiveis').textContent = data.chavesDisponiveis;
