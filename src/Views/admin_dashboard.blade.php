@@ -101,7 +101,7 @@
         </div>
 
         <!-- Gráficos Analíticos -->
-        <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-8">
             <div class="bg-white rounded-2xl border border-slate-200 p-6 shadow-sm">
                 <h2 class="text-lg font-bold text-slate-800 mb-6">Fluxo de Retiradas (Últimos 7 dias)</h2>
                 <div class="relative h-64 w-full">
@@ -112,6 +112,12 @@
                 <h2 class="text-lg font-bold text-slate-800 mb-6">Top 5 Salas Mais Utilizadas</h2>
                 <div class="relative h-64 w-full">
                     <canvas id="chartTopSalas"></canvas>
+                </div>
+            </div>
+            <div class="bg-white rounded-2xl border border-slate-200 p-6 shadow-sm">
+                <h2 class="text-lg font-bold text-slate-800 mb-6">Status do Inventário</h2>
+                <div class="relative h-64 w-full flex justify-center">
+                    <canvas id="chartStatusInventario"></canvas>
                 </div>
             </div>
         </div>
@@ -173,6 +179,7 @@
     <script>
         let chartFluxoInstance = null;
         let chartSalasInstance = null;
+        let chartStatusInstance = null;
 
         async function devolverChave(chaveId) {
             if (!confirm("Deseja forçar a devolução manual desta chave?")) return;
@@ -282,6 +289,15 @@
                     chartSalasInstance.update();
                 }
 
+                if (chartStatusInstance) {
+                    chartStatusInstance.data.datasets[0].data = [
+                        data.chavesDisponiveis, 
+                        data.chavesEmUsoCount - data.pendentesCount, 
+                        data.pendentesCount
+                    ];
+                    chartStatusInstance.update();
+                }
+
             } catch (err) {
                 console.error("Erro no polling do dashboard:", err);
             }
@@ -371,6 +387,44 @@
                         y: {
                             grid: { display: false },
                             border: { display: false }
+                        }
+                    }
+                }
+            });
+
+            // 3. Gráfico de Status do Inventário (Pizza)
+            const ctxStatus = document.getElementById('chartStatusInventario').getContext('2d');
+            chartStatusInstance = new Chart(ctxStatus, {
+                type: 'doughnut',
+                data: {
+                    labels: ['Disponíveis', 'Em Uso Normal', 'Atrasadas'],
+                    datasets: [{
+                        data: [
+                            <?php echo $chavesDisponiveis; ?>, 
+                            <?php echo ($chavesEmUsoCount - $pendentesCount); ?>, 
+                            <?php echo $pendentesCount; ?>
+                        ],
+                        backgroundColor: [
+                            '#22c55e', // green
+                            '#3b82f6', // blue
+                            '#ef4444'  // red
+                        ],
+                        hoverOffset: 4,
+                        borderWidth: 0
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    cutout: '65%',
+                    plugins: {
+                        legend: { 
+                            position: 'bottom',
+                            labels: {
+                                padding: 20,
+                                usePointStyle: true,
+                                boxWidth: 8
+                            }
                         }
                     }
                 }
