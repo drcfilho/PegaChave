@@ -12,11 +12,11 @@ CREATE TABLE IF NOT EXISTS perfis (
 -- Carga inicial de perfis
 INSERT INTO perfis (id, nome) VALUES 
 (1, 'Administrador'), 
-(2, 'Estagiário'), 
+(2, 'Estagiario'), 
 (3, 'Docente'), 
 (4, 'TAE'),
 (5, 'Limpeza'),
-(6, 'Segurança'),
+(6, 'Seguranca'),
 (7, 'Externo'),
 (8, 'Aluno')
 ON DUPLICATE KEY UPDATE nome=VALUES(nome);
