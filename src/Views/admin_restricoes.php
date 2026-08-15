@@ -10,403 +10,94 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
-    <style>
-        :root {
-            --bg-color: #f1f5f9;
-            --text-color: #1e293b;
-            --sidebar-bg: #0f172a;
-            --sidebar-active: <?php echo $cor_primaria; ?>;
-            --card-bg: #ffffff;
-            --border-color: #e2e8f0;
-            --primary: <?php echo $cor_primaria; ?>;
-            --success: #22c55e;
-            --error: #ef4444;
-        }
-
-        /* Suporte ao Tema Escuro */
-        body.dark-theme {
-            --bg-color: #0f172a;
-            --text-color: #f8fafc;
-            --card-bg: #1e293b;
-            --border-color: #334155;
-        }
-
-        * {
-            box-sizing: border-box;
-            margin: 0;
-            padding: 0;
-            font-family: 'Inter', sans-serif;
-        }
-
-        body {
-            background-color: var(--bg-color);
-            color: var(--text-color);
-            display: flex;
-            min-height: 100vh;
-        }
-
-        /* Sidebar */
-        aside {
-            width: 260px;
-            background-color: var(--sidebar-bg);
-            color: #ffffff;
-            display: flex;
-            flex-direction: column;
-            border-right: 1px solid rgba(255, 255, 255, 0.05);
-            position: fixed;
-            top: 0;
-            bottom: 0;
-            left: 0;
-            z-index: 10;
-        }
-
-        .sidebar-header {
-            padding: 24px;
-            font-size: 20px;
-            font-weight: 800;
-            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
-            display: flex;
-            align-items: center;
-            gap: 10px;
-        }
-
-        .sidebar-menu {
-            list-style: none;
-            padding: 20px 0;
-            flex: 1;
-        }
-
-        .sidebar-item a {
-            display: flex;
-            align-items: center;
-            gap: 12px;
-            padding: 14px 24px;
-            color: #94a3b8;
-            text-decoration: none;
-            font-weight: 600;
-            font-size: 15px;
-            transition: all 0.2s;
-            border-left: 4px solid transparent;
-        }
-
-        .sidebar-item a:hover, .sidebar-item.active a {
-            color: #ffffff;
-            background-color: rgba(255, 255, 255, 0.02);
-            border-left-color: var(--sidebar-active);
-        }
-
-        .sidebar-footer {
-            padding: 24px;
-            border-top: 1px solid rgba(255, 255, 255, 0.05);
-        }
-
-        .btn-kiosk {
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 8px;
-            width: 100%;
-            background-color: rgba(255, 255, 255, 0.07);
-            color: #ffffff;
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            padding: 10px;
-            border-radius: 8px;
-            font-weight: 600;
-            font-size: 14px;
-            text-decoration: none;
-            transition: background 0.2s;
-        }
-
-        .btn-kiosk:hover {
-            background-color: rgba(255, 255, 255, 0.15);
-        }
-
-        /* Main Content */
-        main {
-            flex: 1;
-            margin-left: 260px;
-            padding: 40px;
-        }
-
-        .page-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 30px;
-        }
-
-        .page-title h1 {
-            font-size: 28px;
-            font-weight: 800;
-        }
-
-        .page-title p {
-            color: #64748b;
-            margin-top: 4px;
-            font-size: 15px;
-        }
-
-        /* Cards e Layout */
-        .content-card {
-            background-color: var(--card-bg);
-            border-radius: 12px;
-            border: 1px solid var(--border-color);
-            padding: 24px;
-            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
-        }
-
-        .card-title {
-            font-size: 18px;
-            font-weight: 700;
-            margin-bottom: 20px;
-        }
-
-        /* Alertas */
-        .alert {
-            padding: 12px 16px;
-            border-radius: 8px;
-            margin-bottom: 24px;
-            font-weight: 600;
-            font-size: 15px;
-        }
-
-        .alert.success {
-            background-color: #dcfce7;
-            border: 1px solid #bbf7d0;
-            color: #166534;
-        }
-
-        .alert.error {
-            background-color: #fee2e2;
-            border: 1px solid #fecaca;
-            color: #991b1b;
-        }
-
-        /* Matriz de Bloqueio */
-        table {
-            width: 100%;
-            border-collapse: collapse;
-            text-align: left;
-        }
-
-        th, td {
-            padding: 12px 16px;
-            border-bottom: 1px solid var(--border-color);
-        }
-
-        th {
-            font-weight: 700;
-            color: var(--text-color);
-            font-size: 14px;
-            background-color: rgba(0, 0, 0, 0.02);
-        }
-
-        body.dark-theme th {
-            background-color: rgba(255, 255, 255, 0.02);
-        }
-
-        td {
-            font-size: 14px;
-        }
-
-        /* Checkbox Customizado */
-        .checkbox-container {
-            display: block;
-            position: relative;
-            padding-left: 25px;
-            cursor: pointer;
-            font-size: 14px;
-            user-select: none;
-        }
-
-        .checkbox-container input {
-            position: absolute;
-            opacity: 0;
-            cursor: pointer;
-            height: 0;
-            width: 0;
-        }
-
-        .checkmark {
-            position: absolute;
-            top: 1px;
-            left: 0;
-            height: 18px;
-            width: 18px;
-            background-color: #cbd5e1;
-            border-radius: 4px;
-            transition: background-color 0.2s;
-        }
-
-        body.dark-theme .checkmark {
-            background-color: #475569;
-        }
-
-        .checkbox-container:hover input ~ .checkmark {
-            background-color: #94a3b8;
-        }
-
-        .checkbox-container input:checked ~ .checkmark {
-            background-color: var(--error);
-        }
-
-        .checkmark:after {
-            content: "";
-            position: absolute;
-            display: none;
-        }
-
-        .checkbox-container input:checked ~ .checkmark:after {
-            display: block;
-        }
-
-        .checkbox-container .checkmark:after {
-            left: 6px;
-            top: 2px;
-            width: 4px;
-            height: 9px;
-            border: solid white;
-            border-width: 0 2px 2px 0;
-            transform: rotate(45deg);
-        }
-
-        .btn-save {
-            background-color: var(--primary);
-            color: #ffffff;
-            border: none;
-            border-radius: 8px;
-            padding: 12px 24px;
-            font-size: 15px;
-            font-weight: 700;
-            cursor: pointer;
-            transition: opacity 0.2s;
-            margin-top: 20px;
-        }
-
-        .btn-save:hover {
-            opacity: 0.9;
-        }
-    </style>
     <link rel="stylesheet" href="<?= BASE_URL ?>/api/admin_responsive.css?v=<?= time() ?>">
     <script src="https://cdn.tailwindcss.com"></script>
     <script>
       tailwind.config = {
         corePlugins: {
-          preflight: false,
+          preflight: true,
         },
         theme: {
           extend: {
             colors: {
               primary: 'var(--primary)',
               secondary: 'var(--sidebar-bg)'
+            },
+            keyframes: {
+              slideUpDown: {
+                '0%, 100%': { top: '-60px', opacity: '0' },
+                '10%, 90%': { top: '20px', opacity: '1' }
+              }
+            },
+            animation: {
+              'slide-up-down': 'slideUpDown 4s forwards'
             }
           }
         }
       }
     </script>
 </head>
-<body>
+<body class="bg-slate-50 text-slate-800 font-sans flex min-h-screen">
 
     <!-- Sidebar -->
-    <aside id="admin-sidebar">
-        <div class="sidebar-header">
-            <span>🔑</span> PegaChave
-        </div>
-        <ul class="sidebar-menu">
-            <li class="sidebar-item">
-                <a href="<?= BASE_URL ?>/admin">📊 Dashboard</a>
-            </li>
-            <li class="sidebar-item">
-                <a href="<?= BASE_URL ?>/admin/chaves">🔑 Chaves/Salas</a>
-            </li>
-            <li class="sidebar-item">
-                <a href="<?= BASE_URL ?>/admin/usuarios">👤 Usuários</a>
-            </li>
-            <li class="sidebar-item">
-                <a href="<?= BASE_URL ?>/admin/usuarios_arquivados">🗄️ Arquivados</a>
-            </li>
-            <li class="sidebar-item">
-                <a href="<?= BASE_URL ?>/admin/reservas">📅 Agendamentos</a>
-            </li>
-            <li class="sidebar-item active">
-                <a href="<?= BASE_URL ?>/admin/restricoes">🔒 Restrições</a>
-            </li>
-            <li class="sidebar-item">
-                <a href="<?= BASE_URL ?>/admin/gerar_qr">🖨️ Gerar QR Codes</a>
-            </li>
-            <li class="sidebar-item">
-                <a href="<?= BASE_URL ?>/admin/consulta">🔍 Consultar Disponibilidade</a>
-            </li>
-            <li class="sidebar-item">
-                <a href="<?= BASE_URL ?>/admin/relatorio">📝 Relatório Geral</a>
-            </li>
-            <li class="sidebar-item">
-                <a href="<?= BASE_URL ?>/admin/logs">📋 Logs de Auditoria</a>
-            </li>
-            <li class="sidebar-item">
-                <a href="<?= BASE_URL ?>/admin/config">⚙️ Configurações</a>
-            </li>
-            <li class="sidebar-item">
-                <a href="<?= BASE_URL ?>/admin_logout.php" style="color: #ef4444;">🚪 Sair</a>
-            </li>
-        </ul>
-        <div class="sidebar-footer">
-            <a href="<?= BASE_URL ?>/" class="btn-kiosk">🖥️ Voltar ao Quiosque</a>
-        </div>
-    </aside>
+    <?php include __DIR__ . '/partials/sidebar.php'; ?>
 
     <!-- Main Content -->
-    <main>
-        <div class="page-header">
-            <div class="page-title">
-                <h1>Restrições de Acesso</h1>
-                <p>Marque os cruzamentos para <strong>bloquear</strong> perfis específicos de retirarem determinadas chaves.</p>
+    <main class="flex-1 ml-0 lg:ml-[260px] p-6 md:p-10 transition-all duration-300">
+        <div class="flex justify-between items-center mb-8 flex-wrap gap-4">
+            <div>
+                <h1 class="text-2xl font-extrabold text-slate-900 mb-1">Restrições de Acesso</h1>
+                <p class="text-sm text-slate-500">Marque os cruzamentos para <strong>bloquear</strong> perfis específicos de retirarem determinadas chaves.</p>
             </div>
         </div>
 
         <?php if ($message): ?>
-            <div class="alert <?php echo $messageType; ?>">
+            <div class="toast-message fixed left-1/2 -translate-x-1/2 <?php echo ($messageType === 'error') ? 'bg-red-500' : 'bg-green-500'; ?> text-white px-6 py-3 rounded-lg font-semibold shadow-lg z-[500] animate-slide-up-down">
                 <?php echo htmlspecialchars($message); ?>
             </div>
         <?php endif; ?>
 
-        <div class="content-card">
-            <h2 class="card-title">Matriz de Perfis vs Salas (Marcado = Acesso Bloqueado)</h2>
+        <div class="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden px-6 py-5 mb-8">
+            <h2 class="text-lg font-bold mb-5">Matriz de Perfis vs Salas (Marcado = Acesso Bloqueado)</h2>
             
             <form method="POST" action="<?= BASE_URL ?>/admin/restricoes">
                 <?php renderizar_csrf_input(); ?>
                 <input type="hidden" name="action" value="save_restrictions">
 
                 <div style="overflow-x: auto;">
-                    <table>
+                    <table class="w-full text-left border-collapse">
                         <thead>
                             <tr>
-                                <th>Chave / Sala</th>
+                                <th class="bg-slate-50 text-slate-500 border-b border-slate-200 text-xs uppercase tracking-wider px-4 py-3 font-semibold">Chave / Sala</th>
                                 <?php foreach ($perfis as $p): ?>
-                                    <th style="text-align: center;"><?php echo htmlspecialchars($p['nome']); ?></th>
+                                    <th class="bg-slate-50 text-slate-500 border-b border-slate-200 text-xs uppercase tracking-wider px-4 py-3 font-semibold text-center"><?php echo htmlspecialchars($p['nome']); ?></th>
                                 <?php endforeach; ?>
                             </tr>
                         </thead>
                         <tbody>
                             <?php if (empty($chaves)): ?>
                                 <tr>
-                                    <td colspan="<?php echo count($perfis) + 1; ?>" style="text-align: center; color: #64748b; padding: 30px;">
+                                    <td colspan="<?php echo count($perfis) + 1; ?>" style="text-align: center; color: #64748b; padding: 25px;">
                                         Nenhuma chave cadastrada para configurar.
                                     </td>
                                 </tr>
                             <?php else: ?>
                                 <?php foreach ($chaves as $c): ?>
-                                    <tr>
-                                        <td><strong><?php echo htmlspecialchars($c['nome_sala']); ?></strong> (<?php echo htmlspecialchars($c['codigo_sala']); ?>)</td>
+                                    <tr class="hover:bg-slate-50 transition-colors">
+                                        <td class="px-4 py-3 border-b border-slate-100 text-sm"><strong><?php echo htmlspecialchars($c['nome_sala']); ?></strong> (<?php echo htmlspecialchars($c['codigo_sala']); ?>)</td>
                                         <?php foreach ($perfis as $p): ?>
-                                            <td style="text-align: center;">
+                                            <td class="px-4 py-3 border-b border-slate-100 text-sm text-center">
                                                 <!-- Ignora o perfil Administrador (ID 1) para evitar autobloqueio indesejado, pois Admin tem acesso total -->
                                                 <?php if ($p['id'] == 1): ?>
-                                                    <span style="font-size: 12px; color: #22c55e; font-weight: 700;">Livre</span>
+                                                    <span class="text-green-500 font-bold text-xs">Livre</span>
                                                 <?php else: ?>
-                                                    <label class="checkbox-container" style="display: inline-block; padding-left: 18px;">
-                                                        <input type="checkbox" name="bloqueio[<?php echo $p['id']; ?>][<?php echo $c['id']; ?>]" value="1" <?php echo isset($restricoes[$p['id']][$c['id']]) ? 'checked' : ''; ?>>
-                                                        <span class="checkmark"></span>
+                                                    <label class="relative flex items-center justify-center cursor-pointer">
+                                                        <input type="checkbox" class="peer sr-only" name="bloqueio[<?php echo $p['id']; ?>][<?php echo $c['id']; ?>]" value="1" <?php echo isset($restricoes[$p['id']][$c['id']]) ? 'checked' : ''; ?>>
+                                                        <div class="w-5 h-5 bg-slate-200 rounded flex items-center justify-center peer-checked:bg-red-500 transition-colors">
+                                                            <svg class="w-3 h-3 text-white hidden peer-checked:block pointer-events-none" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="4" stroke-linecap="round" stroke-linejoin="round">
+                                                                <polyline points="20 6 9 17 4 12"></polyline>
+                                                            </svg>
+                                                        </div>
                                                     </label>
                                                 <?php endif; ?>
                                             </td>
@@ -418,7 +109,7 @@
                     </table>
                 </div>
 
-                <button type="submit" class="btn-save">Salvar Configurações de Acesso</button>
+                <button type="submit" class="bg-green-600 hover:bg-green-700 text-white font-bold py-2 px-4 rounded-lg shadow-sm transition-colors mt-5">Salvar Configurações de Acesso</button>
             </form>
         </div>
     </main>
