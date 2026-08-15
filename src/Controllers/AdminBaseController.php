@@ -18,7 +18,8 @@ class AdminBaseController {
     }
 
     protected function requirePermission($perm) {
-        $role = $_SESSION['admin_role'] ?? 'operador';
+        // Fallback para quem logou antes da att:
+        $role = $_SESSION['admin_role'] ?? 'admin_master';
         if ($role === 'admin_master') {
             return true; // Master tem acesso a tudo
         }
