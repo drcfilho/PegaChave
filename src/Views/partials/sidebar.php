@@ -34,6 +34,11 @@ $isActive = function($path) use ($currentUri) {
                 🔑 Chaves/Salas
             </a>
         </li>
+        <li>
+            <a href="<?= BASE_URL ?>/admin/chaves_arquivadas" class="flex items-center gap-3 px-6 py-3.5 text-[15px] font-semibold transition-all duration-200 border-l-4 <?= $isActive('/admin/chaves_arquivadas') ?>">
+                🗄️ Chaves Arquivadas
+            </a>
+        </li>
         <?php endif; ?>
         
         <?php if(has_permission('gerenciar_usuarios')): ?>
@@ -44,7 +49,7 @@ $isActive = function($path) use ($currentUri) {
         </li>
         <li>
             <a href="<?= BASE_URL ?>/admin/usuarios_arquivados" class="flex items-center gap-3 px-6 py-3.5 text-[15px] font-semibold transition-all duration-200 border-l-4 <?= $isActive('/admin/usuarios_arquivados') ?>">
-                🗄️ Arquivados
+                🗄️ Usuários Arq.
             </a>
         </li>
         <?php endif; ?>

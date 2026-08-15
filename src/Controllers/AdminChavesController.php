@@ -63,10 +63,9 @@ class AdminChavesController extends AdminBaseController {
             $chaveInfo = $chaveRepository->buscarPorId($id);
             $nomeExcluido = $chaveInfo ? $chaveInfo['nome_sala'] . ' (' . $chaveInfo['codigo_sala'] . ')' : "ID $id";
 
-            $chaveRepository->excluirMovimentacoesPorChaveId($id);
             $chaveRepository->excluirPorId($id);
             
-            registrar_log($pdo, 'Remoção de Chave', "Chave '$nomeExcluido' e seu histórico foram removidos.");
+            registrar_log($pdo, 'Remoção de Chave', "Chave '$nomeExcluido' foi removida.");
             
             return $this->index("Chave removida.", "success");
         } catch (\PDOException $e) {

@@ -113,7 +113,8 @@ try {
             qr_code_hash VARCHAR(64) NOT NULL UNIQUE,
             status_disponivel BOOLEAN DEFAULT TRUE,
             descricao TEXT NULL,
-            criado_em TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+            criado_em TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+            deleted_at DATETIME NULL
         ) ENGINE=InnoDB;
         
         CREATE TABLE IF NOT EXISTS movimentacoes (

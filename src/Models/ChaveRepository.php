@@ -5,7 +5,7 @@ use PDO;
 
 class ChaveRepository extends BaseRepository {
     public function buscarTodas() {
-        $stmt = $this->pdo->query("SELECT * FROM chaves ORDER BY nome_sala ASC");
+        $stmt = $this->pdo->query("SELECT * FROM chaves WHERE deleted_at IS NULL ORDER BY nome_sala ASC");
         return $stmt->fetchAll();
     }
 
@@ -16,13 +16,13 @@ class ChaveRepository extends BaseRepository {
     }
 
     public function buscarPorQrCode($qrCodeHash) {
-        $stmt = $this->pdo->prepare("SELECT * FROM chaves WHERE qr_code_hash = ?");
+        $stmt = $this->pdo->prepare("SELECT * FROM chaves WHERE qr_code_hash = ? AND deleted_at IS NULL");
         $stmt->execute([$qrCodeHash]);
         return $stmt->fetch();
     }
 
     public function buscarPorCodigoOuHash($codigo) {
-        $stmt = $this->pdo->prepare("SELECT * FROM chaves WHERE qr_code_hash = ? OR codigo_sala = ?");
+        $stmt = $this->pdo->prepare("SELECT * FROM chaves WHERE (qr_code_hash = ? OR codigo_sala = ?) AND deleted_at IS NULL");
         $stmt->execute([$codigo, $codigo]);
         return $stmt->fetch();
     }
@@ -33,11 +33,11 @@ class ChaveRepository extends BaseRepository {
     }
 
     public function contarTotal() {
-        return $this->pdo->query("SELECT COUNT(*) FROM chaves")->fetchColumn();
+        return $this->pdo->query("SELECT COUNT(*) FROM chaves WHERE deleted_at IS NULL")->fetchColumn();
     }
 
     public function buscarParaQrCode() {
-        return $this->pdo->query("SELECT id, nome_sala AS nome, bloco, andar, codigo_sala AS identificador, qr_code_hash, 'Chave' AS categoria FROM chaves ORDER BY nome_sala ASC")->fetchAll();
+        return $this->pdo->query("SELECT id, nome_sala AS nome, bloco, andar, codigo_sala AS identificador, qr_code_hash, 'Chave' AS categoria FROM chaves WHERE deleted_at IS NULL ORDER BY nome_sala ASC")->fetchAll();
     }
 
     public function criar($nome_sala, $bloco, $andar, $matriculas_permitidas, $codigo_sala, $qr_code_hash, $descricao) {
@@ -51,7 +51,17 @@ class ChaveRepository extends BaseRepository {
     }
 
     public function excluirPorId($id) {
-        $stmt = $this->pdo->prepare("DELETE FROM chaves WHERE id = ?");
+        $stmt = $this->pdo->prepare("UPDATE chaves SET deleted_at = NOW() WHERE id = ?");
+        return $stmt->execute([$id]);
+    }
+
+    public function buscarTodasArquivadas() {
+        $stmt = $this->pdo->query("SELECT * FROM chaves WHERE deleted_at IS NOT NULL ORDER BY deleted_at DESC");
+        return $stmt->fetchAll();
+    }
+
+    public function restaurar($id) {
+        $stmt = $this->pdo->prepare("UPDATE chaves SET deleted_at = NULL WHERE id = ?");
         return $stmt->execute([$id]);
     }
 
@@ -61,7 +71,7 @@ class ChaveRepository extends BaseRepository {
     }
 
     public function buscarTodasOrdenadasPorCodigo() {
-        $stmt = $this->pdo->query("SELECT * FROM chaves ORDER BY codigo_sala ASC");
+        $stmt = $this->pdo->query("SELECT * FROM chaves WHERE deleted_at IS NULL ORDER BY codigo_sala ASC");
         return $stmt->fetchAll();
     }
 

@@ -33,6 +33,8 @@ $router->get('/admin/chaves', 'AdminChavesController', 'index', $auth);
 $router->post('/admin/chaves/create', 'AdminChavesController', 'store', $authCsrf);
 $router->post('/admin/chaves/update', 'AdminChavesController', 'update', $authCsrf);
 $router->post('/admin/chaves/delete', 'AdminChavesController', 'destroy', $authCsrf);
+$router->get('/admin/chaves_arquivadas', 'AdminChavesArquivadasController', 'index', $auth);
+$router->post('/admin/chaves_arquivadas', 'AdminChavesArquivadasController', 'index', $authCsrf);
 $router->get('/admin/usuarios', 'AdminUsuariosController', 'index', $auth);
 $router->post('/admin/usuarios/create', 'AdminUsuariosController', 'store', $authCsrf);
 $router->post('/admin/usuarios/update', 'AdminUsuariosController', 'update', $authCsrf);
