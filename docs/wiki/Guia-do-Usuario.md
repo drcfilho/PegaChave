@@ -42,6 +42,11 @@ Você pode garantir que um aluno só pegue 1 chave, ou um professor pegue 3 chav
 Na aba **Reservas de Chaves**, o gestor pode selecionar uma chave, um usuário, uma data e os horários de início e fim.
 Durante aquele intervalo programado, a chave só poderá ser retirada no Quiosque por aquela pessoa específica. Ninguém mais.
 
+### 🤖 Robô de Alertas e Notificações (E-mail)
+O sistema possui uma inteligência integrada que rastreia chaves que não foram devolvidas no prazo.
+* **Como funciona:** Se um aluno pegar a chave e ficar com ela por um período superior ao limite permitido (padrão de 6 horas), o sistema disparará automaticamente um e-mail HTML na caixa de entrada do aluno pedindo a devolução da sala.
+* **Pré-requisitos:** O usuário precisa ter o e-mail cadastrado na sua ficha de usuário no Painel Admin. Caso não tenha, o robô ignorará o aviso para essa pessoa.
+
 ### Arquivamento (Soft Delete)
 Ao tentar excluir um Usuário ou uma Chave que possua histórico no sistema, o PegaChave fará o **Arquivamento Seguro** no lugar da deleção permanente. Isso evita que os relatórios antigos quebrem.
 Itens arquivados podem ser visualizados nas abas `Arquivados`, mas exigem a digitação da senha do Administrador para exibir os dados (Auditoria Protegida).

@@ -58,3 +58,27 @@ Acesse o painel de administração em: `http://localhost:8000/admin`.
 
 * **Usuário Padrão:** `admin_master`
 * **Senha Padrão:** `admin` (Você será obrigado a trocar de senha assim que quiser, recomendamos fazer isso imediatamente).
+
+---
+
+## 📧 Configurando Alertas por E-mail (Robô de Atrasos)
+
+O sistema possui um robô automático que envia um e-mail para usuários que demoraram mais de 6 horas para devolver uma chave.
+
+1. Edite o arquivo `.env` na raiz do seu projeto e preencha suas credenciais de servidor de envio (SMTP):
+   ```env
+   MAIL_HOST=smtp.gmail.com
+   MAIL_PORT=465
+   MAIL_USER=seu_email@gmail.com
+   MAIL_PASS=sua_senha_de_app
+   MAIL_FROM_ADDRESS=naoresponda@pegachave.com
+   MAIL_FROM_NAME="PegaChave Alertas"
+   LIMITE_HORAS_ATRASO=6
+   ```
+
+2. **Para rodar no Docker:** Você não precisa fazer nada! O `docker-compose.yml` já sobe um contêiner oculto (`pegachave-cron`) que executa essa tarefa a cada hora infinitamente em segundo plano.
+
+3. **Para rodar no Servidor Web / XAMPP:**
+   Crie uma tarefa agendada no Windows ou um Cron Job no Linux apontando para a rota web do sistema.
+   * Rota a ser executada a cada 1 hora: `http://localhost/Projeto/pegachave/api/cron/alertas`
+   * *Opcional:* Se você configurar `CRON_SECRET=123` no seu `.env`, a URL passa a exigir autenticação, devendo ser chamada como `.../api/cron/alertas?secret=123`.
