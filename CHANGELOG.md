@@ -71,6 +71,11 @@ Este arquivo registra todo o histórico de desenvolvimento e as melhorias aplica
 * **Painel Administrativo (`admin_restricoes.php`)**: Criação da interface com matriz interativa de Perfis vs Salas, permitindo bloquear o acesso de determinados perfis de usuários a salas específicas (ex: impedir que Alunos ou Estagiários peguem a chave do CPD).
 * **Validação no Quiosque**: Verificação integrada no processo de checkout da chave, bloqueando novas retiradas com mensagens claras de restrição caso o perfil do portador esteja bloqueado para a chave correspondente.
 
+### 🛡️ 11. RBAC (Sistema de Controle de Acesso e Gestão de Operadores)
+* **Gestão Dinâmica de Permissões (JSON)**: Implementação de cadastro de novos "Operadores" no sistema com permissões granulares gerenciadas via Checkboxes pelo Administrador Master. As permissões são salvas na coluna `permissoes` da tabela `administradores`.
+* **Proteção Avançada (`AdminBaseController`)**: Interceptação em tempo de execução validando o perfil do operador da sessão antes de carregar qualquer página administrativa ou executar qualquer ação (CRUD).
+* **Sidebar Componentizado e Dinâmico**: Extração do menu lateral estático para um componente único (`partials/sidebar.php`) que processa ocultação automática das opções baseadas nas permissões ativas. Fallback implementado para sessões legadas.
+
 ---
 
 ### ⚙️ 8. Limite de Chaves sob Posse
@@ -88,13 +93,24 @@ Este arquivo registra todo o histórico de desenvolvimento e as melhorias aplica
 
 Abaixo estão listados os commits oficiais do projeto em ordem cronológica reversa, traduzidos e padronizados para **Português (PT-BR)**:
 
-1. **`docs: atualiza README.md com instruções de Docker, iniciar.bat e segurança`**
+1. **`fix: substitui sidebar fixo pelo componente dinamico na view gerar_qr`**
+   * Resolve falha de renderização do menu na tela de QR codes.
+2. **`fix: restaura ordem do menu e adiciona fallback de sessao para usuarios antigos`**
+   * Restaura visual exato dos menus e arruma desaparecimento para quem estava logado antes do update.
+3. **`refactor: extrai sidebar estatica para componente dinamico com RBAC e inclui em todas as telas`**
+   * Limpeza de redundância. O menu agora é renderizado inteligentemente usando um único arquivo.
+4. **`fix: corrige acesso indevido a propriedade protegida do pdo no AdminOperadoresController`**
+   * Resolve crash Fatal Error ao tentar auditar log no momento da criação.
+5. **`fix: corrige erro de sintaxe e codigo duplicado no AdminChavesController`**
+   * Restaura funcionamento da página de chaves que estava quebrada.
+6. **`feat: sistema de controle de acesso (RBAC) e gestao de operadores`**
+   * Adiciona CRUD de usuários administrativos com caixas de seleção de permissão. 
+7. **`docs: atualiza README.md com instruções de Docker, iniciar.bat e segurança`**
    * Atualização completa da documentação para novos usuários do projeto.
-2. **`feat: adiciona suporte a contêineres Docker e script iniciar.bat`**
+8. **`feat: adiciona suporte a contêineres Docker e script iniciar.bat`**
    * Configuração de ambiente portátil e instalável de forma isolada.
-3. **`feat: implementa instalador de banco de dados, soft delete de usuários e tema escuro`**
+9. **`feat: implementa instalador de banco de dados, soft delete de usuários e tema escuro`**
    * Refatoração do modelo de dados e melhorias visuais e de UX.
-4. **`docs: adiciona o arquivo de documentação inicial README.md`**
    * Criação do arquivo de documentação original.
 5. **`docs: atualiza checklist de tarefas de refatoração no task.md`**
    * Controle de fases do desenvolvimento.
