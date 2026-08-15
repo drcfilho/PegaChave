@@ -434,37 +434,58 @@
                 
                 <div class="form-group">
                     <label for="nome_sala">Nome da Sala</label>
-                    <input type="text" name="nome_sala" id="nome_sala" class="form-control" placeholder="Ex: Sala 12 - Lab. Biologia" required>
+                    <div class="tooltip-container" style="display: block;">
+                        <input type="text" name="nome_sala" id="nome_sala" class="form-control" placeholder="Ex: Sala 12 - Lab. Biologia" required>
+                        <span class="tooltip-text">Nome descritivo do ambiente que ficará visível para os usuários na busca.</span>
+                    </div>
                 </div>
 
                 <div class="form-group">
                     <label for="bloco">Bloco</label>
-                    <input type="text" name="bloco" id="bloco" class="form-control" placeholder="Ex: Bloco A">
+                    <div class="tooltip-container" style="display: block;">
+                        <input type="text" name="bloco" id="bloco" class="form-control" placeholder="Ex: Bloco A">
+                        <span class="tooltip-text">Edifício ou bloco onde a sala está localizada (opcional).</span>
+                    </div>
                 </div>
 
                 <div class="form-group">
                     <label for="andar">Andar</label>
-                    <input type="text" name="andar" id="andar" class="form-control" placeholder="Ex: 2º Andar">
+                    <div class="tooltip-container" style="display: block;">
+                        <input type="text" name="andar" id="andar" class="form-control" placeholder="Ex: 2º Andar">
+                        <span class="tooltip-text">Andar onde a sala se encontra (opcional).</span>
+                    </div>
                 </div>
                 
                 <div class="form-group">
                     <label for="matriculas_permitidas">Matrículas Autorizadas (Separadas por vírgula)</label>
-                    <input type="text" name="matriculas_permitidas" id="matriculas_permitidas" class="form-control" placeholder="Ex: 2023001, 2023002 (Deixe vazio para acesso público)">
+                    <div class="tooltip-container" style="display: block;">
+                        <input type="text" name="matriculas_permitidas" id="matriculas_permitidas" class="form-control" placeholder="Ex: 2023001, 2023002 (Deixe vazio para acesso público)">
+                        <span class="tooltip-text">Apenas essas matrículas poderão retirar esta chave. Deixe vazio para não ter restrição.</span>
+                    </div>
                 </div>
                 
                 <div class="form-group">
                     <label for="codigo_sala">Código da Sala</label>
-                    <input type="text" name="codigo_sala" id="codigo_sala" class="form-control" placeholder="Ex: SALA-12" required>
+                    <div class="tooltip-container" style="display: block;">
+                        <input type="text" name="codigo_sala" id="codigo_sala" class="form-control" placeholder="Ex: SALA-12" required>
+                        <span class="tooltip-text">Identificador único (sem espaços). Usado para gerar o QR Code associado.</span>
+                    </div>
                 </div>
                 
                 <div class="form-group">
                     <label for="key_qr_code_hash">QR Code Hash (Gerado Automaticamente)</label>
-                    <input type="text" name="qr_code_hash" id="key_qr_code_hash" class="form-control" style="background-color: rgba(0,0,0,0.05); cursor: not-allowed;" placeholder="chaves_SALA-12" readonly required>
+                    <div class="tooltip-container" style="display: block;">
+                        <input type="text" name="qr_code_hash" id="key_qr_code_hash" class="form-control" style="background-color: rgba(0,0,0,0.05); cursor: not-allowed;" placeholder="chaves_SALA-12" readonly required>
+                        <span class="tooltip-text">Código final que será lido pelo scanner do quiosque.</span>
+                    </div>
                 </div>
 
                 <div class="form-group">
                     <label for="descricao">Descrição</label>
-                    <textarea name="descricao" id="descricao" class="form-control" rows="3" placeholder="Informações adicionais..."></textarea>
+                    <div class="tooltip-container" style="display: block;">
+                        <textarea name="descricao" id="descricao" class="form-control" rows="3" placeholder="Informações adicionais..."></textarea>
+                        <span class="tooltip-text">Qualquer outra informação sobre a sala ou chave.</span>
+                    </div>
                 </div>
 
                 <div class="modal-actions">

@@ -423,31 +423,46 @@
                 
                 <div class="form-group">
                     <label for="nome">Nome Completo</label>
-                    <input type="text" name="nome" id="nome" class="form-control" placeholder="Ex: Carlos Silva" required>
+                    <div class="tooltip-container" style="display: block;">
+                        <input type="text" name="nome" id="nome" class="form-control" placeholder="Ex: Carlos Silva" required>
+                        <span class="tooltip-text">Nome do funcionário, professor ou servidor.</span>
+                    </div>
                 </div>
                 
                 <div class="form-group">
                     <label for="email">E-mail</label>
-                    <input type="email" name="email" id="email" class="form-control" placeholder="Ex: carlos@escola.edu.br" required>
+                    <div class="tooltip-container" style="display: block;">
+                        <input type="email" name="email" id="email" class="form-control" placeholder="Ex: carlos@escola.edu.br" required>
+                        <span class="tooltip-text">Endereço de e-mail institucional para contato (pode ser usado para notificações).</span>
+                    </div>
                 </div>
 
                 <div class="form-group">
                     <label for="matricula">Matrícula (ID)</label>
-                    <input type="text" name="matricula" id="matricula" class="form-control" placeholder="Ex: 101" required>
+                    <div class="tooltip-container" style="display: block;">
+                        <input type="text" name="matricula" id="matricula" class="form-control" placeholder="Ex: 101" required>
+                        <span class="tooltip-text">Número de matrícula ou RG. Usado para gerar o crachá/QR Code único do usuário.</span>
+                    </div>
                 </div>
 
                 <div class="form-group">
                     <label for="perfil_id">Perfil / Função</label>
-                    <select name="perfil_id" id="perfil_id" class="form-control" required>
-                        <?php foreach ($perfis as $p): ?>
-                            <option value="<?php echo $p['id']; ?>"><?php echo htmlspecialchars($p['nome']); ?></option>
-                        <?php endforeach; ?>
-                    </select>
+                    <div class="tooltip-container" style="display: block;">
+                        <select name="perfil_id" id="perfil_id" class="form-control" required>
+                            <?php foreach ($perfis as $p): ?>
+                                <option value="<?php echo $p['id']; ?>"><?php echo htmlspecialchars($p['nome']); ?></option>
+                            <?php endforeach; ?>
+                        </select>
+                        <span class="tooltip-text">Define o grupo de permissões gerais (ex: Professor, Zelador).</span>
+                    </div>
                 </div>
                 
                 <div class="form-group">
                     <label for="user_qr_code_hash">QR Code Hash (Gerado Automaticamente)</label>
-                    <input type="text" name="qr_code_hash" id="user_qr_code_hash" class="form-control" style="background-color: rgba(0,0,0,0.05); cursor: not-allowed;" placeholder="user_101" readonly required>
+                    <div class="tooltip-container" style="display: block;">
+                        <input type="text" name="qr_code_hash" id="user_qr_code_hash" class="form-control" style="background-color: rgba(0,0,0,0.05); cursor: not-allowed;" placeholder="user_101" readonly required>
+                        <span class="tooltip-text">Hash encriptado vinculado a este usuário no banco de dados.</span>
+                    </div>
                 </div>
 
                 <div class="form-group" id="group-ativo" style="display: none; align-items: center; gap: 8px;">

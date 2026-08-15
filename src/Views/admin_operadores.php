@@ -136,31 +136,46 @@ $isMaster = ($_SESSION['admin_role'] ?? '') === 'admin_master';
                 
                 <div class="form-group">
                     <label>Nome Completo</label>
-                    <input type="text" name="nome" id="op_nome" class="form-control" required>
+                    <div class="tooltip-container" style="display: block;">
+                        <input type="text" name="nome" id="op_nome" class="form-control" required>
+                        <span class="tooltip-text">Nome real do administrador/operador.</span>
+                    </div>
                 </div>
                 <div class="form-group">
                     <label>Usuário de Login</label>
-                    <input type="text" name="usuario" id="op_usuario" class="form-control" required>
+                    <div class="tooltip-container" style="display: block;">
+                        <input type="text" name="usuario" id="op_usuario" class="form-control" required>
+                        <span class="tooltip-text">Apelido usado para acessar o painel (sem espaços).</span>
+                    </div>
                 </div>
                 <div class="form-group">
                     <label>Senha <span id="senhaHint" style="font-weight:normal; font-size:12px; color:#94a3b8; display:none;">(Deixe em branco para não alterar)</span></label>
-                    <input type="password" name="senha" id="op_senha" class="form-control" required>
+                    <div class="tooltip-container" style="display: block;">
+                        <input type="password" name="senha" id="op_senha" class="form-control" required>
+                        <span class="tooltip-text">Senha de acesso ao painel (criptografada no banco).</span>
+                    </div>
                 </div>
                 <div class="form-group">
                     <label>Nível de Acesso</label>
-                    <select name="role" id="op_role" class="form-control" onchange="togglePerms()">
-                        <option value="operador">Operador (Restrito)</option>
-                        <option value="admin_master">Administrador Master (Poder Total)</option>
-                    </select>
+                    <div class="tooltip-container" style="display: block;">
+                        <select name="role" id="op_role" class="form-control" onchange="togglePerms()">
+                            <option value="operador">Operador (Restrito)</option>
+                            <option value="admin_master">Administrador Master (Poder Total)</option>
+                        </select>
+                        <span class="tooltip-text">Master pode tudo. Operador precisa de permissões específicas marcadas abaixo.</span>
+                    </div>
                 </div>
 
                 <div class="form-group" id="permsSection">
                     <label>Permissões (Apenas para Operador)</label>
-                    <div class="perm-grid">
-                        <label class="perm-item"><input type="checkbox" name="permissoes[]" value="gerenciar_chaves" class="perm-cb"> Gerenciar Chaves e Reservas</label>
-                        <label class="perm-item"><input type="checkbox" name="permissoes[]" value="gerenciar_usuarios" class="perm-cb"> Gerenciar Usuários</label>
-                        <label class="perm-item"><input type="checkbox" name="permissoes[]" value="ver_relatorios" class="perm-cb"> Relatórios e Logs</label>
-                        <label class="perm-item"><input type="checkbox" name="permissoes[]" value="gerenciar_configuracoes" class="perm-cb"> Configurações do Sistema</label>
+                    <div class="tooltip-container" style="display: block;">
+                        <div class="perm-grid">
+                            <label class="perm-item"><input type="checkbox" name="permissoes[]" value="gerenciar_chaves" class="perm-cb"> Gerenciar Chaves e Reservas</label>
+                            <label class="perm-item"><input type="checkbox" name="permissoes[]" value="gerenciar_usuarios" class="perm-cb"> Gerenciar Usuários</label>
+                            <label class="perm-item"><input type="checkbox" name="permissoes[]" value="ver_relatorios" class="perm-cb"> Relatórios e Logs</label>
+                            <label class="perm-item"><input type="checkbox" name="permissoes[]" value="gerenciar_configuracoes" class="perm-cb"> Configurações do Sistema</label>
+                        </div>
+                        <span class="tooltip-text">As áreas que o operador pode acessar no menu lateral.</span>
                     </div>
                 </div>
 
