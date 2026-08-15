@@ -242,18 +242,8 @@ function quiosqueState() {
             this.isProcessing = true;
             
             // Tenta sincronizar pendências antes de enviar o novo
-            if (this.isOnline && this.offlineCount > 0) {
+            if (this.offlineCount > 0) {
                 await this.syncOfflineScans();
-            }
-            
-            if (!this.isOnline) {
-                this.playBeep('success');
-                await addOfflineScan({ code: code, timestamp: new Date().toISOString() });
-                await this.updateNetworkStatus();
-                
-                this.showAlert('Sem conexão: Leitura salva offline!', 'warning', 3500);
-                setTimeout(() => { this.lastScannedCode = ""; this.isProcessing = false; }, 2000);
-                return;
             }
 
             try {
@@ -286,10 +276,11 @@ function quiosqueState() {
                     this.showAlert(result.message, result.status === 'pending_user' ? 'info' : 'error');
                 }
             } catch (err) {
-                this.showAlert("Servidor indisponível. Salvando leitura no Background Sync...", 'warning');
+                // Falha de rede (offline ou servidor fora)
+                this.playBeep('success'); // Beep success pois salvou offline
                 await addOfflineScan({ code: code, timestamp: new Date().toISOString() });
                 await this.updateNetworkStatus();
-                this.syncOfflineScans();
+                this.showAlert('Sem conexão com o servidor. Leitura salva para envio posterior!', 'warning', 4000);
             } finally {
                 setTimeout(() => { this.lastScannedCode = ""; this.isProcessing = false; }, 2000);
             }
