@@ -226,6 +226,51 @@
             animation: slide-up-down 4s forwards;
         }
 
+        /* Tooltip Customizado */
+        .tooltip-container {
+            position: relative;
+            display: inline-block;
+        }
+
+        .tooltip-container .tooltip-text {
+            visibility: hidden;
+            width: 220px;
+            background-color: #1e293b;
+            color: #fff;
+            text-align: center;
+            border-radius: 6px;
+            padding: 8px 12px;
+            position: absolute;
+            z-index: 100;
+            bottom: 125%; /* Aparece acima do elemento */
+            left: 50%;
+            margin-left: -110px;
+            opacity: 0;
+            transition: opacity 0.3s;
+            font-size: 12px;
+            font-weight: 500;
+            line-height: 1.4;
+            pointer-events: none;
+            box-shadow: 0 10px 15px -3px rgba(0,0,0,0.1);
+        }
+
+        /* Setinha do tooltip */
+        .tooltip-container .tooltip-text::after {
+            content: "";
+            position: absolute;
+            top: 100%;
+            left: 50%;
+            margin-left: -5px;
+            border-width: 5px;
+            border-style: solid;
+            border-color: #1e293b transparent transparent transparent;
+        }
+
+        .tooltip-container:hover .tooltip-text {
+            visibility: visible;
+            opacity: 1;
+        }
+
         @keyframes slide-up-down {
             0% { top: -60px; opacity: 0; }
             10% { top: 20px; opacity: 1; }
@@ -262,30 +307,38 @@
                 
                 <div class="form-group">
                     <label for="nome_escola">Nome da Escola / Instituição</label>
-                    <input type="text" name="nome_escola" id="nome_escola" class="form-control" value="<?php echo htmlspecialchars($nome_escola); ?>" required>
+                    <div class="tooltip-container" style="display: block;">
+                        <input type="text" name="nome_escola" id="nome_escola" class="form-control" value="<?php echo htmlspecialchars($nome_escola); ?>" required>
+                        <span class="tooltip-text">Este nome será exibido no topo do quiosque e na aba do navegador.</span>
+                    </div>
                 </div>
 
                 <div class="color-pickers-row">
                     <div class="form-group">
                         <label for="cor_primaria">Cor Primária (Destaques/Botões)</label>
-                        <div class="color-input-wrapper">
+                        <div class="color-input-wrapper tooltip-container">
                             <input type="color" name="cor_primaria" id="cor_primaria" class="color-picker" value="<?php echo htmlspecialchars($cor_primaria); ?>">
                             <span style="font-family: monospace; font-size: 14px;"><?php echo htmlspecialchars($cor_primaria); ?></span>
+                            <span class="tooltip-text" style="bottom: 150%;">Usada nos botões principais e elementos de destaque do sistema.</span>
                         </div>
                     </div>
 
                     <div class="form-group">
                         <label for="cor_secundaria">Cor Secundária (Cabeçalho/Menu)</label>
-                        <div class="color-input-wrapper">
+                        <div class="color-input-wrapper tooltip-container">
                             <input type="color" name="cor_secundaria" id="cor_secundaria" class="color-picker" value="<?php echo htmlspecialchars($cor_secundaria); ?>">
                             <span style="font-family: monospace; font-size: 14px;"><?php echo htmlspecialchars($cor_secundaria); ?></span>
+                            <span class="tooltip-text" style="bottom: 150%;">Define a cor do menu lateral e do cabeçalho superior.</span>
                         </div>
                     </div>
                 </div>
 
                 <div class="form-group" style="margin-top: 20px;">
                     <label for="limite_chaves">Limite Máximo de Chaves sob Posse Simultânea (por Usuário)</label>
-                    <input type="number" name="limite_chaves" id="limite_chaves" class="form-control" min="0" value="<?php echo htmlspecialchars($limite_chaves ?? 0); ?>" style="max-width: 150px;" required>
+                    <div class="tooltip-container">
+                        <input type="number" name="limite_chaves" id="limite_chaves" class="form-control" min="0" value="<?php echo htmlspecialchars($limite_chaves ?? 0); ?>" style="max-width: 150px;" required>
+                        <span class="tooltip-text">Quantas chaves um único crachá pode retirar ao mesmo tempo.</span>
+                    </div>
                     <p style="font-size: 12px; color: #64748b; margin-top: 6px;">Defina como 0 para permitir retiradas ilimitadas.</p>
                 </div>
 
