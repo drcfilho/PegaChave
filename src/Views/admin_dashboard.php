@@ -234,7 +234,7 @@
             text-decoration: underline;
         }
     </style>
-    <link rel="stylesheet" href="<?= BASE_URL ?>/api/admin_responsive.css">
+    <link rel="stylesheet" href="<?= BASE_URL ?>/api/admin_responsive.css?v=<?= time() ?>">
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 </head>
 <body>

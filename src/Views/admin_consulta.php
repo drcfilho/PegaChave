@@ -250,7 +250,7 @@
             color: #0f172a;
         }
     </style>
-    <link rel="stylesheet" href="<?= BASE_URL ?>/api/admin_responsive.css">
+    <link rel="stylesheet" href="<?= BASE_URL ?>/api/admin_responsive.css?v=<?= time() ?>">
 </head>
 <body>
 
