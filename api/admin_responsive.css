@@ -1,6 +1,83 @@
 /* api/admin_responsive.css */
+/* Sidebar Base Styles */
 aside, .sidebar {
+    width: 260px;
+    background-color: var(--sidebar-bg, #0f172a);
+    color: #ffffff;
+    display: flex;
+    flex-direction: column;
+    border-right: 1px solid rgba(255, 255, 255, 0.05);
+    position: fixed;
+    top: 0;
+    bottom: 0;
+    left: 0;
+    z-index: 10;
     overflow-y: auto;
+}
+
+.sidebar-header {
+    padding: 24px;
+    font-size: 20px;
+    font-weight: 800;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.sidebar-menu {
+    list-style: none;
+    padding: 20px 0;
+    flex: 1;
+    margin: 0;
+}
+
+.sidebar-item a {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 14px 24px;
+    color: #94a3b8;
+    text-decoration: none;
+    font-weight: 600;
+    font-size: 15px;
+    transition: all 0.2s;
+    border-left: 4px solid transparent;
+}
+
+.sidebar-item a:hover {
+    color: #ffffff;
+    background: rgba(255, 255, 255, 0.02);
+}
+
+.sidebar-item.active a {
+    color: #ffffff;
+    background: rgba(2, 132, 199, 0.1);
+    border-left-color: var(--primary, #2f9e41);
+}
+
+.sidebar-footer {
+    padding: 20px 24px;
+    border-top: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.btn-kiosk {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    background-color: rgba(255,255,255,0.05);
+    color: #fff;
+    text-decoration: none;
+    padding: 10px;
+    border-radius: 8px;
+    font-size: 14px;
+    font-weight: 700;
+    transition: background 0.2s;
+}
+
+.btn-kiosk:hover {
+    background-color: var(--primary, #2f9e41);
 }
 
 /* Mobile Header (Hidden on Desktop) */
