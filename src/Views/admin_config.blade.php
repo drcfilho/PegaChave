@@ -113,6 +113,44 @@
                 </button>
             </form>
         </div>
+
+        <div class="bg-white rounded-2xl border border-slate-200 shadow-sm px-7 py-7 max-w-2xl mt-8">
+            <h2 class="text-lg font-bold text-slate-900 mb-2">🔄 Sincronizar Banco de Dados</h2>
+            <p class="text-sm text-slate-500 mb-5">
+                O sistema utiliza Migrations para gerenciar as versões do banco de dados. Caso o sistema tenha sido atualizado recentemente, clique no botão abaixo para garantir que todas as tabelas estejam na última versão.
+            </p>
+            <button id="btnSyncDb" class="bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 px-6 rounded-lg transition-all shadow-sm flex items-center gap-2" onclick="syncDb()">
+                ⚡ Rodar Migrations (Sincronizar)
+            </button>
+            <div id="syncResult" class="hidden mt-4 p-4 rounded-lg text-sm bg-slate-900 text-green-400 overflow-y-auto max-h-40 whitespace-pre-wrap font-mono"></div>
+        </div>
+        
+        <script>
+            function syncDb() {
+                const btn = document.getElementById('btnSyncDb');
+                const result = document.getElementById('syncResult');
+                btn.disabled = true;
+                btn.innerText = "Sincronizando...";
+                
+                fetch('<?= BASE_URL ?>/install/run', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' }
+                })
+                .then(res => res.json())
+                .then(data => {
+                    result.classList.remove('hidden');
+                    result.innerText = data.log;
+                    btn.innerText = "✅ Sincronizado";
+                })
+                .catch(err => {
+                    result.classList.remove('hidden');
+                    result.classList.add('text-red-400');
+                    result.innerText = "Erro ao sincronizar: " + err;
+                    btn.disabled = false;
+                    btn.innerText = "⚡ Tentar Novamente";
+                });
+            }
+        </script>
     </main>
 
     <script>

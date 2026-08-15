@@ -37,6 +37,10 @@ $router->get('/consulta', 'ConsultaController', 'index');
 $router->get('/regras', 'RegrasController', 'index');
 $router->post('/api/processar_scan', 'ScanController', 'processar');
 
+// === Rota de Instalação (Somente acessível se o banco estiver vazio) ===
+$router->get('/install', 'InstallController', 'index');
+$router->post('/install/run', 'InstallController', 'runInstall');
+
 // === Middlewares ===
 $auth = ['AuthMiddleware'];
 $authCsrf = ['AuthMiddleware', 'CsrfMiddleware'];
