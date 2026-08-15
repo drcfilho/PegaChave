@@ -27,8 +27,6 @@ services:
       - DB_PASS=
     depends_on:
       - db
-    # Executa o instalador automático para configurar as tabelas e depois inicia o Apache
-    command: sh -c "php bin/install.php && apache2-foreground"
 
 volumes:
   db_data:
