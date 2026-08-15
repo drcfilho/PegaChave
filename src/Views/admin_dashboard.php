@@ -10,240 +10,19 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
-    <style>
-        :root {
-            --bg-color: #f1f5f9;
-            --text-color: #1e293b;
-            --sidebar-bg: #0f172a;
-            --sidebar-active: <?php echo $cor_primaria; ?>;
-            --card-bg: #ffffff;
-            --border-color: #e2e8f0;
-            --primary: <?php echo $cor_primaria; ?>;
-            --success: #22c55e;
-            --error: #ef4444;
-        }
-
-        * {
-            box-sizing: border-box;
-            margin: 0;
-            padding: 0;
-            font-family: 'Inter', sans-serif;
-        }
-
-        body {
-            background-color: var(--bg-color);
-            color: var(--text-color);
-            display: flex;
-            min-height: 100vh;
-        }
-
-        /* Sidebar */
-        aside {
-            width: 260px;
-            background-color: var(--sidebar-bg);
-            color: #ffffff;
-            display: flex;
-            flex-direction: column;
-            border-right: 1px solid rgba(255, 255, 255, 0.05);
-            position: fixed;
-            top: 0;
-            bottom: 0;
-            left: 0;
-            z-index: 10;
-        }
-
-        .sidebar-header {
-            padding: 24px;
-            font-size: 20px;
-            font-weight: 800;
-            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
-            display: flex;
-            align-items: center;
-            gap: 10px;
-        }
-
-        .sidebar-menu {
-            list-style: none;
-            padding: 20px 0;
-            flex: 1;
-        }
-
-        .sidebar-item a {
-            display: flex;
-            align-items: center;
-            gap: 12px;
-            padding: 14px 24px;
-            color: #94a3b8;
-            text-decoration: none;
-            font-weight: 600;
-            font-size: 15px;
-            transition: all 0.2s;
-            border-left: 4px solid transparent;
-        }
-
-        .sidebar-item a:hover {
-            color: #ffffff;
-            background: rgba(255, 255, 255, 0.02);
-        }
-
-        .sidebar-item.active a {
-            color: #ffffff;
-            background: rgba(2, 132, 199, 0.1);
-            border-left-color: var(--sidebar-active);
-        }
-
-        .sidebar-footer {
-            padding: 20px 24px;
-            border-top: 1px solid rgba(255, 255, 255, 0.05);
-        }
-
-        .btn-kiosk {
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 8px;
-            background-color: rgba(255,255,255,0.05);
-            color: #fff;
-            text-decoration: none;
-            padding: 10px;
-            border-radius: 8px;
-            font-size: 14px;
-            font-weight: 700;
-            transition: background 0.2s;
-        }
-
-        .btn-kiosk:hover {
-            background-color: var(--sidebar-active);
-        }
-
-        /* Main Content */
-        main {
-            margin-left: 260px;
-            flex: 1;
-            padding: 40px;
-        }
-
-        .page-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 30px;
-        }
-
-        .page-title h1 {
-            font-size: 24px;
-            font-weight: 800;
-            color: #0f172a;
-        }
-
-        .page-title p {
-            color: #64748b;
-            font-size: 14px;
-            margin-top: 4px;
-        }
-
-        /* Widgets/Cards */
-        .stats-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
-            gap: 20px;
-            margin-bottom: 30px;
-        }
-
-        .stat-card {
-            background-color: var(--card-bg);
-            border-radius: 12px;
-            border: 1px solid var(--border-color);
-            padding: 24px;
-            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-        }
-
-        .stat-info h3 {
-            font-size: 14px;
-            color: #64748b;
-            text-transform: uppercase;
-            font-weight: 700;
-            margin-bottom: 6px;
-        }
-
-        .stat-value {
-            font-size: 28px;
-            font-weight: 800;
-            color: #0f172a;
-        }
-
-        .stat-icon {
-            font-size: 32px;
-            background: #f1f5f9;
-            width: 60px;
-            height: 60px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            border-radius: 50%;
-        }
-
-        .content-card {
-            background-color: var(--card-bg);
-            border-radius: 12px;
-            border: 1px solid var(--border-color);
-            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
-            padding: 24px;
-        }
-
-        .card-title {
-            font-size: 18px;
-            font-weight: 700;
-            margin-bottom: 20px;
-            color: #0f172a;
-        }
-
-        /* Tables */
-        table {
-            width: 100%;
-            border-collapse: collapse;
-            text-align: left;
-        }
-
-        th {
-            font-size: 12px;
-            font-weight: 700;
-            color: #64748b;
-            padding: 12px 16px;
-            border-bottom: 2px solid #e2e8f0;
-            text-transform: uppercase;
-        }
-
-        td {
-            font-size: 14px;
-            padding: 14px 16px;
-            border-bottom: 1px solid #f1f5f9;
-        }
-
-        .action-link {
-            color: var(--primary);
-            text-decoration: none;
-            font-weight: 700;
-            cursor: pointer;
-        }
-
-        .action-link:hover {
-            text-decoration: underline;
-        }
-    </style>
     <link rel="stylesheet" href="<?= BASE_URL ?>/api/admin_responsive.css?v=<?= time() ?>">
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script src="https://cdn.tailwindcss.com"></script>
     <script>
       tailwind.config = {
         corePlugins: {
-          preflight: false,
+          preflight: true,
         },
         theme: {
           extend: {
+            fontFamily: {
+              sans: ['Inter', 'sans-serif'],
+            },
             colors: {
               primary: 'var(--primary)',
               secondary: 'var(--sidebar-bg)'
@@ -253,25 +32,25 @@
       }
     </script>
 </head>
-<body>
+<body class="bg-slate-50 text-slate-800 font-sans flex min-h-screen">
 
     <!-- Sidebar -->
     <?php include __DIR__ . '/partials/sidebar.php'; ?>
 
     <!-- Main Content -->
-    <main>
-        <div class="page-header">
-            <div class="page-title">
-                <h1>Painel Administrativo</h1>
-                <p>Monitoramento e estatísticas rápidas do claviculário digital.</p>
+    <main class="flex-1 ml-0 lg:ml-[260px] p-6 md:p-10 transition-all duration-300">
+        <div class="flex flex-col md:flex-row justify-between items-start md:items-center mb-8">
+            <div>
+                <h1 class="text-3xl font-extrabold text-slate-900 tracking-tight">Painel Administrativo</h1>
+                <p class="text-slate-500 text-sm mt-1 font-medium">Monitoramento e estatísticas rápidas do claviculário digital.</p>
             </div>
         </div>
 
         <div id="alert-banner-container">
             <?php if ($pendentesCount > 0): ?>
-                <div class="alert-banner" style="background-color: #fee2e2; border: 1px solid #ef4444; border-left: 6px solid #ef4444; color: #991b1b; padding: 16px; border-radius: 8px; margin-bottom: 25px; display: flex; align-items: center; justify-content: space-between; font-size: 14px; font-weight: 600;">
-                    <div style="display: flex; align-items: center; gap: 10px;">
-                        <span style="font-size: 20px;">⚠️</span>
+                <div class="bg-red-50 border border-red-200 border-l-4 border-l-red-500 text-red-800 p-4 rounded-lg shadow-sm mb-6 flex items-center justify-between font-semibold text-sm">
+                    <div class="flex items-center gap-3">
+                        <span class="text-2xl">⚠️</span>
                         <div>
                             Atenção: Existem <?php echo $pendentesCount; ?> chaves com atraso de devolução (em uso há mais de 8 horas)!
                         </div>
@@ -281,94 +60,124 @@
         </div>
 
         <!-- Estatísticas Rápidas -->
-        <div class="stats-grid">
-            <div class="stat-card">
-                <div class="stat-info">
-                    <h3>Disponíveis</h3>
-                    <div class="stat-value" id="stat-disponiveis" style="color: var(--success);"><?php echo $chavesDisponiveis; ?></div>
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-6 mb-8">
+            <div class="bg-white rounded-2xl border border-slate-200 p-6 shadow-sm hover:shadow-md transition-shadow relative overflow-hidden group">
+                <div class="absolute -right-4 -top-4 w-24 h-24 bg-gradient-to-br from-green-100 to-green-50 rounded-full opacity-50 group-hover:scale-110 transition-transform"></div>
+                <div class="flex items-center justify-between relative z-10">
+                    <div>
+                        <h3 class="text-xs font-bold text-slate-400 uppercase tracking-wider mb-1">Disponíveis</h3>
+                        <div class="text-4xl font-extrabold text-green-600" id="stat-disponiveis"><?php echo $chavesDisponiveis; ?></div>
+                    </div>
+                    <div class="text-4xl">🟢</div>
                 </div>
-                <div class="stat-icon">🟢</div>
             </div>
-            <div class="stat-card">
-                <div class="stat-info">
-                    <h3>Em Uso</h3>
-                    <div class="stat-value" id="stat-em-uso" style="color: var(--error);"><?php echo $chavesEmUsoCount; ?></div>
+            
+            <div class="bg-white rounded-2xl border border-slate-200 p-6 shadow-sm hover:shadow-md transition-shadow relative overflow-hidden group">
+                <div class="absolute -right-4 -top-4 w-24 h-24 bg-gradient-to-br from-red-100 to-red-50 rounded-full opacity-50 group-hover:scale-110 transition-transform"></div>
+                <div class="flex items-center justify-between relative z-10">
+                    <div>
+                        <h3 class="text-xs font-bold text-slate-400 uppercase tracking-wider mb-1">Em Uso</h3>
+                        <div class="text-4xl font-extrabold text-red-500" id="stat-em-uso"><?php echo $chavesEmUsoCount; ?></div>
+                    </div>
+                    <div class="text-4xl">🔴</div>
                 </div>
-                <div class="stat-icon">🔴</div>
             </div>
-            <div class="stat-card">
-                <div class="stat-info">
-                    <h3>Atrasadas</h3>
-                    <div class="stat-value" id="stat-atrasadas" style="color: #f59e0b;"><?php echo $pendentesCount; ?></div>
+
+            <div class="bg-white rounded-2xl border border-slate-200 p-6 shadow-sm hover:shadow-md transition-shadow relative overflow-hidden group">
+                <div class="absolute -right-4 -top-4 w-24 h-24 bg-gradient-to-br from-amber-100 to-amber-50 rounded-full opacity-50 group-hover:scale-110 transition-transform"></div>
+                <div class="flex items-center justify-between relative z-10">
+                    <div>
+                        <h3 class="text-xs font-bold text-slate-400 uppercase tracking-wider mb-1">Atrasadas</h3>
+                        <div class="text-4xl font-extrabold text-amber-500" id="stat-atrasadas"><?php echo $pendentesCount; ?></div>
+                    </div>
+                    <div class="text-4xl">⚠️</div>
                 </div>
-                <div class="stat-icon">⚠️</div>
             </div>
-            <div class="stat-card">
-                <div class="stat-info">
-                    <h3>Retiradas Hoje</h3>
-                    <div class="stat-value" id="stat-retiradas-hoje" style="color: #6366f1;"><?php echo $retiradasHoje; ?></div>
+
+            <div class="bg-white rounded-2xl border border-slate-200 p-6 shadow-sm hover:shadow-md transition-shadow relative overflow-hidden group">
+                <div class="absolute -right-4 -top-4 w-24 h-24 bg-gradient-to-br from-indigo-100 to-indigo-50 rounded-full opacity-50 group-hover:scale-110 transition-transform"></div>
+                <div class="flex items-center justify-between relative z-10">
+                    <div>
+                        <h3 class="text-xs font-bold text-slate-400 uppercase tracking-wider mb-1">Retiradas Hoje</h3>
+                        <div class="text-4xl font-extrabold text-indigo-500" id="stat-retiradas-hoje"><?php echo $retiradasHoje; ?></div>
+                    </div>
+                    <div class="text-4xl drop-shadow-sm">🔑</div>
                 </div>
-                <div class="stat-icon">🔑</div>
             </div>
-            <div class="stat-card">
-                <div class="stat-info">
-                    <h3>Devoluções Hoje</h3>
-                    <div class="stat-value" id="stat-devolucoes-hoje" style="color: var(--success);"><?php echo $devolucoesHoje; ?></div>
+
+            <div class="bg-white rounded-2xl border border-slate-200 p-6 shadow-sm hover:shadow-md transition-shadow relative overflow-hidden group">
+                <div class="absolute -right-4 -top-4 w-24 h-24 bg-gradient-to-br from-emerald-100 to-emerald-50 rounded-full opacity-50 group-hover:scale-110 transition-transform"></div>
+                <div class="flex items-center justify-between relative z-10">
+                    <div>
+                        <h3 class="text-xs font-bold text-slate-400 uppercase tracking-wider mb-1">Devoluções Hoje</h3>
+                        <div class="text-4xl font-extrabold text-emerald-500" id="stat-devolucoes-hoje"><?php echo $devolucoesHoje; ?></div>
+                    </div>
+                    <div class="text-4xl drop-shadow-sm">↩</div>
                 </div>
-                <div class="stat-icon">↩</div>
             </div>
         </div>
 
         <!-- Gráficos Analíticos -->
-        <div class="stats-grid" style="grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 20px; margin-bottom: 25px;">
-            <div class="content-card" style="margin-bottom: 0;">
-                <h2 class="card-title">Fluxo de Retiradas (Últimos 7 dias)</h2>
-                <div style="height: 220px; position: relative;">
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
+            <div class="bg-white rounded-2xl border border-slate-200 p-6 shadow-sm">
+                <h2 class="text-lg font-bold text-slate-800 mb-6">Fluxo de Retiradas (Últimos 7 dias)</h2>
+                <div class="relative h-64 w-full">
                     <canvas id="chartFluxoSemanal"></canvas>
                 </div>
             </div>
-            <div class="content-card" style="margin-bottom: 0;">
-                <h2 class="card-title">Top 5 Salas Mais Utilizadas</h2>
-                <div style="height: 220px; position: relative;">
+            <div class="bg-white rounded-2xl border border-slate-200 p-6 shadow-sm">
+                <h2 class="text-lg font-bold text-slate-800 mb-6">Top 5 Salas Mais Utilizadas</h2>
+                <div class="relative h-64 w-full">
                     <canvas id="chartTopSalas"></canvas>
                 </div>
             </div>
         </div>
 
         <!-- Chaves em Uso -->
-        <div class="content-card">
-            <h2 class="card-title">Chaves em Uso Atualmente</h2>
-            <div style="overflow-x: auto;">
-                <table>
+        <div class="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden">
+            <div class="px-6 py-5 border-b border-slate-100 bg-slate-50/50">
+                <h2 class="text-lg font-bold text-slate-800">Chaves em Uso Atualmente</h2>
+            </div>
+            <div class="overflow-x-auto">
+                <table class="w-full text-left border-collapse">
                     <thead>
-                        <tr>
-                            <th>Chave/Sala</th>
-                            <th>Portador</th>
-                            <th>Cargo/Função</th>
-                            <th>Hora da Retirada</th>
-                            <th>Ações</th>
+                        <tr class="bg-slate-50 text-slate-500 border-b border-slate-200 text-xs uppercase tracking-wider">
+                            <th class="px-6 py-4 font-bold">Chave/Sala</th>
+                            <th class="px-6 py-4 font-bold">Portador</th>
+                            <th class="px-6 py-4 font-bold">Cargo/Função</th>
+                            <th class="px-6 py-4 font-bold">Hora da Retirada</th>
+                            <th class="px-6 py-4 font-bold">Ações</th>
                         </tr>
                     </thead>
-                    <tbody id="tabela-chaves-em-uso">
+                    <tbody id="tabela-chaves-em-uso" class="divide-y divide-slate-100 text-sm">
                         <?php if (empty($chavesEmUso)): ?>
                             <tr>
-                                <td colspan="5" style="text-align: center; color: #64748b; padding: 25px;">
+                                <td colspan="5" class="px-6 py-8 text-center text-slate-400 font-medium">
                                     Nenhuma chave retirada no momento.
                                 </td>
                             </tr>
                         <?php else: ?>
                             <?php foreach ($chavesEmUso as $c): ?>
-                                 <tr <?php echo $c['atrasada'] ? 'style="background-color: #fee2e2;"' : ''; ?>>
-                                     <td><strong><?php echo htmlspecialchars($c['nome_sala']); ?></strong> (<?php echo htmlspecialchars($c['codigo_sala']); ?>)</td>
-                                     <td><?php echo htmlspecialchars($c['usuario_nome']); ?></td>
-                                     <td><?php echo htmlspecialchars($c['usuario_perfil']); ?></td>
-                                     <td>
-                                         <?php echo htmlspecialchars($c['desde']); ?>
-                                         <?php if ($c['atrasada']): ?>
-                                             <span style="background-color: #ef4444; color: white; font-size: 10px; font-weight: 800; padding: 2px 6px; border-radius: 4px; margin-left: 6px; display: inline-block;">ATRASADA ⚠️</span>
-                                         <?php endif; ?>
+                                 <tr class="hover:bg-slate-50 transition-colors <?php echo $c['atrasada'] ? 'bg-red-50 hover:bg-red-100/70' : ''; ?>">
+                                     <td class="px-6 py-4 whitespace-nowrap">
+                                        <div class="font-bold text-slate-800"><?php echo htmlspecialchars($c['nome_sala']); ?></div>
+                                        <div class="text-slate-500 text-xs mt-0.5">Código: <?php echo htmlspecialchars($c['codigo_sala']); ?></div>
                                      </td>
-                                     <td><a class="action-link" style="color: var(--error);" onclick="devolverChave(<?php echo $c['chave_id']; ?>)">Devolver Manual</a></td>
+                                     <td class="px-6 py-4 whitespace-nowrap font-medium text-slate-700"><?php echo htmlspecialchars($c['usuario_nome']); ?></td>
+                                     <td class="px-6 py-4 whitespace-nowrap text-slate-500"><?php echo htmlspecialchars($c['usuario_perfil']); ?></td>
+                                     <td class="px-6 py-4 whitespace-nowrap text-slate-600">
+                                         <div class="flex items-center gap-2">
+                                             <?php echo htmlspecialchars($c['desde']); ?>
+                                             <?php if ($c['atrasada']): ?>
+                                                 <span class="bg-red-500 text-white text-[10px] font-bold px-2 py-0.5 rounded-md shadow-sm">ATRASADA ⚠️</span>
+                                             <?php endif; ?>
+                                         </div>
+                                     </td>
+                                     <td class="px-6 py-4 whitespace-nowrap">
+                                        <button onclick="devolverChave(<?php echo $c['chave_id']; ?>)" class="text-red-500 font-bold hover:text-red-700 transition-colors cursor-pointer">
+                                            Devolver Manual
+                                        </button>
+                                     </td>
                                  </tr>
                             <?php endforeach; ?>
                         <?php endif; ?>
@@ -424,9 +233,9 @@
                 const bannerContainer = document.getElementById('alert-banner-container');
                 if (data.pendentesCount > 0) {
                     bannerContainer.innerHTML = `
-                        <div class="alert-banner" style="background-color: #fee2e2; border: 1px solid #ef4444; border-left: 6px solid #ef4444; color: #991b1b; padding: 16px; border-radius: 8px; margin-bottom: 25px; display: flex; align-items: center; justify-content: space-between; font-size: 14px; font-weight: 600;">
-                            <div style="display: flex; align-items: center; gap: 10px;">
-                                <span style="font-size: 20px;">⚠️</span>
+                        <div class="bg-red-50 border border-red-200 border-l-4 border-l-red-500 text-red-800 p-4 rounded-lg shadow-sm mb-6 flex items-center justify-between font-semibold text-sm">
+                            <div class="flex items-center gap-3">
+                                <span class="text-2xl">⚠️</span>
                                 <div>
                                     Atenção: Existem ${data.pendentesCount} chaves com atraso de devolução (em uso há mais de 8 horas)!
                                 </div>
@@ -442,7 +251,7 @@
                 if (data.chavesEmUso.length === 0) {
                     tbody.innerHTML = `
                         <tr>
-                            <td colspan="5" style="text-align: center; color: #64748b; padding: 25px;">
+                            <td colspan="5" class="px-6 py-8 text-center text-slate-400 font-medium">
                                 Nenhuma chave retirada no momento.
                             </td>
                         </tr>
@@ -450,18 +259,27 @@
                 } else {
                     let html = '';
                     data.chavesEmUso.forEach(c => {
-                        const styleTr = c.atrasada == 1 ? 'style="background-color: #fee2e2;"' : '';
-                        const tagAtrasada = c.atrasada == 1 ? '<span style="background-color: #ef4444; color: white; font-size: 10px; font-weight: 800; padding: 2px 6px; border-radius: 4px; margin-left: 6px; display: inline-block;">ATRASADA ⚠️</span>' : '';
+                        const styleTr = c.atrasada == 1 ? 'bg-red-50 hover:bg-red-100/70' : 'hover:bg-slate-50 transition-colors';
+                        const tagAtrasada = c.atrasada == 1 ? '<span class="bg-red-500 text-white text-[10px] font-bold px-2 py-0.5 rounded-md shadow-sm">ATRASADA ⚠️</span>' : '';
                         html += `
-                            <tr ${styleTr}>
-                                <td><strong>${escapeHtml(c.nome_sala)}</strong> (${escapeHtml(c.codigo_sala)})</td>
-                                <td>${escapeHtml(c.usuario_nome)}</td>
-                                <td>${escapeHtml(c.usuario_perfil)}</td>
-                                <td>
-                                    ${escapeHtml(c.desde)}
-                                    ${tagAtrasada}
+                            <tr class="${styleTr}">
+                                <td class="px-6 py-4 whitespace-nowrap">
+                                    <div class="font-bold text-slate-800">${escapeHtml(c.nome_sala)}</div>
+                                    <div class="text-slate-500 text-xs mt-0.5">Código: ${escapeHtml(c.codigo_sala)}</div>
                                 </td>
-                                <td><a class="action-link" style="color: var(--error);" onclick="devolverChave(${c.chave_id})">Devolver Manual</a></td>
+                                <td class="px-6 py-4 whitespace-nowrap font-medium text-slate-700">${escapeHtml(c.usuario_nome)}</td>
+                                <td class="px-6 py-4 whitespace-nowrap text-slate-500">${escapeHtml(c.usuario_perfil)}</td>
+                                <td class="px-6 py-4 whitespace-nowrap text-slate-600">
+                                    <div class="flex items-center gap-2">
+                                        ${escapeHtml(c.desde)}
+                                        ${tagAtrasada}
+                                    </div>
+                                </td>
+                                <td class="px-6 py-4 whitespace-nowrap">
+                                    <button onclick="devolverChave(${c.chave_id})" class="text-red-500 font-bold hover:text-red-700 transition-colors cursor-pointer">
+                                        Devolver Manual
+                                    </button>
+                                </td>
                             </tr>
                         `;
                     });
@@ -505,7 +323,12 @@
                         backgroundColor: 'rgba(99, 102, 241, 0.1)',
                         borderWidth: 3,
                         fill: true,
-                        tension: 0.4
+                        tension: 0.4,
+                        pointBackgroundColor: '#ffffff',
+                        pointBorderColor: '#6366f1',
+                        pointBorderWidth: 2,
+                        pointRadius: 4,
+                        pointHoverRadius: 6
                     }]
                 },
                 options: {
@@ -517,9 +340,19 @@
                     scales: {
                         y: {
                             beginAtZero: true,
-                            ticks: { stepSize: 1 }
+                            ticks: { stepSize: 1 },
+                            grid: { color: '#f1f5f9' },
+                            border: { display: false }
+                        },
+                        x: {
+                            grid: { display: false },
+                            border: { display: false }
                         }
-                    }
+                    },
+                    interaction: {
+                        intersect: false,
+                        mode: 'index',
+                    },
                 }
             });
 
@@ -533,7 +366,9 @@
                         label: 'Total de Retiradas',
                         data: <?php echo json_encode(array_column($topSalas, 'total_retiradas')); ?>,
                         backgroundColor: 'rgba(2, 132, 199, 0.85)',
-                        borderRadius: 6
+                        hoverBackgroundColor: 'rgba(2, 132, 199, 1)',
+                        borderRadius: 6,
+                        borderSkipped: false
                     }]
                 },
                 options: {
@@ -546,7 +381,13 @@
                     scales: {
                         x: {
                             beginAtZero: true,
-                            ticks: { stepSize: 1 }
+                            ticks: { stepSize: 1 },
+                            grid: { color: '#f1f5f9' },
+                            border: { display: false }
+                        },
+                        y: {
+                            grid: { display: false },
+                            border: { display: false }
                         }
                     }
                 }
