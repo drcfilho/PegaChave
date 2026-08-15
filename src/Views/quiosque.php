@@ -68,7 +68,7 @@
         corePlugins: {
           preflight: true,
         },
-        darkMode: ['class', '.dark-theme'],
+        darkMode: 'class',
         theme: {
           extend: {
             colors: {

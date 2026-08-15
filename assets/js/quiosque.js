@@ -103,17 +103,17 @@ function quiosqueState() {
             const savedTheme = localStorage.getItem('theme');
             if (savedTheme === 'dark' || (!savedTheme && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
                 this.isDark = true;
-                document.body.classList.add('dark-theme');
+                document.documentElement.classList.add('dark');
             }
         },
 
         toggleDarkMode() {
             this.isDark = !this.isDark;
             if (this.isDark) {
-                document.body.classList.add('dark-theme');
+                document.documentElement.classList.add('dark');
                 localStorage.setItem('theme', 'dark');
             } else {
-                document.body.classList.remove('dark-theme');
+                document.documentElement.classList.remove('dark');
                 localStorage.setItem('theme', 'light');
             }
         },
