@@ -297,11 +297,31 @@
             <p style="font-size: 14px; color: #64748b; margin-bottom: 20px;">
                 Gere um arquivo de dump SQL com todas as tabelas e dados atuais do sistema para guardar com segurança.
             </p>
-            <form method="POST" action="<?= BASE_URL ?>/admin/config" target="_blank">
+            <form method="POST" action="<?= BASE_URL ?>/admin/config" target="_blank" style="margin-bottom: 20px;">
                 <?php renderizar_csrf_input(); ?>
                 <input type="hidden" name="action" value="download_backup">
                 <button type="submit" class="btn-save" style="background-color: #22c55e;">
                     📥 Baixar Backup (.sql)
+                </button>
+            </form>
+
+            <hr style="border: 0; border-top: 1px solid var(--border-color); margin: 25px 0;">
+
+            <h2 style="font-size: 18px; margin-bottom: 10px;">♻️ Restaurar Backup</h2>
+            <p style="font-size: 14px; color: #ef4444; margin-bottom: 20px; font-weight: 600;">
+                Atenção: Restaurar um backup irá apagar todos os dados atuais e substituí-los pelas informações do arquivo .sql. Faça isso apenas se tiver certeza!
+            </p>
+            <form method="POST" action="<?= BASE_URL ?>/admin/config" enctype="multipart/form-data" onsubmit="return confirm('Tem certeza absoluta que deseja sobreescrever o banco de dados atual? Esta ação é irreversível!');">
+                <?php renderizar_csrf_input(); ?>
+                <input type="hidden" name="action" value="restore_backup">
+                
+                <div class="form-group">
+                    <label for="backup_file">Arquivo de Backup (.sql)</label>
+                    <input type="file" name="backup_file" id="backup_file" class="form-control" accept=".sql" required>
+                </div>
+
+                <button type="submit" class="btn-save" style="background-color: #ef4444;">
+                    ⚠️ Sobreescrever e Restaurar Banco
                 </button>
             </form>
         </div>

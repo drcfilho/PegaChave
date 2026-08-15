@@ -18,6 +18,28 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     if (!validar_csrf_token($_POST['csrf_token'] ?? '')) {
         $message = "Token de segurança inválido. Tente novamente.";
         $messageType = "error";
+    } elseif (isset($_POST['action']) && $_POST['action'] === 'restore_backup') {
+        if (isset($_FILES['backup_file']) && $_FILES['backup_file']['error'] === UPLOAD_ERR_OK) {
+            $sqlContent = file_get_contents($_FILES['backup_file']['tmp_name']);
+            if (!empty($sqlContent)) {
+                try {
+                    // Executa todas as queries do arquivo SQL
+                    $pdo->exec($sqlContent);
+                    registrar_log($pdo, 'Restauração de Backup', "O banco de dados foi restaurado com sucesso a partir de um arquivo SQL.");
+                    $message = "Banco de dados restaurado com sucesso!";
+                    $messageType = "success";
+                } catch (\PDOException $e) {
+                    $message = "Erro ao restaurar o banco: " . $e->getMessage();
+                    $messageType = "error";
+                }
+            } else {
+                $message = "Arquivo SQL vazio ou inválido.";
+                $messageType = "error";
+            }
+        } else {
+            $message = "Erro no upload do arquivo de backup.";
+            $messageType = "error";
+        }
     } elseif (isset($_POST['action']) && $_POST['action'] === 'download_backup') {
         $called_from_web = true;
         require_once __DIR__ . '/../../bin/backup_db.php';
