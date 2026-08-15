@@ -184,52 +184,7 @@
 <body>
 
     <!-- Sidebar -->
-    <aside>
-        <div class="sidebar-header">
-            <span>🔑</span> PegaChave
-        </div>
-        <ul class="sidebar-menu">
-            <li class="sidebar-item">
-                <a href="<?= BASE_URL ?>/admin">📊 Dashboard</a>
-            </li>
-            <li class="sidebar-item">
-                <a href="<?= BASE_URL ?>/admin/chaves">🔑 Chaves/Salas</a>
-            </li>
-            <li class="sidebar-item">
-                <a href="<?= BASE_URL ?>/admin/usuarios">👤 Usuários</a>
-            </li>
-            <li class="sidebar-item">
-                <a href="<?= BASE_URL ?>/admin/usuarios_arquivados">🗄️ Arquivados</a>
-            </li>
-            <li class="sidebar-item">
-                <a href="<?= BASE_URL ?>/admin/reservas">📅 Agendamentos</a>
-            </li>
-            <li class="sidebar-item">
-                <a href="<?= BASE_URL ?>/admin/restricoes">🔒 Restrições</a>
-            </li>
-            <li class="sidebar-item">
-                <a href="<?= BASE_URL ?>/admin/gerar_qr">🖨️ Gerar QR Codes</a>
-            </li>
-            <li class="sidebar-item">
-                <a href="<?= BASE_URL ?>/admin/consulta">🔍 Consultar Disponibilidade</a>
-            </li>
-            <li class="sidebar-item">
-                <a href="<?= BASE_URL ?>/admin/relatorio">📝 Relatório Geral</a>
-            </li>
-            <li class="sidebar-item active">
-                <a href="<?= BASE_URL ?>/admin/logs">📋 Logs de Auditoria</a>
-            </li>
-            <li class="sidebar-item">
-                <a href="<?= BASE_URL ?>/admin/config">⚙️ Configurações</a>
-            </li>
-            <li class="sidebar-item">
-                <a href="<?= BASE_URL ?>/admin_logout.php" style="color: #ef4444;">🚪 Sair</a>
-            </li>
-        </ul>
-        <div class="sidebar-footer">
-            <a href="<?= BASE_URL ?>/" class="btn-kiosk">🖥️ Voltar ao Quiosque</a>
-        </div>
-    </aside>
+    <?php include __DIR__ . '/partials/sidebar.php'; ?>
 
     <!-- Main Content -->
     <main>

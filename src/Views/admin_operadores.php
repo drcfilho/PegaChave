@@ -77,35 +77,7 @@ $isMaster = ($_SESSION['admin_role'] ?? '') === 'admin_master';
 <body>
 
     <!-- Sidebar Dinâmica -->
-    <aside>
-        <div class="sidebar-header"><span>🔑</span> PegaChave</div>
-        <ul class="sidebar-menu">
-            <li class="sidebar-item"><a href="<?= BASE_URL ?>/admin">📊 Dashboard</a></li>
-            <?php if(has_permission('gerenciar_chaves')): ?>
-            <li class="sidebar-item"><a href="<?= BASE_URL ?>/admin/chaves">🔑 Chaves/Salas</a></li>
-            <li class="sidebar-item"><a href="<?= BASE_URL ?>/admin/reservas">📅 Agendamentos</a></li>
-            <?php endif; ?>
-            <?php if(has_permission('gerenciar_usuarios')): ?>
-            <li class="sidebar-item"><a href="<?= BASE_URL ?>/admin/usuarios">👤 Usuários</a></li>
-            <li class="sidebar-item"><a href="<?= BASE_URL ?>/admin/usuarios_arquivados">🗄️ Arquivados</a></li>
-            <li class="sidebar-item"><a href="<?= BASE_URL ?>/admin/restricoes">🔒 Restrições</a></li>
-            <?php endif; ?>
-            <?php if(has_permission('gerenciar_operadores')): ?>
-            <li class="sidebar-item active"><a href="<?= BASE_URL ?>/admin/operadores">🛡️ Operadores</a></li>
-            <?php endif; ?>
-            <?php if(has_permission('ver_relatorios')): ?>
-            <li class="sidebar-item"><a href="<?= BASE_URL ?>/admin/relatorio">📝 Relatório Geral</a></li>
-            <li class="sidebar-item"><a href="<?= BASE_URL ?>/admin/logs">📋 Logs de Auditoria</a></li>
-            <?php endif; ?>
-            <?php if(has_permission('gerenciar_configuracoes')): ?>
-            <li class="sidebar-item"><a href="<?= BASE_URL ?>/admin/gerar_qr">🖨️ Gerar QR Codes</a></li>
-            <li class="sidebar-item"><a href="<?= BASE_URL ?>/admin/config">⚙️ Configurações</a></li>
-            <?php endif; ?>
-            <li class="sidebar-item"><a href="<?= BASE_URL ?>/admin/consulta">🔍 Consultar Disp.</a></li>
-            <li class="sidebar-item"><a href="<?= BASE_URL ?>/admin_logout.php" style="color: #ef4444;">🚪 Sair</a></li>
-        </ul>
-        <div class="sidebar-footer"><a href="<?= BASE_URL ?>/" class="btn-kiosk">🖥️ Voltar ao Quiosque</a></div>
-    </aside>
+    <?php include __DIR__ . '/partials/sidebar.php'; ?>
 
     <main>
         <div class="page-header">
