@@ -11,31 +11,8 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="<?= BASE_URL ?>/api/admin_responsive.css?v=<?= time() ?>">
-    <script src="https://cdn.tailwindcss.com"></script>
-    <script>
-      tailwind.config = {
-        corePlugins: {
-          preflight: true,
-        },
-        theme: {
-          extend: {
-            colors: {
-              primary: 'var(--primary)',
-              secondary: 'var(--sidebar-bg)'
-            },
-            keyframes: {
-              slideUpDown: {
-                '0%, 100%': { top: '-60px', opacity: '0' },
-                '10%, 90%': { top: '20px', opacity: '1' }
-              }
-            },
-            animation: {
-              'slide-up-down': 'slideUpDown 4s forwards'
-            }
-          }
-        }
-      }
-    </script>
+    
+    <link rel="stylesheet" href="<?= BASE_URL ?>/assets/dist/app.min.css?v=<?= time() ?>">
 </head>
 <body class="bg-slate-50 text-slate-800 font-sans flex min-h-screen">
 

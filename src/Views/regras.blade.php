@@ -146,22 +146,8 @@ require_once __DIR__ . '/../../api/db.php';
             filter: brightness(0.9);
         }
     </style>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <script>
-      tailwind.config = {
-        corePlugins: {
-          preflight: false,
-        },
-        theme: {
-          extend: {
-            colors: {
-              primary: 'var(--primary)',
-              secondary: 'var(--sidebar-bg)'
-            }
-          }
-        }
-      }
-    </script>
+    
+    <link rel="stylesheet" href="<?= BASE_URL ?>/assets/dist/app.min.css?v=<?= time() ?>">
 </head>
 <body>
 
