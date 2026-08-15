@@ -182,7 +182,9 @@
         let chartStatusInstance = null;
 
         async function devolverChave(chaveId) {
-            if (!confirm("Deseja forçar a devolução manual desta chave?")) return;
+            const observacao = prompt("Registrar Ocorrência / Avaria? (Deixe em branco se a chave/sala foi devolvida em perfeito estado):");
+            if (observacao === null) return; // Cancelado
+            
             try {
                 const response = await fetch('<?= BASE_URL ?>/api/status_chaves.php');
                 const result = await response.json();
@@ -192,7 +194,11 @@
                     const scanRes = await fetch('<?= BASE_URL ?>/api/processar_scan', {
                         method: 'POST',
                         headers: { 'Content-Type': 'application/json' },
-                        body: JSON.stringify({ qr_code: chaveObj.qr_code_hash })
+                        body: JSON.stringify({ 
+                            qr_code: chaveObj.qr_code_hash,
+                            observacao: observacao.trim(),
+                            modo_explicito: 'devolver'
+                        })
                     });
                     const scanData = await scanRes.json();
                     alert(scanData.message);

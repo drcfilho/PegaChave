@@ -86,7 +86,11 @@ Este arquivo registra todo o histórico de desenvolvimento e as melhorias aplica
 ### 🛡️ 11. RBAC (Sistema de Controle de Acesso e Gestão de Operadores)
 * **Gestão Dinâmica de Permissões (JSON)**: Implementação de cadastro de novos "Operadores" no sistema com permissões granulares gerenciadas via Checkboxes pelo Administrador Master. As permissões são salvas na coluna `permissoes` da tabela `administradores`.
 * **Proteção Avançada (`AdminBaseController`)**: Interceptação em tempo de execução validando o perfil do operador da sessão antes de carregar qualquer página administrativa ou executar qualquer ação (CRUD).
-* **Sidebar Componentizado e Dinâmico**: Extração do menu lateral estático para um componente único (`partials/sidebar.php`) que processa ocultação automática das opções baseadas nas permissões ativas. Fallback implementado para sessões legadas.
+* **Menu de Auditoria e Componentização**: Extração do menu lateral estático para um componente único (`partials/sidebar.php`) que processa ocultação automática das opções baseadas nas permissões ativas. Abas de *Relatórios*, *Logs*, *Chaves Arquivadas* e *Usuários Arquivados* foram inteligentemente agrupadas em um único dropdown (sanfona) nativo de "🛡️ Auditoria & Dados".
+
+### ⚠️ 12. Gestão de Ocorrências e Avarias
+* **Registro no Ato da Devolução**: Ao realizar uma devolução manual diretamente no painel de controle (Dashboard Administrativo), o sistema agora abre um *prompt* permitindo ao porteiro/operador registrar avarias ou ocorrências (ex: "Chaveiro quebrado", "Ar condicionado deixado ligado", "Cabo HDMI sumiu").
+* **Destaque Visual no Relatório de Uso**: Ocorrências registradas são automaticamente prefixadas com a tag "🚨 OCORRÊNCIA" e salvas no banco. Na tela de "Histórico de Uso", estas ocorrências ganham destaque visual (caixa vermelha em negrito) no meio da tabela para fácil identificação pela coordenação.
 
 ---
 

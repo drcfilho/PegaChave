@@ -104,10 +104,15 @@ class ScanController extends BaseController {
                         $mov = $movRepo->buscarAtivaPorChave($ch_id);
 
                         if ($mov) {
+                            $observacao_input = $input['observacao'] ?? null;
                             $observacao = null;
                             if (isset($_SESSION['admin_logged_in']) && $_SESSION['admin_logged_in'] === true) {
                                 $admin_nome = $_SESSION['admin_name'] ?? 'Administrador';
-                                $observacao = "Devolvida manualmente por: " . $admin_nome;
+                                if (!empty($observacao_input)) {
+                                    $observacao = "🚨 OCORRÊNCIA ($admin_nome): " . $observacao_input;
+                                } else {
+                                    $observacao = "Devolvida manualmente por: " . $admin_nome;
+                                }
                             }
                             $movRepo->registrarDevolucao($mov['id'], $observacao);
                             $chaveRepo->atualizarStatus($ch_id, 1);
@@ -199,10 +204,16 @@ class ScanController extends BaseController {
                     $mov = $movRepo->buscarAtivaPorChave($chave_id);
 
                     if ($mov) {
+                        $observacao_input = $input['observacao'] ?? null;
                         $observacao = null;
+                        
                         if (isset($_SESSION['admin_logged_in']) && $_SESSION['admin_logged_in'] === true) {
                             $admin_nome = $_SESSION['admin_name'] ?? 'Administrador';
-                            $observacao = "Devolvida manualmente por: " . $admin_nome;
+                            if (!empty($observacao_input)) {
+                                $observacao = "🚨 OCORRÊNCIA ($admin_nome): " . $observacao_input;
+                            } else {
+                                $observacao = "Devolvida manualmente por: " . $admin_nome;
+                            }
                         }
 
                         $movRepo->registrarDevolucao($mov['id'], $observacao);

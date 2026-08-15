@@ -115,7 +115,15 @@
                                             <span class="text-[11px] font-bold px-2.5 py-1 rounded-full uppercase bg-red-100 text-red-700">Em Uso</span>
                                         <?php endif; ?>
                                     </td>
-                                    <td class="px-4 py-3 border-b border-slate-100 text-sm"><small><?php echo htmlspecialchars($m['observacao'] ?? '-'); ?></small></td>
+                                    <td class="px-4 py-3 border-b border-slate-100 text-sm max-w-xs">
+                                        <?php if (strpos($m['observacao'] ?? '', '🚨 OCORRÊNCIA') !== false): ?>
+                                            <div class="text-red-700 font-bold bg-red-100 border border-red-200 px-2 py-1.5 rounded text-xs leading-tight">
+                                                <?php echo nl2br(htmlspecialchars($m['observacao'])); ?>
+                                            </div>
+                                        <?php else: ?>
+                                            <small class="text-slate-500"><?php echo htmlspecialchars($m['observacao'] ?? '-'); ?></small>
+                                        <?php endif; ?>
+                                    </td>
                                 </tr>
                             <?php endforeach; ?>
                         <?php endif; ?>
