@@ -179,7 +179,7 @@
             display: inline-block;
         }
     </style>
-    <link rel="stylesheet" href="api/admin_responsive.css">
+    <link rel="stylesheet" href="<?= BASE_URL ?>/api/admin_responsive.css">
 </head>
 <body>
 
@@ -247,6 +247,6 @@
             window.location.href = window.location.pathname + '?' + urlParams.toString();
         }
     </script>
-    <script src="/api/admin_responsive.js"></script>
+    <script src="<?= BASE_URL ?>/api/admin_responsive.js"></script>
 </body>
 </html>

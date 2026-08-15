@@ -233,7 +233,7 @@
             100% { top: -60px; opacity: 0; }
         }
     </style>
-    <link rel="stylesheet" href="api/admin_responsive.css">
+    <link rel="stylesheet" href="<?= BASE_URL ?>/api/admin_responsive.css">
 </head>
 <body>
 
@@ -344,6 +344,6 @@
             e.target.nextElementSibling.textContent = e.target.value.toUpperCase();
         });
     </script>
-    <script src="/api/admin_responsive.js"></script>
+    <script src="<?= BASE_URL ?>/api/admin_responsive.js"></script>
 </body>
 </html>

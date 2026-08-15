@@ -281,7 +281,7 @@
             }
         }
     </style>
-    <link rel="stylesheet" href="api/admin_responsive.css">
+    <link rel="stylesheet" href="<?= BASE_URL ?>/api/admin_responsive.css">
 </head>
 <body>
 
@@ -405,6 +405,6 @@
             window.open(window.location.pathname + '?' + urlParams.toString(), '_blank');
         }
     </script>
-    <script src="/api/admin_responsive.js"></script>
+    <script src="<?= BASE_URL ?>/api/admin_responsive.js"></script>
 </body>
 </html>

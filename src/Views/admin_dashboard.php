@@ -234,7 +234,7 @@
             text-decoration: underline;
         }
     </style>
-    <link rel="stylesheet" href="api/admin_responsive.css">
+    <link rel="stylesheet" href="<?= BASE_URL ?>/api/admin_responsive.css">
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 </head>
 <body>
@@ -540,6 +540,6 @@
             setInterval(refreshDashboard, 2000);
         });
     </script>
-    <script src="/api/admin_responsive.js"></script>
+    <script src="<?= BASE_URL ?>/api/admin_responsive.js"></script>
 </body>
 </html>
