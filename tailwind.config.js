@@ -5,11 +5,18 @@ module.exports = {
     "./src/Views/*.blade.php",
     "./api/**/*.js"
   ],
+  darkMode: 'class',
   theme: {
     extend: {
       colors: {
         primary: 'var(--primary, #0ea5e9)',
-        secondary: 'var(--sidebar-bg, #0f172a)'
+        secondary: 'var(--sidebar-bg, #0f172a)',
+        brand: {
+          400: 'var(--theme-cor-primaria, #16a34a)',
+          500: 'var(--theme-cor-primaria, #15803d)',
+          600: 'var(--theme-cor-primaria, #166534)',
+          800: 'var(--theme-cor-secundaria, #14532d)'
+        }
       },
       keyframes: {
         slideIn: { from: { transform: 'translateX(120%)' }, to: { transform: 'translateX(0)' } },
