@@ -8,7 +8,7 @@ if (php_sapi_name() !== 'cli' && !isset($called_from_web)) {
     die('Acesso negado.');
 }
 
-require_once __DIR__ . '/../api/config.php';
+require_once __DIR__ . '/../api/db.php';
 
 function generate_mysql_dump($pdo) {
     $dump = "-- Banco de Dados PegaChave\n";

@@ -7,6 +7,7 @@ Este arquivo registra todo o histórico de desenvolvimento e as melhorias aplica
 ## 🚀 Versão Atual (Melhorias e Ajustes Recentes)
 
 ### Refatoração Estrutural (Task 1, 2, 3)
+* **Correções Críticas de Backup**: A rotina de backup (`bin/backup_db.php`) estava quebrando ao tentar requisitar um arquivo inexistente (`api/config.php`). O apontamento foi corrigido para `api/db.php`. Além disso, foram adicionadas proteções de *fallback* para ambientes que não possuem a extensão `ZipArchive` habilitada, evitando que o painel quebre (Erro 500) ao baixar ou restaurar os backups.
 * **Injeção de Dependência**: Remoção de variáveis globais (`$pdo`, `$config`) dos controladores e implementação via construtor (Task 1).
 * **Controladores RESTful**: Separação clara das requisições GET e POST nos controladores `AdminChavesController` e `AdminUsuariosController`. Rotas em `index.php` agora direcionam para métodos específicos (`index`, `store`, `update`, `destroy`) ao invés de um único `index()` (Task 2).
 * **Tratamento de Erros Limpo (Encapsulamento de Regra de Negócio)**: Validações extensas, `htmlspecialchars`, e tratamentos de erro de formulário foram movidos dos controladores para os Models (`UsuarioRepository` e `ChaveRepository`).
