@@ -280,6 +280,22 @@
             margin-bottom: 0;
         }
     </style>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+      tailwind.config = {
+        corePlugins: {
+          preflight: false,
+        },
+        theme: {
+          extend: {
+            colors: {
+              primary: 'var(--primary)',
+              secondary: 'var(--sidebar-bg)'
+            }
+          }
+        }
+      }
+    </script>
 </head>
 <body>
 

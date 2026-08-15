@@ -73,6 +73,22 @@ $isMaster = ($_SESSION['admin_role'] ?? '') === 'admin_master';
         .perm-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-top: 10px; }
         .perm-item { display: flex; align-items: center; gap: 8px; font-size: 14px; }
     </style>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+      tailwind.config = {
+        corePlugins: {
+          preflight: false,
+        },
+        theme: {
+          extend: {
+            colors: {
+              primary: 'var(--primary)',
+              secondary: 'var(--sidebar-bg)'
+            }
+          }
+        }
+      }
+    </script>
 </head>
 <body>
 
