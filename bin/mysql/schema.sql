@@ -1,3 +1,4 @@
+SET NAMES utf8mb4;
 CREATE DATABASE IF NOT EXISTS controle_chaves 
 DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
 
@@ -12,11 +13,11 @@ CREATE TABLE IF NOT EXISTS perfis (
 -- Carga inicial de perfis
 INSERT INTO perfis (id, nome) VALUES 
 (1, 'Administrador'), 
-(2, 'Estagiario'), 
+(2, 'Estagiário'), 
 (3, 'Docente'), 
 (4, 'TAE'),
 (5, 'Limpeza'),
-(6, 'Seguranca'),
+(6, 'Segurança'),
 (7, 'Externo'),
 (8, 'Aluno')
 ON DUPLICATE KEY UPDATE nome=VALUES(nome);
