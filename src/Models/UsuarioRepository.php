@@ -90,4 +90,58 @@ class UsuarioRepository extends BaseRepository {
         $stmt->execute([$id]);
         return $stmt->fetch();
     }
+
+    public function salvarNovoUsuario($dados) {
+        $nome = trim($dados['nome'] ?? '');
+        $email = trim($dados['email'] ?? '');
+        $matricula = trim($dados['matricula'] ?? '');
+        $perfil_id = filter_var($dados['perfil_id'] ?? '', FILTER_VALIDATE_INT);
+
+        $nome = htmlspecialchars($nome, ENT_QUOTES, 'UTF-8');
+        $matricula = preg_replace('/[^a-zA-Z0-9_-]/', '', $matricula);
+        $qr_code_hash = 'user_' . $matricula;
+
+        if (empty($nome) || empty($matricula) || empty($qr_code_hash) || !$perfil_id) {
+            throw new \Exception("Por favor, preencha todos os campos obrigatórios corretamente.");
+        }
+        if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
+            throw new \Exception("Formato de e-mail inválido.");
+        }
+
+        $this->cadastrar($nome, $email, $matricula, $perfil_id, $qr_code_hash);
+        return [
+            'nome' => $nome,
+            'matricula' => $matricula,
+            'qr_code_hash' => $qr_code_hash
+        ];
+    }
+
+    public function salvarAtualizacaoUsuario($dados) {
+        $id = filter_var($dados['id'] ?? '', FILTER_VALIDATE_INT);
+        $nome = trim($dados['nome'] ?? '');
+        $email = trim($dados['email'] ?? '');
+        $matricula = trim($dados['matricula'] ?? '');
+        $perfil_id = filter_var($dados['perfil_id'] ?? '', FILTER_VALIDATE_INT);
+        $ativo = isset($dados['ativo']) ? 1 : 0;
+
+        $nome = htmlspecialchars($nome, ENT_QUOTES, 'UTF-8');
+        $matricula = preg_replace('/[^a-zA-Z0-9_-]/', '', $matricula);
+        $qr_code_hash = 'user_' . $matricula;
+
+        if (!$id || empty($nome) || empty($matricula) || empty($qr_code_hash) || !$perfil_id) {
+            throw new \Exception("Todos os campos obrigatórios devem ser preenchidos.");
+        }
+        if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
+            throw new \Exception("Formato de e-mail inválido.");
+        }
+
+        $this->atualizar($id, $nome, $email, $matricula, $perfil_id, $qr_code_hash, $ativo);
+        return [
+            'id' => $id,
+            'nome' => $nome,
+            'matricula' => $matricula,
+            'qr_code_hash' => $qr_code_hash,
+            'ativo' => $ativo
+        ];
+    }
 }

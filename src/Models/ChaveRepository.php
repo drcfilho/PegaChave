@@ -64,4 +64,70 @@ class ChaveRepository extends BaseRepository {
         $stmt = $this->pdo->query("SELECT * FROM chaves ORDER BY codigo_sala ASC");
         return $stmt->fetchAll();
     }
+
+    public function salvarNovaChave($dados) {
+        $nome_sala = trim($dados['nome_sala'] ?? '');
+        $bloco = trim($dados['bloco'] ?? '');
+        $andar = trim($dados['andar'] ?? '');
+        $matriculas_permitidas = trim($dados['matriculas_permitidas'] ?? '');
+        $codigo_sala = trim($dados['codigo_sala'] ?? '');
+        $descricao = trim($dados['descricao'] ?? '');
+
+        $nome_sala = htmlspecialchars($nome_sala, ENT_QUOTES, 'UTF-8');
+        $bloco = htmlspecialchars($bloco, ENT_QUOTES, 'UTF-8');
+        $andar = htmlspecialchars($andar, ENT_QUOTES, 'UTF-8');
+        $matriculas_permitidas = htmlspecialchars($matriculas_permitidas, ENT_QUOTES, 'UTF-8');
+        $codigo_sala = preg_replace('/[^a-zA-Z0-9_-]/', '', $codigo_sala);
+        $descricao = htmlspecialchars($descricao, ENT_QUOTES, 'UTF-8');
+
+        $qr_code_hash = 'chaves_' . $codigo_sala;
+
+        if (empty($nome_sala) || empty($codigo_sala) || empty($qr_code_hash)) {
+            throw new \Exception("Por favor, preencha todos os campos obrigatórios.");
+        }
+
+        $this->criar($nome_sala, $bloco, $andar, $matriculas_permitidas, $codigo_sala, $qr_code_hash, $descricao);
+        return [
+            'nome_sala' => $nome_sala,
+            'bloco' => $bloco,
+            'andar' => $andar,
+            'matriculas_permitidas' => $matriculas_permitidas,
+            'codigo_sala' => $codigo_sala,
+            'qr_code_hash' => $qr_code_hash
+        ];
+    }
+
+    public function salvarAtualizacaoChave($dados) {
+        $id = filter_var($dados['id'] ?? '', FILTER_VALIDATE_INT);
+        $nome_sala = trim($dados['nome_sala'] ?? '');
+        $bloco = trim($dados['bloco'] ?? '');
+        $andar = trim($dados['andar'] ?? '');
+        $matriculas_permitidas = trim($dados['matriculas_permitidas'] ?? '');
+        $codigo_sala = trim($dados['codigo_sala'] ?? '');
+        $descricao = trim($dados['descricao'] ?? '');
+
+        $nome_sala = htmlspecialchars($nome_sala, ENT_QUOTES, 'UTF-8');
+        $bloco = htmlspecialchars($bloco, ENT_QUOTES, 'UTF-8');
+        $andar = htmlspecialchars($andar, ENT_QUOTES, 'UTF-8');
+        $matriculas_permitidas = htmlspecialchars($matriculas_permitidas, ENT_QUOTES, 'UTF-8');
+        $codigo_sala = preg_replace('/[^a-zA-Z0-9_-]/', '', $codigo_sala);
+        $descricao = htmlspecialchars($descricao, ENT_QUOTES, 'UTF-8');
+
+        $qr_code_hash = 'chaves_' . $codigo_sala;
+
+        if (!$id || empty($nome_sala) || empty($codigo_sala) || empty($qr_code_hash)) {
+            throw new \Exception("Todos os campos obrigatórios devem ser preenchidos.");
+        }
+
+        $this->atualizar($nome_sala, $bloco, $andar, $matriculas_permitidas, $codigo_sala, $qr_code_hash, $descricao, $id);
+        return [
+            'id' => $id,
+            'nome_sala' => $nome_sala,
+            'bloco' => $bloco,
+            'andar' => $andar,
+            'matriculas_permitidas' => $matriculas_permitidas,
+            'codigo_sala' => $codigo_sala,
+            'qr_code_hash' => $qr_code_hash
+        ];
+    }
 }
