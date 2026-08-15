@@ -299,6 +299,9 @@
                 <button class="btn-print" onclick="exportarCSV()" style="background-color: var(--primary); border-color: var(--primary); color: white;">
                     📊 Exportar CSV
                 </button>
+                <button class="btn-print" onclick="exportarPDF()" style="background-color: #dc2626; border-color: #dc2626; color: white;">
+                    📄 Exportar PDF
+                </button>
                 <button class="btn-print" onclick="window.print()">
                     🖨️ Imprimir Página
                 </button>
@@ -394,6 +397,12 @@
             const urlParams = new URLSearchParams(window.location.search);
             urlParams.set('export', 'csv');
             window.location.href = window.location.pathname + '?' + urlParams.toString();
+        }
+
+        function exportarPDF() {
+            const urlParams = new URLSearchParams(window.location.search);
+            urlParams.set('export', 'pdf');
+            window.open(window.location.pathname + '?' + urlParams.toString(), '_blank');
         }
     </script>
     <script src="/api/admin_responsive.js"></script>

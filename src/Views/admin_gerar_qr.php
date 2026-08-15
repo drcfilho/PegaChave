@@ -497,6 +497,7 @@
             </div>
             <div style="display: flex; gap: 12px;">
                 <button class="btn-outline" onclick="closePreview()">↩ Voltar</button>
+                <button class="btn-generate" onclick="exportarPDF()" style="background-color: #dc2626;">📄 Exportar PDF A4</button>
                 <button class="btn-generate" onclick="window.print()">🖨️ Imprimir Agora</button>
             </div>
         </div>
@@ -675,6 +676,44 @@
 
         function closePreview() {
             document.getElementById('print-preview-section').style.display = 'none';
+        }
+
+        function exportarPDF() {
+            const checkedBoxes = document.querySelectorAll('.chk-item:checked');
+            if (checkedBoxes.length === 0) return;
+
+            const items = [];
+            checkedBoxes.forEach(chk => {
+                items.push({
+                    name: chk.getAttribute('data-name'),
+                    bloco: chk.getAttribute('data-bloco') || '',
+                    andar: chk.getAttribute('data-andar') || '',
+                    id: chk.getAttribute('data-id'),
+                    hash: chk.getAttribute('data-hash'),
+                    cat: chk.getAttribute('data-cat')
+                });
+            });
+
+            // Criar um form oculto para enviar via POST e gerar o download
+            const form = document.createElement('form');
+            form.method = 'POST';
+            form.action = window.location.href; // Mesma página
+
+            const inputAction = document.createElement('input');
+            inputAction.type = 'hidden';
+            inputAction.name = 'action';
+            inputAction.value = 'export_pdf';
+
+            const inputItems = document.createElement('input');
+            inputItems.type = 'hidden';
+            inputItems.name = 'items';
+            inputItems.value = JSON.stringify(items);
+
+            form.appendChild(inputAction);
+            form.appendChild(inputItems);
+            document.body.appendChild(form);
+            form.submit();
+            document.body.removeChild(form);
         }
     </script>
     <script src="/api/admin_responsive.js"></script>

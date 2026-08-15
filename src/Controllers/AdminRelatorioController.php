@@ -59,6 +59,55 @@ try {
         exit;
     }
 
+    // Exportação para PDF se solicitado
+    if (isset($_GET['export']) && $_GET['export'] === 'pdf') {
+        if (ob_get_level()) {
+            ob_end_clean();
+        }
+
+        require_once __DIR__ . '/../../vendor/autoload.php';
+        
+        $dompdf = new \Dompdf\Dompdf();
+        
+        $html = '<!DOCTYPE html><html><head><meta charset="UTF-8"><style>
+            body { font-family: Helvetica, Arial, sans-serif; }
+            table { width: 100%; border-collapse: collapse; margin-top: 20px; font-size: 11px; }
+            th, td { border: 1px solid #ddd; padding: 6px; text-align: left; }
+            th { background-color: #f8fafc; color: #475569; }
+            h2 { text-align: center; color: #0f172a; }
+            .badge { font-weight: bold; }
+            .devolvida { color: #22c55e; }
+            .retirada { color: #ef4444; }
+        </style></head><body>';
+        $html .= '<h2>Relatório de Movimentações - ' . htmlspecialchars($nome_escola) . '</h2>';
+        $html .= '<table>';
+        $html .= '<thead><tr><th>Chave/Sala</th><th>Cód</th><th>Usuário</th><th>Matrícula</th><th>Retirada</th><th>Devolução</th><th>Status</th></tr></thead><tbody>';
+        
+        foreach ($movimentacoes as $row) {
+            $dataRetirada = $row['data_retirada'] ? date('d/m/Y H:i', strtotime($row['data_retirada'])) : '';
+            $dataDevolucao = $row['data_devolucao'] ? date('d/m/Y H:i', strtotime($row['data_devolucao'])) : '-';
+            $status = $row['data_devolucao'] ? '<span class="badge devolvida">Devolvida</span>' : '<span class="badge retirada">Em Uso</span>';
+            
+            $html .= '<tr>';
+            $html .= '<td>' . htmlspecialchars($row['nome_sala']) . '</td>';
+            $html .= '<td>' . htmlspecialchars($row['codigo_sala']) . '</td>';
+            $html .= '<td>' . htmlspecialchars($row['usuario_nome']) . '</td>';
+            $html .= '<td>' . htmlspecialchars($row['usuario_matricula']) . '</td>';
+            $html .= '<td>' . $dataRetirada . '</td>';
+            $html .= '<td>' . $dataDevolucao . '</td>';
+            $html .= '<td>' . $status . '</td>';
+            $html .= '</tr>';
+        }
+        
+        $html .= '</tbody></table></body></html>';
+        
+        $dompdf->loadHtml($html);
+        $dompdf->setPaper('A4', 'portrait');
+        $dompdf->render();
+        $dompdf->stream("relatorio_movimentacoes_" . date('Ymd_His') . ".pdf", ["Attachment" => true]);
+        exit;
+    }
+
 } catch (\PDOException $e) {
     echo "Erro de Banco de Dados: " . $e->getMessage();
     exit;
