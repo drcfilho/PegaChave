@@ -23,8 +23,14 @@ try {
     $cache = __DIR__ . '/../cache';
     $blade = new BladeOne($views, $cache, BladeOne::MODE_AUTO);
 
-    // Buscar movimentações sem devolução iniciadas há mais de 6 horas
-    $limiteHoras = $_ENV['LIMITE_HORAS_ATRASO'] ?? getenv('LIMITE_HORAS_ATRASO') ?: 6;
+    // Buscar movimentações sem devolução iniciadas há mais de X horas
+    $limiteHoras = $limite_atraso_horas ?? 6;
+    
+    if ($limiteHoras <= 0) {
+        echo "Sistema de alertas de atraso está desativado (limite = 0).\n";
+        exit(0);
+    }
+    
     $atrasadas = $movRepo->buscarAtrasadas($limiteHoras);
 
     if (empty($atrasadas)) {
