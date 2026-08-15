@@ -136,18 +136,7 @@ function quiosqueState() {
             const scans = await getOfflineScans();
             if (scans.length === 0) return;
 
-            // Se o browser suportar Background Sync, solicita e deixa o Service Worker cuidar
-            if ('serviceWorker' in navigator && 'SyncManager' in window) {
-                try {
-                    const registration = await navigator.serviceWorker.ready;
-                    await registration.sync.register('sync-pegachave-scans');
-                    return; // Retorna pois o Background Sync fará o trabalho em segundo plano
-                } catch (e) {
-                    console.warn("Background Sync não suportado ou falhou, usando fallback local", e);
-                }
-            }
-
-            // Fallback caso Background Sync não funcione (Safári ou Browsers antigos)
+            // Processamento local de offline scans
             for (let item of scans) {
                 try {
                     const response = await fetch(`${window.BASE_URL}/api/processar_scan`, {
@@ -252,16 +241,18 @@ function quiosqueState() {
         async processCode(code) {
             this.isProcessing = true;
             
-            if (!this.isOnline || this.offlineCount > 0) {
+            // Tenta sincronizar pendências antes de enviar o novo
+            if (this.isOnline && this.offlineCount > 0) {
+                await this.syncOfflineScans();
+            }
+            
+            if (!this.isOnline) {
                 this.playBeep('success');
                 await addOfflineScan({ code: code, timestamp: new Date().toISOString() });
                 await this.updateNetworkStatus();
                 
-                this.showAlert('Sincronização em Background: Registro gravado offline!', 'warning', 3500);
+                this.showAlert('Sem conexão: Leitura salva offline!', 'warning', 3500);
                 setTimeout(() => { this.lastScannedCode = ""; this.isProcessing = false; }, 2000);
-                
-                // Tenta chamar o Background Sync
-                this.syncOfflineScans();
                 return;
             }
 
