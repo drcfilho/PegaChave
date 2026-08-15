@@ -10,353 +10,25 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="<?= BASE_URL ?>/api/admin_responsive.css?v=<?= time() ?>">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+      tailwind.config = {
+        corePlugins: {
+          preflight: true,
+        },
+        theme: {
+          extend: {
+            colors: {
+              primary: 'var(--primary)',
+              secondary: 'var(--sidebar-bg)'
+            }
+          }
+        }
+      }
+    </script>
     <style>
-        :root {
-            --bg-color: #f1f5f9;
-            --text-color: #1e293b;
-            --sidebar-bg: #0f172a;
-            --sidebar-active: <?php echo $cor_primaria; ?>;
-            --card-bg: #ffffff;
-            --border-color: #e2e8f0;
-            --primary: <?php echo $cor_primaria; ?>;
-            --success: #22c55e;
-            --error: #ef4444;
-        }
-
-        * {
-            box-sizing: border-box;
-            margin: 0;
-            padding: 0;
-            font-family: 'Inter', sans-serif;
-        }
-
-        body {
-            background-color: var(--bg-color);
-            color: var(--text-color);
-            display: flex;
-            min-height: 100vh;
-        }
-
-        /* Sidebar */
-        aside {
-            width: 260px;
-            background-color: var(--sidebar-bg);
-            color: #ffffff;
-            display: flex;
-            flex-direction: column;
-            border-right: 1px solid rgba(255, 255, 255, 0.05);
-            position: fixed;
-            top: 0;
-            bottom: 0;
-            left: 0;
-            z-index: 10;
-        }
-
-        .sidebar-header {
-            padding: 24px;
-            font-size: 20px;
-            font-weight: 800;
-            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
-            display: flex;
-            align-items: center;
-            gap: 10px;
-        }
-
-        .sidebar-menu {
-            list-style: none;
-            padding: 20px 0;
-            flex: 1;
-        }
-
-        .sidebar-item a {
-            display: flex;
-            align-items: center;
-            gap: 12px;
-            padding: 14px 24px;
-            color: #94a3b8;
-            text-decoration: none;
-            font-weight: 600;
-            font-size: 15px;
-            transition: all 0.2s;
-            border-left: 4px solid transparent;
-        }
-
-        .sidebar-item a:hover {
-            color: #ffffff;
-            background: rgba(255, 255, 255, 0.02);
-        }
-
-        .sidebar-item.active a {
-            color: #ffffff;
-            background: rgba(2, 132, 199, 0.1);
-            border-left-color: var(--sidebar-active);
-        }
-
-        .sidebar-footer {
-            padding: 20px 24px;
-            border-top: 1px solid rgba(255, 255, 255, 0.05);
-        }
-
-        .btn-kiosk {
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 8px;
-            background-color: rgba(255,255,255,0.05);
-            color: #fff;
-            text-decoration: none;
-            padding: 10px;
-            border-radius: 8px;
-            font-size: 14px;
-            font-weight: 700;
-            transition: background 0.2s;
-        }
-
-        .btn-kiosk:hover {
-            background-color: var(--sidebar-active);
-        }
-
-        /* Main Content */
-        main {
-            margin-left: 260px;
-            flex: 1;
-            padding: 40px;
-            transition: margin 0.2s;
-        }
-
-        .page-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 30px;
-        }
-
-        .page-title h1 {
-            font-size: 24px;
-            font-weight: 800;
-            color: #0f172a;
-        }
-
-        .btn-generate {
-            background-color: var(--primary);
-            color: white;
-            border: none;
-            padding: 12px 22px;
-            font-size: 14px;
-            font-weight: 700;
-            border-radius: 8px;
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            box-shadow: 0 4px 6px -1px rgba(2, 132, 199, 0.1);
-            transition: transform 0.2s;
-        }
-
-        .btn-generate:hover {
-            filter: brightness(0.95);
-        }
-
-        /* Abas */
-        .tab-buttons {
-            display: flex;
-            gap: 10px;
-            margin-bottom: 25px;
-            border-bottom: 2px solid #e2e8f0;
-            padding-bottom: 12px;
-        }
-
-        .tab-btn {
-            background: none;
-            border: none;
-            padding: 10px 20px;
-            font-size: 15px;
-            font-weight: 700;
-            color: #64748b;
-            cursor: pointer;
-            border-radius: 8px;
-            transition: all 0.2s;
-        }
-
-        .tab-btn.active {
-            background-color: white;
-            color: var(--primary);
-            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
-        }
-
-        /* Filtro */
-        .filter-row {
-            display: flex;
-            gap: 15px;
-            margin-bottom: 20px;
-            align-items: center;
-        }
-
-        .search-input {
-            flex: 1;
-            padding: 12px 16px;
-            font-size: 14px;
-            border-radius: 8px;
-            border: 1px solid var(--border-color);
-            outline: none;
-            background-color: white;
-        }
-
-        /* Lista de Itens */
-        .list-card {
-            background-color: var(--card-bg);
-            border-radius: 12px;
-            border: 1px solid var(--border-color);
-            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
-            padding: 24px;
-        }
-
-        table {
-            width: 100%;
-            border-collapse: collapse;
-            text-align: left;
-            font-size: 14px;
-        }
-
-        th {
-            padding: 14px 16px;
-            background-color: #f8fafc;
-            color: #475569;
-            font-weight: 700;
-            border-bottom: 2px solid var(--border-color);
-        }
-
-        td {
-            padding: 14px 16px;
-            border-bottom: 1px solid var(--border-color);
-            color: #334155;
-        }
-
-        tr:hover td {
-            background-color: #f8fafc;
-        }
-
-        /* Caixa de Seleção Customizada */
-        .checkbox-container {
-            display: flex;
-            align-items: center;
-            cursor: pointer;
-        }
-
-        .checkbox-container input {
-            display: none;
-        }
-
-        .checkmark {
-            width: 20px;
-            height: 20px;
-            border: 2px solid #cbd5e1;
-            border-radius: 4px;
-            display: inline-block;
-            margin-right: 10px;
-            position: relative;
-            background-color: white;
-            transition: all 0.2s;
-        }
-
-        .checkbox-container input:checked + .checkmark {
-            background-color: var(--primary);
-            border-color: var(--primary);
-        }
-
-        .checkbox-container input:checked + .checkmark::after {
-            content: "";
-            position: absolute;
-            left: 6px;
-            top: 2px;
-            width: 5px;
-            height: 10px;
-            border: solid white;
-            border-width: 0 2px 2px 0;
-            transform: rotate(45deg);
-        }
-
-        /* Visualização da Grade (Escondida por padrão) */
-        #print-preview-section {
-            display: none;
-            background-color: white;
-            min-height: 100vh;
-            width: 100%;
-            padding: 40px;
-            position: absolute;
-            top: 0;
-            left: 0;
-            z-index: 1000;
-        }
-
-        .preview-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            border-bottom: 2px solid #e2e8f0;
-            padding-bottom: 20px;
-            margin-bottom: 30px;
-        }
-
-        .btn-outline {
-            background: none;
-            border: 1px solid #cbd5e1;
-            color: #475569;
-            padding: 12px 22px;
-            font-weight: 700;
-            border-radius: 8px;
-            cursor: pointer;
-        }
-
-        .btn-outline:hover {
-            background-color: #f8fafc;
-        }
-
-        /* Grade de Impressão */
-        .label-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
-            gap: 15px;
-            justify-content: center;
-        }
-
-        .label-card {
-            background: #ffffff;
-            border: 1px solid #e2e8f0;
-            border-radius: 8px;
-            padding: 15px;
-            text-align: center;
-            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.02);
-            page-break-inside: avoid;
-        }
-
-        .label-card img {
-            width: 110px;
-            height: 110px;
-            margin-bottom: 8px;
-        }
-
-        .item-name {
-            font-size: 13px;
-            font-weight: 800;
-            color: #0f172a;
-            margin-bottom: 2px;
-        }
-
-        .item-id {
-            font-size: 11px;
-            color: #64748b;
-            font-weight: 600;
-        }
-
-        .item-hash {
-            font-size: 9px;
-            font-family: monospace;
-            color: #94a3b8;
-            margin-top: 4px;
-        }
-
-        /* Impressão Apenas */
+        /* Print Styles */
         @media print {
             body * {
                 visibility: hidden;
@@ -383,142 +55,127 @@
             }
         }
     </style>
-    <link rel="stylesheet" href="<?= BASE_URL ?>/api/admin_responsive.css?v=<?= time() ?>">
-    <script src="https://cdn.tailwindcss.com"></script>
-    <script>
-      tailwind.config = {
-        corePlugins: {
-          preflight: false,
-        },
-        theme: {
-          extend: {
-            colors: {
-              primary: 'var(--primary)',
-              secondary: 'var(--sidebar-bg)'
-            }
-          }
-        }
-      }
-    </script>
 </head>
-<body>
+<body class="bg-slate-50 text-slate-800 font-sans flex min-h-screen">
 
     <?php include __DIR__ . '/partials/sidebar.php'; ?>
 
     <!-- Main Content -->
-    <main id="admin-main">
-        <div class="page-header">
-            <div class="page-title">
-                <h1>Gerador de Etiquetas QR Code</h1>
-                <p>Selecione itens específicos ou imprima em lote de forma customizável.</p>
+    <main class="flex-1 ml-0 lg:ml-[260px] p-6 md:p-10 transition-all duration-300" id="admin-main">
+        <div class="flex justify-between items-center mb-8 flex-wrap gap-4">
+            <div>
+                <h1 class="text-2xl font-extrabold text-slate-900 mb-1">Gerador de Etiquetas QR Code</h1>
+                <p class="text-sm text-slate-500">Selecione itens específicos ou imprima em lote de forma customizável.</p>
             </div>
-            <button class="btn-generate" onclick="generateSelectedPreview()">
+            <button class="bg-[var(--primary)] hover:brightness-95 text-white font-bold py-3 px-5 rounded-lg shadow-sm transition-transform flex items-center gap-2" onclick="generateSelectedPreview()">
                 🖨️ Gerar Grade Selecionada (<span id="selected-count">0</span>)
             </button>
         </div>
 
         <!-- Abas de Categoria -->
-        <div class="tab-buttons">
-            <button class="tab-btn active" id="tab-chaves" onclick="switchTab('chaves')">
+        <div class="flex gap-2 mb-6 border-b-2 border-slate-200 pb-3">
+            <button class="tab-btn active bg-white text-[var(--primary)] shadow-sm px-5 py-2.5 text-[15px] font-bold rounded-lg transition-all" id="tab-chaves" onclick="switchTab('chaves')">
                 🔑 Chaves/Salas
             </button>
-            <button class="tab-btn" id="tab-usuarios" onclick="switchTab('usuarios')">
+            <button class="tab-btn bg-transparent text-slate-500 hover:text-slate-700 px-5 py-2.5 text-[15px] font-bold rounded-lg transition-all" id="tab-usuarios" onclick="switchTab('usuarios')">
                 👤 Crachás de Usuários
             </button>
         </div>
 
         <!-- Barra de Busca -->
-        <div class="filter-row">
-            <input type="text" id="search-box" class="search-input" placeholder="Buscar na lista..." onkeyup="filterItems()">
+        <div class="flex gap-4 mb-5 items-center">
+            <input type="text" id="search-box" class="flex-1 border border-slate-300 rounded-lg px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-[var(--primary)] focus:border-[var(--primary)] bg-white" placeholder="Buscar na lista..." onkeyup="filterItems()">
         </div>
 
         <!-- Lista de Itens -->
-        <div class="list-card">
+        <div class="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden px-6 py-5">
             <!-- Tabela de Chaves -->
-            <table id="table-chaves">
-                <thead>
-                    <tr>
-                        <th width="40">
-                            <label class="checkbox-container">
-                                <input type="checkbox" id="select-all-chaves" onclick="toggleSelectAll('chaves')">
-                                <span class="checkmark"></span>
-                            </label>
-                        </th>
-                        <th>Sala / Ambiente</th>
-                        <th>Bloco</th>
-                        <th>Andar</th>
-                        <th>Código</th>
-                        <th>Hash do QR Code</th>
-                    </tr>
-                </thead>
-                <tbody id="tbody-chaves">
-                    <?php foreach ($chaves as $c): ?>
-                        <tr class="item-row" data-search="<?php echo strtolower(htmlspecialchars($c['nome'] . ' ' . $c['identificador'] . ' ' . ($c['bloco'] ?? '') . ' ' . ($c['andar'] ?? ''))); ?>">
-                            <td>
-                                <label class="checkbox-container">
-                                    <input type="checkbox" class="chk-item chk-chave" value="<?php echo $c['id']; ?>" data-name="<?php echo htmlspecialchars($c['nome']); ?>" data-bloco="<?php echo htmlspecialchars($c['bloco'] ?? ''); ?>" data-andar="<?php echo htmlspecialchars($c['andar'] ?? ''); ?>" data-id="<?php echo htmlspecialchars($c['identificador']); ?>" data-hash="<?php echo htmlspecialchars($c['qr_code_hash']); ?>" data-cat="Chave" onchange="updateSelectedCount()">
-                                    <span class="checkmark"></span>
+            <div style="overflow-x: auto;">
+                <table id="table-chaves" class="w-full text-left border-collapse">
+                    <thead>
+                        <tr>
+                            <th width="40" class="bg-slate-50 text-slate-500 border-b border-slate-200 px-4 py-3">
+                                <label class="flex items-center cursor-pointer relative">
+                                    <input type="checkbox" id="select-all-chaves" class="peer sr-only" onclick="toggleSelectAll('chaves')">
+                                    <div class="w-5 h-5 border-2 border-slate-300 rounded bg-white peer-checked:bg-[var(--primary)] peer-checked:border-[var(--primary)] transition-all after:content-[''] after:absolute after:hidden peer-checked:after:block after:left-[6px] after:top-[2px] after:w-1.5 after:h-2.5 after:border-solid after:border-white after:border-b-2 after:border-r-2 after:rotate-45"></div>
                                 </label>
-                            </td>
-                            <td><strong><?php echo htmlspecialchars($c['nome']); ?></strong></td>
-                            <td><?php echo htmlspecialchars($c['bloco'] ?? '-'); ?></td>
-                            <td><?php echo htmlspecialchars($c['andar'] ?? '-'); ?></td>
-                            <td><?php echo htmlspecialchars($c['identificador']); ?></td>
-                            <td><code style="font-size: 12px;"><?php echo htmlspecialchars($c['qr_code_hash']); ?></code></td>
+                            </th>
+                            <th class="bg-slate-50 text-slate-500 border-b border-slate-200 text-xs uppercase tracking-wider px-4 py-3 font-semibold">Sala / Ambiente</th>
+                            <th class="bg-slate-50 text-slate-500 border-b border-slate-200 text-xs uppercase tracking-wider px-4 py-3 font-semibold">Bloco</th>
+                            <th class="bg-slate-50 text-slate-500 border-b border-slate-200 text-xs uppercase tracking-wider px-4 py-3 font-semibold">Andar</th>
+                            <th class="bg-slate-50 text-slate-500 border-b border-slate-200 text-xs uppercase tracking-wider px-4 py-3 font-semibold">Código</th>
+                            <th class="bg-slate-50 text-slate-500 border-b border-slate-200 text-xs uppercase tracking-wider px-4 py-3 font-semibold">Hash do QR Code</th>
                         </tr>
-                    <?php endforeach; ?>
-                </tbody>
-            </table>
+                    </thead>
+                    <tbody id="tbody-chaves">
+                        <?php foreach ($chaves as $c): ?>
+                            <tr class="item-row hover:bg-slate-50 transition-colors" data-search="<?php echo strtolower(htmlspecialchars($c['nome'] . ' ' . $c['identificador'] . ' ' . ($c['bloco'] ?? '') . ' ' . ($c['andar'] ?? ''))); ?>">
+                                <td class="px-4 py-3 border-b border-slate-100">
+                                    <label class="flex items-center cursor-pointer relative">
+                                        <input type="checkbox" class="chk-item chk-chave peer sr-only" value="<?php echo $c['id']; ?>" data-name="<?php echo htmlspecialchars($c['nome']); ?>" data-bloco="<?php echo htmlspecialchars($c['bloco'] ?? ''); ?>" data-andar="<?php echo htmlspecialchars($c['andar'] ?? ''); ?>" data-id="<?php echo htmlspecialchars($c['identificador']); ?>" data-hash="<?php echo htmlspecialchars($c['qr_code_hash']); ?>" data-cat="Chave" onchange="updateSelectedCount()">
+                                        <div class="w-5 h-5 border-2 border-slate-300 rounded bg-white peer-checked:bg-[var(--primary)] peer-checked:border-[var(--primary)] transition-all after:content-[''] after:absolute after:hidden peer-checked:after:block after:left-[6px] after:top-[2px] after:w-1.5 after:h-2.5 after:border-solid after:border-white after:border-b-2 after:border-r-2 after:rotate-45"></div>
+                                    </label>
+                                </td>
+                                <td class="px-4 py-3 border-b border-slate-100 text-sm text-slate-700"><strong><?php echo htmlspecialchars($c['nome']); ?></strong></td>
+                                <td class="px-4 py-3 border-b border-slate-100 text-sm text-slate-700"><?php echo htmlspecialchars($c['bloco'] ?? '-'); ?></td>
+                                <td class="px-4 py-3 border-b border-slate-100 text-sm text-slate-700"><?php echo htmlspecialchars($c['andar'] ?? '-'); ?></td>
+                                <td class="px-4 py-3 border-b border-slate-100 text-sm text-slate-700"><?php echo htmlspecialchars($c['identificador']); ?></td>
+                                <td class="px-4 py-3 border-b border-slate-100 text-sm"><code class="text-xs text-slate-500 bg-slate-100 px-1 py-0.5 rounded"><?php echo htmlspecialchars($c['qr_code_hash']); ?></code></td>
+                            </tr>
+                        <?php endforeach; ?>
+                    </tbody>
+                </table>
 
-            <!-- Tabela de Usuários -->
-            <table id="table-usuarios" style="display: none;">
-                <thead>
-                    <tr>
-                        <th width="40">
-                            <label class="checkbox-container">
-                                <input type="checkbox" id="select-all-usuarios" onclick="toggleSelectAll('usuarios')">
-                                <span class="checkmark"></span>
-                            </label>
-                        </th>
-                        <th>Nome</th>
-                        <th>Matrícula / Perfil</th>
-                        <th>Hash do QR Code</th>
-                    </tr>
-                </thead>
-                <tbody id="tbody-usuarios">
-                    <?php foreach ($usuarios as $u): ?>
-                        <tr class="item-row" data-search="<?php echo strtolower(htmlspecialchars($u['nome'] . ' ' . $u['identificador'])); ?>">
-                            <td>
-                                <label class="checkbox-container">
-                                    <input type="checkbox" class="chk-item chk-usuario" value="<?php echo $u['id']; ?>" data-name="<?php echo htmlspecialchars($u['nome']); ?>" data-id="<?php echo htmlspecialchars($u['identificador']); ?>" data-hash="<?php echo htmlspecialchars($u['qr_code_hash']); ?>" data-cat="Usuário" onchange="updateSelectedCount()">
-                                    <span class="checkmark"></span>
+                <!-- Tabela de Usuários -->
+                <table id="table-usuarios" class="w-full text-left border-collapse" style="display: none;">
+                    <thead>
+                        <tr>
+                            <th width="40" class="bg-slate-50 text-slate-500 border-b border-slate-200 px-4 py-3">
+                                <label class="flex items-center cursor-pointer relative">
+                                    <input type="checkbox" id="select-all-usuarios" class="peer sr-only" onclick="toggleSelectAll('usuarios')">
+                                    <div class="w-5 h-5 border-2 border-slate-300 rounded bg-white peer-checked:bg-[var(--primary)] peer-checked:border-[var(--primary)] transition-all after:content-[''] after:absolute after:hidden peer-checked:after:block after:left-[6px] after:top-[2px] after:w-1.5 after:h-2.5 after:border-solid after:border-white after:border-b-2 after:border-r-2 after:rotate-45"></div>
                                 </label>
-                            </td>
-                            <td><strong><?php echo htmlspecialchars($u['nome']); ?></strong></td>
-                            <td><?php echo htmlspecialchars($u['identificador']); ?></td>
-                            <td><code style="font-size: 12px;"><?php echo htmlspecialchars($u['qr_code_hash']); ?></code></td>
+                            </th>
+                            <th class="bg-slate-50 text-slate-500 border-b border-slate-200 text-xs uppercase tracking-wider px-4 py-3 font-semibold">Nome</th>
+                            <th class="bg-slate-50 text-slate-500 border-b border-slate-200 text-xs uppercase tracking-wider px-4 py-3 font-semibold">Matrícula / Perfil</th>
+                            <th class="bg-slate-50 text-slate-500 border-b border-slate-200 text-xs uppercase tracking-wider px-4 py-3 font-semibold">Hash do QR Code</th>
                         </tr>
-                    <?php endforeach; ?>
-                </tbody>
-            </table>
+                    </thead>
+                    <tbody id="tbody-usuarios">
+                        <?php foreach ($usuarios as $u): ?>
+                            <tr class="item-row hover:bg-slate-50 transition-colors" data-search="<?php echo strtolower(htmlspecialchars($u['nome'] . ' ' . $u['identificador'])); ?>">
+                                <td class="px-4 py-3 border-b border-slate-100">
+                                    <label class="flex items-center cursor-pointer relative">
+                                        <input type="checkbox" class="chk-item chk-usuario peer sr-only" value="<?php echo $u['id']; ?>" data-name="<?php echo htmlspecialchars($u['nome']); ?>" data-id="<?php echo htmlspecialchars($u['identificador']); ?>" data-hash="<?php echo htmlspecialchars($u['qr_code_hash']); ?>" data-cat="Usuário" onchange="updateSelectedCount()">
+                                        <div class="w-5 h-5 border-2 border-slate-300 rounded bg-white peer-checked:bg-[var(--primary)] peer-checked:border-[var(--primary)] transition-all after:content-[''] after:absolute after:hidden peer-checked:after:block after:left-[6px] after:top-[2px] after:w-1.5 after:h-2.5 after:border-solid after:border-white after:border-b-2 after:border-r-2 after:rotate-45"></div>
+                                    </label>
+                                </td>
+                                <td class="px-4 py-3 border-b border-slate-100 text-sm text-slate-700"><strong><?php echo htmlspecialchars($u['nome']); ?></strong></td>
+                                <td class="px-4 py-3 border-b border-slate-100 text-sm text-slate-700"><?php echo htmlspecialchars($u['identificador']); ?></td>
+                                <td class="px-4 py-3 border-b border-slate-100 text-sm"><code class="text-xs text-slate-500 bg-slate-100 px-1 py-0.5 rounded"><?php echo htmlspecialchars($u['qr_code_hash']); ?></code></td>
+                            </tr>
+                        <?php endforeach; ?>
+                    </tbody>
+                </table>
+            </div>
         </div>
     </main>
 
     <!-- Seção de Impressão (Preview) -->
-    <div id="print-preview-section">
-        <div class="preview-header">
+    <div id="print-preview-section" class="hidden bg-white min-h-screen w-full p-10 absolute top-0 left-0 z-[1000]">
+        <div class="preview-header flex justify-between items-center border-b-2 border-slate-200 pb-5 mb-8">
             <div>
-                <h1 style="font-size: 22px; font-weight: 800;">Visualização de Impressão</h1>
-                <p style="color: #64748b; font-size: 14px;">Confirme as etiquetas geradas e clique em Imprimir.</p>
+                <h1 class="text-[22px] font-extrabold text-slate-900">Visualização de Impressão</h1>
+                <p class="text-slate-500 text-sm mt-1">Confirme as etiquetas geradas e clique em Imprimir.</p>
             </div>
-            <div style="display: flex; gap: 12px;">
-                <button class="btn-outline" onclick="closePreview()">↩ Voltar</button>
-                <button class="btn-generate" onclick="exportarPDF()" style="background-color: #dc2626;">📄 Exportar PDF A4</button>
-                <button class="btn-generate" onclick="window.print()">🖨️ Imprimir Agora</button>
+            <div class="flex gap-3">
+                <button class="bg-transparent border border-slate-300 text-slate-600 px-5 py-3 font-bold rounded-lg hover:bg-slate-50 transition-colors" onclick="closePreview()">↩ Voltar</button>
+                <button class="bg-red-600 text-white px-5 py-3 font-bold rounded-lg hover:brightness-95 transition-all shadow-sm" onclick="exportarPDF()">📄 Exportar PDF A4</button>
+                <button class="bg-[var(--primary)] text-white px-5 py-3 font-bold rounded-lg hover:brightness-95 transition-all shadow-sm" onclick="window.print()">🖨️ Imprimir Agora</button>
             </div>
         </div>
 
-        <div class="label-grid" id="preview-grid-container">
+        <div class="grid grid-cols-[repeat(auto-fill,minmax(180px,1fr))] gap-4 justify-center" id="preview-grid-container">
             <!-- Inserido dinamicamente via JS -->
         </div>
     </div>
@@ -528,8 +185,16 @@
 
         function switchTab(tab) {
             currentTab = tab;
-            document.getElementById('tab-chaves').classList.toggle('active', tab === 'chaves');
-            document.getElementById('tab-usuarios').classList.toggle('active', tab === 'usuarios');
+            const tabChaves = document.getElementById('tab-chaves');
+            const tabUsuarios = document.getElementById('tab-usuarios');
+            
+            if (tab === 'chaves') {
+                tabChaves.className = "tab-btn active bg-white text-[var(--primary)] shadow-sm px-5 py-2.5 text-[15px] font-bold rounded-lg transition-all";
+                tabUsuarios.className = "tab-btn bg-transparent text-slate-500 hover:text-slate-700 px-5 py-2.5 text-[15px] font-bold rounded-lg transition-all";
+            } else {
+                tabUsuarios.className = "tab-btn active bg-white text-[var(--primary)] shadow-sm px-5 py-2.5 text-[15px] font-bold rounded-lg transition-all";
+                tabChaves.className = "tab-btn bg-transparent text-slate-500 hover:text-slate-700 px-5 py-2.5 text-[15px] font-bold rounded-lg transition-all";
+            }
             
             document.getElementById('table-chaves').style.display = tab === 'chaves' ? 'table' : 'none';
             document.getElementById('table-usuarios').style.display = tab === 'usuarios' ? 'table' : 'none';
@@ -593,24 +258,26 @@
                 const cat = chk.getAttribute('data-cat');
 
                 const card = document.createElement('div');
-                card.className = 'label-card';
+                card.className = 'label-card bg-white border border-slate-200 rounded-lg p-4 text-center shadow-[0_2px_4px_rgba(0,0,0,0.02)] break-inside-avoid flex flex-col items-center';
                 card.innerHTML = `
-                    <div style="font-size: 9px; font-weight: 800; text-transform: uppercase; color: #475569; border-bottom: 1px solid #e2e8f0; padding-bottom: 4px; margin-bottom: 8px;">
+                    <div class="text-[9px] font-extrabold uppercase text-slate-600 border-b border-slate-200 pb-1 mb-2 w-full">
                         ${cat === 'Chave' ? '🔑 CHAVE' : '👤 CRACHÁ'}
                     </div>
-                    <img src="https://api.qrserver.com/v1/create-qr-code/?size=110x110&data=${encodeURIComponent(hash)}" alt="QR Code">
-                    <div class="no-print" style="margin-top: 6px; margin-bottom: 4px;">
-                        <button onclick="downloadQRCode('${hash}', '${name.replace(/'/g, "\\'")}', '${id.replace(/'/g, "\\'")}', '${cat}', '${bloco.replace(/'/g, "\\'")}', '${andar.replace(/'/g, "\\'")}', '${cat}_${name.replace(/[^a-zA-Z0-9]/g, '_')}')" style="background: var(--primary); color: white; border: none; padding: 4px 8px; border-radius: 4px; font-size: 11px; font-weight: 600; cursor: pointer;">⬇️ Baixar</button>
+                    <img class="w-[110px] h-[110px] mb-2" src="https://api.qrserver.com/v1/create-qr-code/?size=110x110&data=${encodeURIComponent(hash)}" alt="QR Code">
+                    <div class="no-print mt-1.5 mb-1">
+                        <button onclick="downloadQRCode('${hash}', '${name.replace(/'/g, "\\'")}', '${id.replace(/'/g, "\\'")}', '${cat}', '${bloco.replace(/'/g, "\\'")}', '${andar.replace(/'/g, "\\'")}', '${cat}_${name.replace(/[^a-zA-Z0-9]/g, '_')}')" class="bg-[var(--primary)] text-white border-none px-2 py-1 rounded text-[11px] font-semibold cursor-pointer">⬇️ Baixar</button>
                     </div>
-                    <div class="item-name">${name}</div>
-                    ${bloco || andar ? `<div style="font-size: 11px; color: #475569; font-weight: 600; margin-bottom: 4px;">${bloco ? 'Bloco: ' + bloco : ''} ${bloco && andar ? '|' : ''} ${andar ? 'Andar: ' + andar : ''}</div>` : ''}
-                    <div class="item-id">${id}</div>
-                    <div class="item-hash">${hash}</div>
+                    <div class="text-[13px] font-extrabold text-slate-900 mb-0.5">${name}</div>
+                    ${bloco || andar ? `<div class="text-[11px] text-slate-600 font-semibold mb-1">${bloco ? 'Bloco: ' + bloco : ''} ${bloco && andar ? '|' : ''} ${andar ? 'Andar: ' + andar : ''}</div>` : ''}
+                    <div class="text-[11px] text-slate-500 font-semibold">${id}</div>
+                    <div class="text-[9px] font-mono text-slate-400 mt-1">${hash}</div>
                 `;
                 container.appendChild(card);
             });
 
-            document.getElementById('print-preview-section').style.display = 'block';
+            const previewSection = document.getElementById('print-preview-section');
+            previewSection.classList.remove('hidden');
+            previewSection.classList.add('block');
             window.scrollTo(0, 0);
         }
 
@@ -691,7 +358,9 @@
         }
 
         function closePreview() {
-            document.getElementById('print-preview-section').style.display = 'none';
+            const previewSection = document.getElementById('print-preview-section');
+            previewSection.classList.remove('block');
+            previewSection.classList.add('hidden');
         }
 
         function exportarPDF() {

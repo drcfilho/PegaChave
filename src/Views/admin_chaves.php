@@ -10,354 +10,37 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
-    <style>
-        :root {
-            --bg-color: #f1f5f9;
-            --text-color: #1e293b;
-            --sidebar-bg: #0f172a;
-            --sidebar-active: <?php echo $cor_primaria; ?>;
-            --card-bg: #ffffff;
-            --border-color: #e2e8f0;
-            --primary: <?php echo $cor_primaria; ?>;
-            --success: #22c55e;
-            --error: #ef4444;
-        }
-
-        * {
-            box-sizing: border-box;
-            margin: 0;
-            padding: 0;
-            font-family: 'Inter', sans-serif;
-        }
-
-        body {
-            background-color: var(--bg-color);
-            color: var(--text-color);
-            display: flex;
-            min-height: 100vh;
-        }
-
-        /* Sidebar */
-        aside {
-            width: 260px;
-            background-color: var(--sidebar-bg);
-            color: #ffffff;
-            display: flex;
-            flex-direction: column;
-            border-right: 1px solid rgba(255, 255, 255, 0.05);
-            position: fixed;
-            top: 0;
-            bottom: 0;
-            left: 0;
-            z-index: 10;
-        }
-
-        .sidebar-header {
-            padding: 24px;
-            font-size: 20px;
-            font-weight: 800;
-            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
-            display: flex;
-            align-items: center;
-            gap: 10px;
-        }
-
-        .sidebar-menu {
-            list-style: none;
-            padding: 20px 0;
-            flex: 1;
-        }
-
-        .sidebar-item a {
-            display: flex;
-            align-items: center;
-            gap: 12px;
-            padding: 14px 24px;
-            color: #94a3b8;
-            text-decoration: none;
-            font-weight: 600;
-            font-size: 15px;
-            transition: all 0.2s;
-            border-left: 4px solid transparent;
-        }
-
-        .sidebar-item a:hover {
-            color: #ffffff;
-            background: rgba(255, 255, 255, 0.02);
-        }
-
-        .sidebar-item.active a {
-            color: #ffffff;
-            background: rgba(2, 132, 199, 0.1);
-            border-left-color: var(--sidebar-active);
-        }
-
-        .sidebar-footer {
-            padding: 20px 24px;
-            border-top: 1px solid rgba(255, 255, 255, 0.05);
-        }
-
-        .btn-kiosk {
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 8px;
-            background-color: rgba(255,255,255,0.05);
-            color: #fff;
-            text-decoration: none;
-            padding: 10px;
-            border-radius: 8px;
-            font-size: 14px;
-            font-weight: 700;
-            transition: background 0.2s;
-        }
-
-        .btn-kiosk:hover {
-            background-color: var(--sidebar-active);
-        }
-
-        /* Main Content */
-        main {
-            margin-left: 260px;
-            flex: 1;
-            padding: 40px;
-        }
-
-        .page-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 30px;
-        }
-
-        .page-title h1 {
-            font-size: 24px;
-            font-weight: 800;
-            color: #0f172a;
-        }
-
-        .btn-add {
-            background-color: var(--success);
-            color: white;
-            border: none;
-            padding: 10px 20px;
-            font-size: 14px;
-            font-weight: 700;
-            border-radius: 8px;
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            gap: 6px;
-        }
-
-        .btn-add:hover {
-            background-color: var(--primary-green-hover);
-        }
-
-        .content-card {
-            background-color: var(--card-bg);
-            border-radius: 12px;
-            border: 1px solid var(--border-color);
-            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
-            padding: 24px;
-        }
-
-        /* Tables */
-        table {
-            width: 100%;
-            border-collapse: collapse;
-            text-align: left;
-        }
-
-        th {
-            font-size: 12px;
-            font-weight: 700;
-            color: #64748b;
-            padding: 12px 16px;
-            border-bottom: 2px solid #e2e8f0;
-            text-transform: uppercase;
-        }
-
-        th.sortable {
-            cursor: pointer;
-            position: relative;
-            user-select: none;
-            transition: background 0.2s;
-        }
-
-        th.sortable:hover {
-            background-color: rgba(0,0,0,0.05);
-            color: var(--primary);
-        }
-
-        body.dark-theme th.sortable:hover {
-            background-color: rgba(255,255,255,0.05);
-        }
-
-        th.sortable::after {
-            content: ' ↕';
-            font-size: 10px;
-            color: #94a3b8;
-            margin-left: 4px;
-        }
-
-        td {
-            font-size: 14px;
-            padding: 14px 16px;
-            border-bottom: 1px solid #f1f5f9;
-        }
-
-        .action-link {
-            color: var(--primary);
-            text-decoration: none;
-            font-weight: 700;
-            cursor: pointer;
-        }
-
-        .action-link:hover {
-            text-decoration: underline;
-        }
-
-        .action-link.delete {
-            color: var(--error);
-        }
-
-        /* Modais */
-        .modal {
-            position: fixed;
-            inset: 0;
-            background: rgba(15, 23, 42, 0.7);
-            backdrop-filter: blur(4px);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            opacity: 0;
-            pointer-events: none;
-            transition: all 0.25s ease;
-            z-index: 200;
-        }
-
-        .modal.active {
-            opacity: 1;
-            pointer-events: auto;
-        }
-
-        .modal-content {
-            background: #ffffff;
-            border-radius: 12px;
-            padding: 24px;
-            width: 95%;
-            max-width: 480px;
-            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1);
-            transform: scale(0.95);
-            transition: all 0.25s ease;
-        }
-
-        .modal.active .modal-content {
-            transform: scale(1);
-        }
-
-        .modal-title-text {
-            font-size: 20px;
-            font-weight: 700;
-            margin-bottom: 18px;
-        }
-
-        .form-group {
-            margin-bottom: 16px;
-        }
-
-        .form-group label {
-            display: block;
-            font-size: 13px;
-            font-weight: 600;
-            color: #475569;
-            margin-bottom: 6px;
-        }
-
-        .form-control {
-            width: 100%;
-            border: 1px solid #cbd5e1;
-            border-radius: 6px;
-            padding: 10px 12px;
-            font-size: 14px;
-            outline: none;
-        }
-
-        .form-control:focus {
-            border-color: var(--primary);
-        }
-
-        .modal-actions {
-            display: flex;
-            gap: 10px;
-            justify-content: flex-end;
-            margin-top: 24px;
-        }
-
-        .btn-modal {
-            padding: 10px 20px;
-            font-size: 14px;
-            font-weight: 700;
-            border-radius: 6px;
-            border: none;
-            cursor: pointer;
-        }
-
-        .btn-modal.cancel {
-            background-color: transparent;
-            color: #64748b;
-        }
-
-        .btn-modal.save {
-            background-color: var(--primary);
-            color: white;
-        }
-
-        .toast-message {
-            position: fixed;
-            top: 20px;
-            left: 50%;
-            transform: translateX(-50%);
-            background-color: #22c55e;
-            color: white;
-            padding: 12px 24px;
-            border-radius: 8px;
-            font-weight: 600;
-            box-shadow: 0 10px 15px -3px rgba(0,0,0,0.1);
-            z-index: 500;
-            animation: slide-up-down 4s forwards;
-        }
-
-        @keyframes slide-up-down {
-            0% { top: -60px; opacity: 0; }
-            10% { top: 20px; opacity: 1; }
-            90% { top: 20px; opacity: 1; }
-            100% { top: -60px; opacity: 0; }
-        }
-    </style>
     <link rel="stylesheet" href="<?= BASE_URL ?>/api/admin_responsive.css?v=<?= time() ?>">
     <script src="https://cdn.tailwindcss.com"></script>
     <script>
       tailwind.config = {
         corePlugins: {
-          preflight: false,
+          preflight: true,
         },
         theme: {
           extend: {
             colors: {
               primary: 'var(--primary)',
               secondary: 'var(--sidebar-bg)'
+            },
+            keyframes: {
+              slideUpDown: {
+                '0%, 100%': { top: '-60px', opacity: '0' },
+                '10%, 90%': { top: '20px', opacity: '1' }
+              }
+            },
+            animation: {
+              'slide-up-down': 'slideUpDown 4s forwards'
             }
           }
         }
       }
     </script>
 </head>
-<body>
+<body class="bg-slate-50 text-slate-800 font-sans flex min-h-screen">
 
     <?php if ($message): ?>
-        <div class="toast-message">
+        <div class="toast-message fixed left-1/2 -translate-x-1/2 bg-green-500 text-white px-6 py-3 rounded-lg font-semibold shadow-lg z-[500] animate-slide-up-down">
             <?php echo htmlspecialchars($message); ?>
         </div>
     <?php endif; ?>
@@ -366,34 +49,34 @@
     <?php include __DIR__ . '/partials/sidebar.php'; ?>
 
     <!-- Main Content -->
-    <main>
-        <div class="page-header">
-            <div class="page-title">
-                <h1>Gerenciamento de Chaves</h1>
-                <p>Cadastre salas, edite informações e gerencie os códigos QR associados.</p>
+    <main class="flex-1 ml-0 lg:ml-[260px] p-6 md:p-10 transition-all duration-300">
+        <div class="flex justify-between items-center mb-8 flex-wrap gap-4">
+            <div>
+                <h1 class="text-2xl font-extrabold text-slate-900 mb-1">Gerenciamento de Chaves</h1>
+                <p class="text-sm text-slate-500">Cadastre salas, edite informações e gerencie os códigos QR associados.</p>
             </div>
             <div style="display: flex; gap: 15px; align-items: center; flex-wrap: wrap;">
-                <input type="text" id="search-input" placeholder="🔍 Pesquisar chave..." style="padding: 10px 16px; border-radius: 8px; border: 1px solid var(--border-color); background: var(--card-bg); color: var(--text-color); font-size: 14px; font-weight: 500; min-width: 250px; outline: none; transition: border 0.2s;" oninput="filterTable()">
-                <button class="btn-add" onclick="openKeyModal()">
+                <input type="text" id="search-input" placeholder="🔍 Pesquisar chave..." class="w-full md:w-auto border border-slate-300 rounded-lg px-4 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-green-500 min-w-[250px]" oninput="filterTable()">
+                <button class="bg-green-600 hover:bg-green-700 text-white font-bold py-2 px-4 rounded-lg shadow-sm transition-colors flex items-center gap-2" onclick="openKeyModal()">
                     ➕ Nova Chave
                 </button>
             </div>
         </div>
 
-        <div class="content-card">
+        <div class="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden px-6 py-5 mb-8">
             <div style="overflow-x: auto;">
-                <table>
+                <table class="w-full text-left border-collapse">
                     <thead>
                         <tr>
-                            <th class="sortable" onclick="sortTable(0)">Sala/Ambiente</th>
-                            <th class="sortable" onclick="sortTable(1)">Bloco</th>
-                            <th class="sortable" onclick="sortTable(2)">Andar</th>
-                            <th class="sortable" onclick="sortTable(3)">Código</th>
-                            <th class="sortable" onclick="sortTable(4)">QR Hash</th>
-                            <th class="sortable" onclick="sortTable(5)">Descrição</th>
-                            <th class="sortable" onclick="sortTable(6)">Acesso Restrito</th>
-                            <th class="sortable" onclick="sortTable(7)">Status</th>
-                            <th>Ações</th>
+                            <th class="sortable cursor-pointer select-none transition-colors hover:bg-slate-100 hover:text-primary relative after:content-['\2195'] after:text-[10px] after:text-slate-400 after:ml-1 bg-slate-50 text-slate-500 border-b border-slate-200 text-xs uppercase tracking-wider px-4 py-3 font-semibold" onclick="sortTable(0)">Sala/Ambiente</th>
+                            <th class="sortable cursor-pointer select-none transition-colors hover:bg-slate-100 hover:text-primary relative after:content-['\2195'] after:text-[10px] after:text-slate-400 after:ml-1 bg-slate-50 text-slate-500 border-b border-slate-200 text-xs uppercase tracking-wider px-4 py-3 font-semibold" onclick="sortTable(1)">Bloco</th>
+                            <th class="sortable cursor-pointer select-none transition-colors hover:bg-slate-100 hover:text-primary relative after:content-['\2195'] after:text-[10px] after:text-slate-400 after:ml-1 bg-slate-50 text-slate-500 border-b border-slate-200 text-xs uppercase tracking-wider px-4 py-3 font-semibold" onclick="sortTable(2)">Andar</th>
+                            <th class="sortable cursor-pointer select-none transition-colors hover:bg-slate-100 hover:text-primary relative after:content-['\2195'] after:text-[10px] after:text-slate-400 after:ml-1 bg-slate-50 text-slate-500 border-b border-slate-200 text-xs uppercase tracking-wider px-4 py-3 font-semibold" onclick="sortTable(3)">Código</th>
+                            <th class="sortable cursor-pointer select-none transition-colors hover:bg-slate-100 hover:text-primary relative after:content-['\2195'] after:text-[10px] after:text-slate-400 after:ml-1 bg-slate-50 text-slate-500 border-b border-slate-200 text-xs uppercase tracking-wider px-4 py-3 font-semibold" onclick="sortTable(4)">QR Hash</th>
+                            <th class="sortable cursor-pointer select-none transition-colors hover:bg-slate-100 hover:text-primary relative after:content-['\2195'] after:text-[10px] after:text-slate-400 after:ml-1 bg-slate-50 text-slate-500 border-b border-slate-200 text-xs uppercase tracking-wider px-4 py-3 font-semibold" onclick="sortTable(5)">Descrição</th>
+                            <th class="sortable cursor-pointer select-none transition-colors hover:bg-slate-100 hover:text-primary relative after:content-['\2195'] after:text-[10px] after:text-slate-400 after:ml-1 bg-slate-50 text-slate-500 border-b border-slate-200 text-xs uppercase tracking-wider px-4 py-3 font-semibold" onclick="sortTable(6)">Acesso Restrito</th>
+                            <th class="sortable cursor-pointer select-none transition-colors hover:bg-slate-100 hover:text-primary relative after:content-['\2195'] after:text-[10px] after:text-slate-400 after:ml-1 bg-slate-50 text-slate-500 border-b border-slate-200 text-xs uppercase tracking-wider px-4 py-3 font-semibold" onclick="sortTable(7)">Status</th>
+                            <th class="bg-slate-50 text-slate-500 border-b border-slate-200 text-xs uppercase tracking-wider px-4 py-3 font-semibold">Ações</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -405,14 +88,14 @@
                             </tr>
                         <?php else: ?>
                             <?php foreach ($chaves as $c): ?>
-                                <tr>
-                                    <td><strong><?php echo htmlspecialchars($c['nome_sala']); ?></strong></td>
-                                    <td><?php echo htmlspecialchars($c['bloco'] ?? '-'); ?></td>
-                                    <td><?php echo htmlspecialchars($c['andar'] ?? '-'); ?></td>
-                                    <td><code><?php echo htmlspecialchars($c['codigo_sala']); ?></code></td>
-                                    <td><small><?php echo htmlspecialchars($c['qr_code_hash']); ?></small></td>
-                                    <td><?php echo htmlspecialchars($c['descricao']); ?></td>
-                                    <td>
+                                <tr class="hover:bg-slate-50 transition-colors">
+                                    <td class="px-4 py-3 border-b border-slate-100 text-sm"><strong><?php echo htmlspecialchars($c['nome_sala']); ?></strong></td>
+                                    <td class="px-4 py-3 border-b border-slate-100 text-sm"><?php echo htmlspecialchars($c['bloco'] ?? '-'); ?></td>
+                                    <td class="px-4 py-3 border-b border-slate-100 text-sm"><?php echo htmlspecialchars($c['andar'] ?? '-'); ?></td>
+                                    <td class="px-4 py-3 border-b border-slate-100 text-sm"><code><?php echo htmlspecialchars($c['codigo_sala']); ?></code></td>
+                                    <td class="px-4 py-3 border-b border-slate-100 text-sm"><small><?php echo htmlspecialchars($c['qr_code_hash']); ?></small></td>
+                                    <td class="px-4 py-3 border-b border-slate-100 text-sm"><?php echo htmlspecialchars($c['descricao']); ?></td>
+                                    <td class="px-4 py-3 border-b border-slate-100 text-sm">
                                         <?php if (!empty($c['matriculas_permitidas'])): ?>
                                             <span style="background-color: #fee2e2; border: 1px solid #fecaca; color: #ef4444; padding: 2px 6px; border-radius: 4px; font-size: 11px; font-weight: 700; display: inline-block;">Restrita</span>
                                             <div style="font-size: 11px; color: #64748b; margin-top: 4px; max-width: 150px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;" title="<?php echo htmlspecialchars($c['matriculas_permitidas']); ?>"><?php echo htmlspecialchars($c['matriculas_permitidas']); ?></div>
@@ -420,15 +103,15 @@
                                             <span style="color: #64748b; font-size: 12px;">Público</span>
                                         <?php endif; ?>
                                     </td>
-                                    <td>
+                                    <td class="px-4 py-3 border-b border-slate-100 text-sm">
                                         <span style="color: <?php echo $c['status_disponivel'] ? '#22c55e' : '#ef4444'; ?>; font-weight: bold;">
                                             <?php echo $c['status_disponivel'] ? 'Disponível' : 'Retirada'; ?>
                                         </span>
                                     </td>
-                                    <td>
-                                        <a class="action-link" onclick="openEditKeyModal(<?php echo htmlspecialchars(json_encode($c)); ?>)">Editar</a>
+                                    <td class="px-4 py-3 border-b border-slate-100 text-sm">
+                                        <a class="text-primary font-bold cursor-pointer hover:underline" onclick="openEditKeyModal(<?php echo htmlspecialchars(json_encode($c)); ?>)">Editar</a>
                                         <span style="color: #cbd5e1;">|</span>
-                                        <a class="action-link delete" onclick="confirmDeleteChave(<?php echo $c['id']; ?>)">Excluir</a>
+                                        <a class="text-red-500 font-bold cursor-pointer hover:underline" onclick="confirmDeleteChave(<?php echo $c['id']; ?>)">Excluir</a>
                                     </td>
                                 </tr>
                             <?php endforeach; ?>
@@ -440,73 +123,73 @@
     </main>
 
     <!-- Modal Form -->
-    <div class="modal" id="key-modal">
-        <div class="modal-content">
-            <h3 class="modal-title-text" id="key-modal-title">Cadastrar Nova Chave</h3>
+    <div class="fixed inset-0 bg-slate-900/70 backdrop-blur-sm z-[200] flex items-center justify-center opacity-0 pointer-events-none transition-all duration-250 [&.active]:opacity-100 [&.active]:pointer-events-auto" id="key-modal">
+        <div class="bg-white rounded-2xl p-6 w-[95%] max-w-[480px] shadow-2xl transform scale-95 transition-all duration-250 [.active_&]:scale-100">
+            <h3 class="text-xl font-bold mb-5" id="key-modal-title">Cadastrar Nova Chave</h3>
             <form method="POST" action="<?= BASE_URL ?>/admin/chaves">
                 <?php renderizar_csrf_input(); ?>
                 <input type="hidden" name="action" id="key-action" value="add_chave">
                 <input type="hidden" name="id" id="key-id">
                 
-                <div class="form-group">
-                    <label for="nome_sala">Nome da Sala</label>
+                <div class="mb-4">
+                    <label for="nome_sala" class="block text-[13px] font-semibold text-slate-600 mb-1.5">Nome da Sala</label>
                     <div class="tooltip-container" style="display: block;">
-                        <input type="text" name="nome_sala" id="nome_sala" class="form-control" placeholder="Ex: Sala 12 - Lab. Biologia" required>
+                        <input type="text" name="nome_sala" id="nome_sala" class="w-full border border-slate-300 rounded-lg px-4 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-green-500" placeholder="Ex: Sala 12 - Lab. Biologia" required>
                         <span class="tooltip-text">Nome descritivo do ambiente que ficará visível para os usuários na busca.</span>
                     </div>
                 </div>
 
-                <div class="form-group">
-                    <label for="bloco">Bloco</label>
+                <div class="mb-4">
+                    <label for="bloco" class="block text-[13px] font-semibold text-slate-600 mb-1.5">Bloco</label>
                     <div class="tooltip-container" style="display: block;">
-                        <input type="text" name="bloco" id="bloco" class="form-control" placeholder="Ex: Bloco A">
+                        <input type="text" name="bloco" id="bloco" class="w-full border border-slate-300 rounded-lg px-4 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-green-500" placeholder="Ex: Bloco A">
                         <span class="tooltip-text">Edifício ou bloco onde a sala está localizada (opcional).</span>
                     </div>
                 </div>
 
-                <div class="form-group">
-                    <label for="andar">Andar</label>
+                <div class="mb-4">
+                    <label for="andar" class="block text-[13px] font-semibold text-slate-600 mb-1.5">Andar</label>
                     <div class="tooltip-container" style="display: block;">
-                        <input type="text" name="andar" id="andar" class="form-control" placeholder="Ex: 2º Andar">
+                        <input type="text" name="andar" id="andar" class="w-full border border-slate-300 rounded-lg px-4 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-green-500" placeholder="Ex: 2º Andar">
                         <span class="tooltip-text">Andar onde a sala se encontra (opcional).</span>
                     </div>
                 </div>
                 
-                <div class="form-group">
-                    <label for="matriculas_permitidas">Matrículas Autorizadas (Separadas por vírgula)</label>
+                <div class="mb-4">
+                    <label for="matriculas_permitidas" class="block text-[13px] font-semibold text-slate-600 mb-1.5">Matrículas Autorizadas (Separadas por vírgula)</label>
                     <div class="tooltip-container" style="display: block;">
-                        <input type="text" name="matriculas_permitidas" id="matriculas_permitidas" class="form-control" placeholder="Ex: 2023001, 2023002 (Deixe vazio para acesso público)">
+                        <input type="text" name="matriculas_permitidas" id="matriculas_permitidas" class="w-full border border-slate-300 rounded-lg px-4 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-green-500" placeholder="Ex: 2023001, 2023002 (Deixe vazio para acesso público)">
                         <span class="tooltip-text">Apenas essas matrículas poderão retirar esta chave. Deixe vazio para não ter restrição.</span>
                     </div>
                 </div>
                 
-                <div class="form-group">
-                    <label for="codigo_sala">Código da Sala</label>
+                <div class="mb-4">
+                    <label for="codigo_sala" class="block text-[13px] font-semibold text-slate-600 mb-1.5">Código da Sala</label>
                     <div class="tooltip-container" style="display: block;">
-                        <input type="text" name="codigo_sala" id="codigo_sala" class="form-control" placeholder="Ex: SALA-12" required>
+                        <input type="text" name="codigo_sala" id="codigo_sala" class="w-full border border-slate-300 rounded-lg px-4 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-green-500" placeholder="Ex: SALA-12" required>
                         <span class="tooltip-text">Identificador único (sem espaços). Usado para gerar o QR Code associado.</span>
                     </div>
                 </div>
                 
-                <div class="form-group">
-                    <label for="key_qr_code_hash">QR Code Hash (Gerado Automaticamente)</label>
+                <div class="mb-4">
+                    <label for="key_qr_code_hash" class="block text-[13px] font-semibold text-slate-600 mb-1.5">QR Code Hash (Gerado Automaticamente)</label>
                     <div class="tooltip-container" style="display: block;">
-                        <input type="text" name="qr_code_hash" id="key_qr_code_hash" class="form-control" style="background-color: rgba(0,0,0,0.05); cursor: not-allowed;" placeholder="chaves_SALA-12" readonly required>
+                        <input type="text" name="qr_code_hash" id="key_qr_code_hash" class="w-full border border-slate-300 rounded-lg px-4 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-green-500" style="background-color: rgba(0,0,0,0.05); cursor: not-allowed;" placeholder="chaves_SALA-12" readonly required>
                         <span class="tooltip-text">Código final que será lido pelo scanner do quiosque.</span>
                     </div>
                 </div>
 
-                <div class="form-group">
-                    <label for="descricao">Descrição</label>
+                <div class="mb-4">
+                    <label for="descricao" class="block text-[13px] font-semibold text-slate-600 mb-1.5">Descrição</label>
                     <div class="tooltip-container" style="display: block;">
-                        <textarea name="descricao" id="descricao" class="form-control" rows="3" placeholder="Informações adicionais..."></textarea>
+                        <textarea name="descricao" id="descricao" class="w-full border border-slate-300 rounded-lg px-4 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-green-500" rows="3" placeholder="Informações adicionais..."></textarea>
                         <span class="tooltip-text">Qualquer outra informação sobre a sala ou chave.</span>
                     </div>
                 </div>
 
-                <div class="modal-actions">
-                    <button type="button" class="btn-modal cancel" onclick="closeKeyModal()">Cancelar</button>
-                    <button type="submit" class="btn-modal save">Salvar Chave</button>
+                <div class="flex gap-3 justify-end mt-6">
+                    <button type="button" class="px-4 py-2 text-sm font-bold rounded-lg cursor-pointer bg-transparent text-slate-500 hover:bg-slate-100 transition-colors" onclick="closeKeyModal()">Cancelar</button>
+                    <button type="submit" class="px-4 py-2 text-sm font-bold rounded-lg cursor-pointer bg-green-600 text-white hover:bg-green-700 transition-colors shadow-sm">Salvar Chave</button>
                 </div>
             </form>
         </div>
