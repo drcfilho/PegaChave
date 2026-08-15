@@ -24,7 +24,15 @@ class ConsultaRepository extends BaseRepository {
         return $this->pdo->query($query)->fetchAll();
     }
 
-    public function buscarChavesPublico() {
+    public function buscarChavesPublico($bloco = null) {
+        $params = [];
+        $where = "";
+        
+        if (!empty($bloco)) {
+            $where = "WHERE (c.bloco = ? OR c.bloco IS NULL OR c.bloco = '')";
+            $params[] = $bloco;
+        }
+        
         $query = "
             SELECT 
                 c.id, 
@@ -41,9 +49,13 @@ class ConsultaRepository extends BaseRepository {
             LEFT JOIN movimentacoes m ON c.id = m.chave_id AND m.data_devolucao IS NULL
             LEFT JOIN usuarios u ON m.usuario_id = u.id
             LEFT JOIN perfis p ON u.perfil_id = p.id
+            $where
             ORDER BY c.nome_sala ASC
         ";
-        return $this->pdo->query($query)->fetchAll();
+        
+        $stmt = $this->pdo->prepare($query);
+        $stmt->execute($params);
+        return $stmt->fetchAll();
     }
 
     public function buscarReservasHoje() {

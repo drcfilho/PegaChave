@@ -99,6 +99,15 @@ class ScanController extends BaseController {
 
                     $ch_id = $ch['id'];
                     $nom_sala = $ch['nome_sala'];
+                    
+                    $modo_portaria = $this->config['modo_portaria'] ?? 'geral';
+                    $bloco_terminal = $input['bloco_terminal'] ?? null;
+                    if ($modo_portaria === 'blocos' && !empty($bloco_terminal)) {
+                        if (!empty($ch['bloco']) && $ch['bloco'] !== $bloco_terminal) {
+                            $erros[] = "Acesso Negado: '$nom_sala' pertence ao Bloco {$ch['bloco']}";
+                            continue;
+                        }
+                    }
 
                     if ($operacao === 'devolucao') {
                         $mov = $movRepo->buscarAtivaPorChave($ch_id);
@@ -186,10 +195,23 @@ class ScanController extends BaseController {
             // 1. Verificar se o QR Code pertence a uma Chave
             $chave = $chaveRepo->buscarPorCodigoOuHash($qr_code);
             $modo_explicito = $input['modo_explicito'] ?? 'auto';
+            $bloco_terminal = $input['bloco_terminal'] ?? null;
 
             if ($chave) {
                 $chave_id = $chave['id'];
                 $nome_sala = $chave['nome_sala'];
+                
+                // Validação de Múltiplas Portarias (Multitenancy)
+                $modo_portaria = $this->config['modo_portaria'] ?? 'geral';
+                if ($modo_portaria === 'blocos' && !empty($bloco_terminal)) {
+                    if (!empty($chave['bloco']) && $chave['bloco'] !== $bloco_terminal) {
+                        echo json_encode([
+                            "status" => "error",
+                            "message" => "Bloqueado: A chave '$nome_sala' pertence ao Bloco {$chave['bloco']} e não pode ser movimentada neste terminal (Bloco $bloco_terminal)."
+                        ]);
+                        exit;
+                    }
+                }
 
                 if ($modo_explicito === 'devolver' && $chave['status_disponivel']) {
                     echo json_encode([

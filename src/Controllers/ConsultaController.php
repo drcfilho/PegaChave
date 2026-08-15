@@ -9,8 +9,13 @@ class ConsultaController extends BaseController {
         $pdo = $this->pdo;
         extract($this->config);
         try {
+            $bloco_filtro = null;
+            if (($modo_portaria ?? 'geral') === 'blocos') {
+                $bloco_filtro = $_GET['bloco'] ?? null;
+            }
+            
             $consultaRepo = new \App\Models\ConsultaRepository($pdo);
-            $chaves = $consultaRepo->buscarChavesPublico();
+            $chaves = $consultaRepo->buscarChavesPublico($bloco_filtro);
             
             $reservas = $consultaRepo->buscarReservasHoje();
             $reservasHoje = [];

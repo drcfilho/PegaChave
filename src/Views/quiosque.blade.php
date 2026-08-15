@@ -77,10 +77,15 @@
             <span><?php echo htmlspecialchars($nome_escola); ?></span>
         </div>
         <div class="flex items-center gap-3 md:gap-4 text-sm font-medium">
+            <?php if (($modo_portaria ?? 'geral') === 'blocos'): ?>
+            <button @click="showBlocoModal = true" class="bg-indigo-600 hover:bg-indigo-700 text-white px-3 py-1.5 rounded-lg shadow-sm backdrop-blur-sm transition-all active:scale-95 flex items-center gap-1.5 border border-indigo-400">
+                <span>📍</span> <span class="hidden sm:inline" x-text="currentBloco ? 'Bloco ' + currentBloco : 'Selecionar Bloco'"></span>
+            </button>
+            <?php endif; ?>
             <button @click="toggleDarkMode()" class="bg-white/10 hover:bg-white/20 border border-white/20 text-white px-3 py-1.5 rounded-lg shadow-sm backdrop-blur-sm transition-all active:scale-95 flex items-center gap-1.5">
                 <span>🌗</span> <span class="hidden sm:inline">Tema</span>
             </button>
-            <button onclick="window.location.href='<?= BASE_URL ?>/consulta'" class="bg-white/10 hover:bg-white/20 border border-white/20 text-white px-3 py-1.5 rounded-lg shadow-sm backdrop-blur-sm transition-all active:scale-95 flex items-center gap-1.5">
+            <button onclick="window.location.href='<?= BASE_URL ?>/consulta' + (currentBloco ? '?bloco=' + encodeURIComponent(currentBloco) : '')" class="bg-white/10 hover:bg-white/20 border border-white/20 text-white px-3 py-1.5 rounded-lg shadow-sm backdrop-blur-sm transition-all active:scale-95 flex items-center gap-1.5">
                 <span>🔍</span> <span class="hidden sm:inline">Consultar Chaves</span>
             </button>
             <span class="hidden md:inline bg-black/20 px-3 py-1.5 rounded-lg border border-black/10" x-text="currentTime"></span>
@@ -96,6 +101,44 @@
             </div>
         </div>
     </header>
+
+    <!-- Modal de Seleção de Bloco -->
+    <?php if (($modo_portaria ?? 'geral') === 'blocos'): ?>
+    <div class="fixed inset-0 bg-slate-900/80 backdrop-blur-md z-[100] flex justify-center items-center p-4 transition-all duration-300"
+         :class="{ 'opacity-100 pointer-events-auto': showBlocoModal, 'opacity-0 pointer-events-none': !showBlocoModal }"
+         x-cloak>
+        <div class="bg-white dark:bg-slate-800 rounded-3xl p-8 max-w-md w-full shadow-2xl flex flex-col gap-5 border border-slate-200 dark:border-slate-700 transform transition-all duration-300"
+             :class="{ 'scale-100 translate-y-0': showBlocoModal, 'scale-95 translate-y-8': !showBlocoModal }">
+            
+            <div class="text-center">
+                <div class="w-16 h-16 bg-indigo-100 dark:bg-indigo-900/50 text-indigo-600 dark:text-indigo-400 rounded-full flex items-center justify-center text-3xl mx-auto mb-4 shadow-inner">
+                    🏢
+                </div>
+                <h2 class="text-2xl font-extrabold text-slate-800 dark:text-white mb-2">Configurar Terminal</h2>
+                <p class="text-sm text-slate-500 dark:text-slate-400">Este sistema está configurado para operar com Múltiplas Portarias. Por favor, selecione o Bloco onde este terminal físico está instalado.</p>
+            </div>
+            
+            <div class="flex flex-col gap-3 mt-2">
+                <?php foreach($blocos_disponiveis as $b): ?>
+                    <button @click="selectBloco('<?= htmlspecialchars($b) ?>')" 
+                            class="w-full text-left px-5 py-4 rounded-xl font-bold border-2 transition-all hover:-translate-y-1 hover:shadow-lg"
+                            :class="currentBloco === '<?= htmlspecialchars($b) ?>' ? 'bg-indigo-50 border-indigo-500 text-indigo-700 dark:bg-indigo-900/30 dark:border-indigo-400 dark:text-indigo-300' : 'bg-white border-slate-200 text-slate-700 hover:border-indigo-300 dark:bg-slate-800 dark:border-slate-600 dark:text-slate-200 dark:hover:border-indigo-500'">
+                        <div class="flex justify-between items-center">
+                            <span class="text-lg">Bloco <?= htmlspecialchars($b) ?></span>
+                            <span x-show="currentBloco === '<?= htmlspecialchars($b) ?>'">✅</span>
+                        </div>
+                    </button>
+                <?php endforeach; ?>
+                
+                <?php if(empty($blocos_disponiveis)): ?>
+                    <div class="p-4 bg-yellow-50 dark:bg-yellow-900/30 text-yellow-800 dark:text-yellow-200 rounded-xl text-sm border border-yellow-200 dark:border-yellow-800">
+                        Nenhum bloco cadastrado no sistema ainda. Adicione o campo "Bloco" no cadastro de chaves para que eles apareçam aqui.
+                    </div>
+                <?php endif; ?>
+            </div>
+        </div>
+    </div>
+    <?php endif; ?>
 
     <!-- Container Principal -->
     <main class="flex-1 flex flex-col justify-center items-center p-3 sm:p-6 w-full max-w-3xl mx-auto relative z-10">
@@ -226,7 +269,7 @@
                     <span>🔄</span> Voltar ao Início
                 </button>
                 <button class="w-full bg-slate-100 hover:bg-slate-200 dark:bg-slate-700 dark:hover:bg-slate-600 text-slate-700 dark:text-slate-200 font-bold py-3.5 px-4 rounded-xl transition-all active:scale-95 flex justify-center items-center gap-2"
-                        onclick="window.location.href='<?= BASE_URL ?>/consulta'">
+                        onclick="window.location.href='<?= BASE_URL ?>/consulta' + (currentBloco ? '?bloco=' + encodeURIComponent(currentBloco) : '')">
                     <span>🔍</span> Consultar Outras
                 </button>
             </div>

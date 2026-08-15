@@ -68,6 +68,15 @@ function quiosqueState() {
             dateTime: ''
         },
         
+        currentBloco: localStorage.getItem('bloco_atual') || '',
+        showBlocoModal: false,
+        
+        selectBloco(bloco) {
+            this.currentBloco = bloco;
+            localStorage.setItem('bloco_atual', bloco);
+            this.showBlocoModal = false;
+        },
+        
         manualCode: '',
         isProcessing: false,
         lastScannedCode: '',
@@ -77,6 +86,14 @@ function quiosqueState() {
             this.initTheme();
             this.updateClock();
             setInterval(() => this.updateClock(), 1000);
+            
+            // Se existir o modal de blocos e não houver bloco atual, mostra o modal
+            if (!this.currentBloco && document.querySelector('div[x-show="showBlocoModal"]')) {
+                this.showBlocoModal = true;
+            } else if (!this.currentBloco) {
+                // Tenta forçar a exibição caso seja carregado de forma diferente
+                this.showBlocoModal = true;
+            }
             
             await this.updateNetworkStatus();
             
@@ -256,7 +273,8 @@ function quiosqueState() {
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({ 
                         qr_code: code,
-                        modo_explicito: this.currentMode 
+                        modo_explicito: this.currentMode,
+                        bloco_terminal: this.currentBloco
                     })
                 });
                 

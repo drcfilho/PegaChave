@@ -27,7 +27,8 @@ $router->setDependencies([
         'nome_escola' => $nome_escola,
         'cor_primaria' => $cor_primaria,
         'cor_secundaria' => $cor_secundaria,
-        'limite_chaves' => $limite_chaves
+        'limite_chaves' => $limite_chaves,
+        'modo_portaria' => $modo_portaria ?? 'geral'
     ]
 ]);
 

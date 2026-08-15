@@ -104,6 +104,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $nome_input = $_POST['nome_escola'] ?? 'Escola Lumiar';
     $cor_p_input = $_POST['cor_primaria'] ?? '#0284c7';
     $cor_s_input = $_POST['cor_secundaria'] ?? '#0f172a';
+    $modo_portaria_input = $_POST['modo_portaria'] ?? 'geral';
     $limite_input = filter_var($_POST['limite_chaves'] ?? '0', FILTER_VALIDATE_INT);
     if ($limite_input === false || $limite_input < 0) {
         $limite_input = 0;
@@ -115,8 +116,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $configRepo->salvarOuAtualizar('cor_primaria', $cor_p_input);
         $configRepo->salvarOuAtualizar('cor_secundaria', $cor_s_input);
         $configRepo->salvarOuAtualizar('limite_chaves', $limite_input);
+        $configRepo->salvarOuAtualizar('modo_portaria', $modo_portaria_input);
 
-        registrar_log($pdo, 'Alteração de Configuração', "Nome da Escola: '$nome_input', Cor Primária: '$cor_p_input', Cor Secundária: '$cor_s_input', Limite de Chaves: $limite_input.");
+        registrar_log($pdo, 'Alteração de Configuração', "Nome da Escola: '$nome_input', Cor Primária: '$cor_p_input', Cor Secundária: '$cor_s_input', Limite de Chaves: $limite_input, Modo Portaria: '$modo_portaria_input'.");
 
         $message = "Configurações atualizadas com sucesso!";
         $messageType = "success";
@@ -126,6 +128,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $cor_primaria = $cor_p_input;
         $cor_secundaria = $cor_s_input;
         $limite_chaves = $limite_input;
+        $modo_portaria = $modo_portaria_input;
 
     } catch (\PDOException $e) {
         $message = "Erro ao salvar configurações: " . $e->getMessage();

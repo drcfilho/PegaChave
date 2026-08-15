@@ -92,6 +92,10 @@ Este arquivo registra todo o histórico de desenvolvimento e as melhorias aplica
 * **Registro no Ato da Devolução**: Ao realizar uma devolução manual diretamente no painel de controle (Dashboard Administrativo), o sistema agora abre um *prompt* permitindo ao porteiro/operador registrar avarias ou ocorrências (ex: "Chaveiro quebrado", "Ar condicionado deixado ligado", "Cabo HDMI sumiu").
 * **Destaque Visual no Relatório de Uso**: Ocorrências registradas são automaticamente prefixadas com a tag "🚨 OCORRÊNCIA" e salvas no banco. Na tela de "Histórico de Uso", estas ocorrências ganham destaque visual (caixa vermelha em negrito) no meio da tabela para fácil identificação pela coordenação.
 
+### 🏢 13. Multitenancy (Múltiplas Portarias)
+* **Arquitetura Inteligente de Multi-Blocos**: Implementada a funcionalidade de operar múltiplos quiosques independentes sem precisar instalar o sistema várias vezes. O painel administrativo de *Configurações* agora possui uma chave-mestra: "Portaria Central Única" ou "Múltiplas Portarias (Por Bloco)".
+* **Terminais Inteligentes com Memória (`localStorage`)**: Quando o modo de "Múltiplas Portarias" é ativado, o quiosque obriga a seleção de um Bloco na sua primeira execução (ex: "Bloco A"). A partir de então, este quiosque *rejeita automaticamente* qualquer tentativa de escanear chaves que pertençam a outro Bloco e a tela de Consulta restringe a listagem de chaves apenas ao prédio atual. O Administrador master, por sua vez, continua com a visão global no Painel.
+
 ---
 
 ### ⚙️ 8. Limite de Chaves sob Posse

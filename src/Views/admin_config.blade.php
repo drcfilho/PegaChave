@@ -67,13 +67,25 @@
                     </div>
                 </div>
 
-                <div class="mb-6">
-                    <label for="limite_chaves" class="block text-[13px] font-bold text-slate-600 uppercase mb-2">Limite Máximo de Chaves sob Posse Simultânea (por Usuário)</label>
-                    <div class="tooltip-container inline-block w-full">
-                        <input type="number" name="limite_chaves" id="limite_chaves" class="w-full max-w-[150px] border border-slate-300 bg-slate-50 rounded-lg px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-[var(--primary)] focus:border-[var(--primary)]" min="0" value="<?php echo htmlspecialchars($limite_chaves ?? 0); ?>" required>
-                        <span class="tooltip-text">Quantas chaves um único crachá pode retirar ao mesmo tempo.</span>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-5 mb-6">
+                    <div>
+                        <label for="limite_chaves" class="block text-[13px] font-bold text-slate-600 uppercase mb-2">Limite Máximo de Chaves (por Usuário)</label>
+                        <div class="tooltip-container inline-block w-full">
+                            <input type="number" name="limite_chaves" id="limite_chaves" class="w-full border border-slate-300 bg-slate-50 rounded-lg px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-[var(--primary)] focus:border-[var(--primary)]" min="0" value="<?php echo htmlspecialchars($limite_chaves ?? 0); ?>" required>
+                            <span class="tooltip-text">Quantas chaves um único crachá pode retirar ao mesmo tempo. 0 = ilimitado.</span>
+                        </div>
                     </div>
-                    <p class="text-xs text-slate-500 mt-2 font-medium">Defina como 0 para permitir retiradas ilimitadas.</p>
+                    
+                    <div>
+                        <label for="modo_portaria" class="block text-[13px] font-bold text-slate-600 uppercase mb-2">Modo do Quiosque</label>
+                        <div class="tooltip-container inline-block w-full">
+                            <select name="modo_portaria" id="modo_portaria" class="w-full border border-slate-300 bg-slate-50 rounded-lg px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-[var(--primary)] focus:border-[var(--primary)]" required>
+                                <option value="geral" <?php echo ($modo_portaria ?? 'geral') === 'geral' ? 'selected' : ''; ?>>Portaria Central Única</option>
+                                <option value="blocos" <?php echo ($modo_portaria ?? 'geral') === 'blocos' ? 'selected' : ''; ?>>Múltiplas Portarias (Por Bloco)</option>
+                            </select>
+                            <span class="tooltip-text">Modo Geral lista todas as chaves. Modo Blocos restringe cada Quiosque ao seu prédio específico.</span>
+                        </div>
+                    </div>
                 </div>
 
                 <button type="submit" class="bg-[var(--primary)] hover:brightness-90 text-white font-bold py-3 px-6 rounded-lg transition-all shadow-sm">Salvar Alterações</button>
