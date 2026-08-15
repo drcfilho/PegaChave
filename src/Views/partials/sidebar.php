@@ -3,7 +3,6 @@
 
 if (!function_exists('has_permission')) {
     function has_permission($perm) {
-        // Se a sessão antiga ainda não tem a role, assumimos que é o admin original
         $role = $_SESSION['admin_role'] ?? 'admin_master';
         if ($role === 'admin_master') return true;
         
@@ -15,81 +14,109 @@ if (!function_exists('has_permission')) {
 // Determinar a página ativa baseada na URL
 $currentUri = $_SERVER['REQUEST_URI'];
 $isActive = function($path) use ($currentUri) {
-    return strpos($currentUri, $path) !== false ? 'active' : '';
+    return strpos($currentUri, $path) !== false ? 'bg-primary/10 border-primary text-white' : 'border-transparent text-slate-400 hover:text-white hover:bg-white/5';
 };
 ?>
-<aside>
-    <div class="sidebar-header">
+<aside class="sidebar w-[260px] bg-secondary/95 backdrop-blur-md text-white flex flex-col fixed top-0 bottom-0 left-0 z-50 border-r border-white/10 transition-all duration-300 overflow-y-auto">
+    <div class="p-6 text-xl font-extrabold border-b border-white/10 flex items-center gap-2.5">
         <span>🔑</span> PegaChave
     </div>
-    <ul class="sidebar-menu">
-        <li class="sidebar-item <?= $currentUri === BASE_URL . '/admin' || $currentUri === BASE_URL . '/admin/' ? 'active' : '' ?>">
-            <a href="<?= BASE_URL ?>/admin">📊 Dashboard</a>
+    <ul class="flex-1 py-5 list-none m-0">
+        <li>
+            <a href="<?= BASE_URL ?>/admin" class="flex items-center gap-3 px-6 py-3.5 text-[15px] font-semibold transition-all duration-200 border-l-4 <?= $currentUri === BASE_URL . '/admin' || $currentUri === BASE_URL . '/admin/' ? 'bg-primary/10 border-primary text-white' : 'border-transparent text-slate-400 hover:text-white hover:bg-white/5' ?>">
+                📊 Dashboard
+            </a>
         </li>
         
         <?php if(has_permission('gerenciar_chaves')): ?>
-        <li class="sidebar-item <?= $isActive('/admin/chaves') ?>">
-            <a href="<?= BASE_URL ?>/admin/chaves">🔑 Chaves/Salas</a>
+        <li>
+            <a href="<?= BASE_URL ?>/admin/chaves" class="flex items-center gap-3 px-6 py-3.5 text-[15px] font-semibold transition-all duration-200 border-l-4 <?= $isActive('/admin/chaves') ?>">
+                🔑 Chaves/Salas
+            </a>
         </li>
         <?php endif; ?>
         
         <?php if(has_permission('gerenciar_usuarios')): ?>
-        <li class="sidebar-item <?= $isActive('/admin/usuarios') ?>">
-            <a href="<?= BASE_URL ?>/admin/usuarios">👤 Usuários</a>
+        <li>
+            <a href="<?= BASE_URL ?>/admin/usuarios" class="flex items-center gap-3 px-6 py-3.5 text-[15px] font-semibold transition-all duration-200 border-l-4 <?= $isActive('/admin/usuarios') ?>">
+                👤 Usuários
+            </a>
         </li>
-        <li class="sidebar-item <?= $isActive('/admin/usuarios_arquivados') ?>">
-            <a href="<?= BASE_URL ?>/admin/usuarios_arquivados">🗄️ Arquivados</a>
+        <li>
+            <a href="<?= BASE_URL ?>/admin/usuarios_arquivados" class="flex items-center gap-3 px-6 py-3.5 text-[15px] font-semibold transition-all duration-200 border-l-4 <?= $isActive('/admin/usuarios_arquivados') ?>">
+                🗄️ Arquivados
+            </a>
         </li>
         <?php endif; ?>
         
         <?php if(has_permission('gerenciar_chaves')): ?>
-        <li class="sidebar-item <?= $isActive('/admin/reservas') ?>">
-            <a href="<?= BASE_URL ?>/admin/reservas">📅 Agendamentos</a>
+        <li>
+            <a href="<?= BASE_URL ?>/admin/reservas" class="flex items-center gap-3 px-6 py-3.5 text-[15px] font-semibold transition-all duration-200 border-l-4 <?= $isActive('/admin/reservas') ?>">
+                📅 Agendamentos
+            </a>
         </li>
         <?php endif; ?>
         
         <?php if(has_permission('gerenciar_usuarios')): ?>
-        <li class="sidebar-item <?= $isActive('/admin/restricoes') ?>">
-            <a href="<?= BASE_URL ?>/admin/restricoes">🔒 Restrições</a>
+        <li>
+            <a href="<?= BASE_URL ?>/admin/restricoes" class="flex items-center gap-3 px-6 py-3.5 text-[15px] font-semibold transition-all duration-200 border-l-4 <?= $isActive('/admin/restricoes') ?>">
+                🔒 Restrições
+            </a>
         </li>
         <?php endif; ?>
 
         <?php if(has_permission('gerenciar_operadores')): ?>
-        <li class="sidebar-item <?= $isActive('/admin/operadores') ?>">
-            <a href="<?= BASE_URL ?>/admin/operadores">🛡️ Operadores</a>
+        <li>
+            <a href="<?= BASE_URL ?>/admin/operadores" class="flex items-center gap-3 px-6 py-3.5 text-[15px] font-semibold transition-all duration-200 border-l-4 <?= $isActive('/admin/operadores') ?>">
+                🛡️ Operadores
+            </a>
         </li>
         <?php endif; ?>
         
         <?php if(has_permission('gerenciar_configuracoes')): ?>
-        <li class="sidebar-item <?= $isActive('/admin/gerar_qr') ?>">
-            <a href="<?= BASE_URL ?>/admin/gerar_qr">🖨️ Gerar QR Codes</a>
+        <li>
+            <a href="<?= BASE_URL ?>/admin/gerar_qr" class="flex items-center gap-3 px-6 py-3.5 text-[15px] font-semibold transition-all duration-200 border-l-4 <?= $isActive('/admin/gerar_qr') ?>">
+                🖨️ Gerar QR Codes
+            </a>
         </li>
         <?php endif; ?>
         
-        <li class="sidebar-item <?= $isActive('/admin/consulta') ?>">
-            <a href="<?= BASE_URL ?>/admin/consulta">🔍 Consultar Disponibilidade</a>
+        <li>
+            <a href="<?= BASE_URL ?>/admin/consulta" class="flex items-center gap-3 px-6 py-3.5 text-[15px] font-semibold transition-all duration-200 border-l-4 <?= $isActive('/admin/consulta') ?>">
+                🔍 Consultar Disp.
+            </a>
         </li>
         
         <?php if(has_permission('ver_relatorios')): ?>
-        <li class="sidebar-item <?= $isActive('/admin/relatorio') ?>">
-            <a href="<?= BASE_URL ?>/admin/relatorio">📝 Relatório Geral</a>
+        <li>
+            <a href="<?= BASE_URL ?>/admin/relatorio" class="flex items-center gap-3 px-6 py-3.5 text-[15px] font-semibold transition-all duration-200 border-l-4 <?= $isActive('/admin/relatorio') ?>">
+                📝 Relatório Geral
+            </a>
         </li>
-        <li class="sidebar-item <?= $isActive('/admin/logs') ?>">
-            <a href="<?= BASE_URL ?>/admin/logs">📋 Logs de Auditoria</a>
+        <li>
+            <a href="<?= BASE_URL ?>/admin/logs" class="flex items-center gap-3 px-6 py-3.5 text-[15px] font-semibold transition-all duration-200 border-l-4 <?= $isActive('/admin/logs') ?>">
+                📋 Logs de Auditoria
+            </a>
         </li>
         <?php endif; ?>
         
         <?php if(has_permission('gerenciar_configuracoes')): ?>
-        <li class="sidebar-item <?= $isActive('/admin/config') ?>">
-            <a href="<?= BASE_URL ?>/admin/config">⚙️ Configurações</a>
+        <li>
+            <a href="<?= BASE_URL ?>/admin/config" class="flex items-center gap-3 px-6 py-3.5 text-[15px] font-semibold transition-all duration-200 border-l-4 <?= $isActive('/admin/config') ?>">
+                ⚙️ Configurações
+            </a>
         </li>
         <?php endif; ?>
         
-        <li class="sidebar-item">
-            <a href="<?= BASE_URL ?>/admin_logout.php" style="color: #ef4444;">🚪 Sair</a>
+        <li>
+            <a href="<?= BASE_URL ?>/admin_logout.php" class="flex items-center gap-3 px-6 py-3.5 text-[15px] font-semibold transition-all duration-200 border-l-4 border-transparent text-red-400 hover:text-red-300 hover:bg-white/5">
+                🚪 Sair
+            </a>
         </li>
     </ul>
-    <div class="sidebar-footer">
-        <a href="<?= BASE_URL ?>/" class="btn-kiosk">🖥️ Voltar ao Quiosque</a>
+    <div class="p-5 border-t border-white/10">
+        <a href="<?= BASE_URL ?>/" class="flex items-center justify-center gap-2 bg-white/5 hover:bg-primary text-white text-sm font-bold py-2.5 px-4 rounded-lg transition-colors">
+            🖥️ Voltar ao Quiosque
+        </a>
     </div>
 </aside>
