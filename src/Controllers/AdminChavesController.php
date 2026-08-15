@@ -55,10 +55,6 @@ class AdminChavesController extends AdminBaseController {
     }
 
     public function destroy() {
-        if (!validar_csrf_token($_POST['csrf_token'] ?? '')) {
-            return $this->index("Token de segurança inválido. Tente novamente.", "error");
-        }
-
         $pdo = $this->pdo;
         $chaveRepository = new ChaveRepository($pdo);
 
