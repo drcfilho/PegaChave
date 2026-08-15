@@ -158,7 +158,10 @@ function quiosqueState() {
             await this.updateNetworkStatus();
         },
 
+        currentMode: 'auto',
+
         setMode(mode) {
+            this.currentMode = mode;
             if (mode === 'retirar') {
                 this.titleMessage = "Modo Retirada: Aproxime o Crachá do Usuário";
             } else if (mode === 'devolver') {
@@ -167,6 +170,7 @@ function quiosqueState() {
             
             setTimeout(() => {
                 this.titleMessage = "Aproxime o QR Code do Crachá ou da Chave";
+                this.currentMode = 'auto';
             }, 10000);
         },
 
@@ -250,7 +254,10 @@ function quiosqueState() {
                 const response = await fetch(`${window.BASE_URL}/api/processar_scan`, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ qr_code: code })
+                    body: JSON.stringify({ 
+                        qr_code: code,
+                        modo_explicito: this.currentMode 
+                    })
                 });
                 
                 const result = await response.json();

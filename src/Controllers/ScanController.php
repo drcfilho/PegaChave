@@ -66,7 +66,16 @@ class ScanController extends BaseController {
                     exit;
                 }
 
+                $modo_explicito = $input['modo_explicito'] ?? 'auto';
                 $operacao = $primeira_chave['status_disponivel'] ? 'retirada' : 'devolucao';
+                
+                if ($modo_explicito === 'devolver' && $primeira_chave['status_disponivel']) {
+                    echo json_encode([
+                        "status" => "error",
+                        "message" => "Esta chave já consta como devolvida e não está atribuída a ninguém. Verifique o QR Code ou o código da sala."
+                    ]);
+                    exit;
+                }
 
                 if ($operacao === 'retirada' && !isset($_SESSION['usuario_pendente'])) {
                     echo json_encode([
@@ -171,12 +180,21 @@ class ScanController extends BaseController {
 
             // 1. Verificar se o QR Code pertence a uma Chave
             $chave = $chaveRepo->buscarPorCodigoOuHash($qr_code);
+            $modo_explicito = $input['modo_explicito'] ?? 'auto';
 
             if ($chave) {
                 $chave_id = $chave['id'];
                 $nome_sala = $chave['nome_sala'];
 
-                // Devolução Automática
+                if ($modo_explicito === 'devolver' && $chave['status_disponivel']) {
+                    echo json_encode([
+                        "status" => "error",
+                        "message" => "Esta chave já consta como devolvida e não está atribuída a ninguém. Verifique o QR Code ou o código da sala."
+                    ]);
+                    exit;
+                }
+
+                // Devolução Automática (ou forçada se status não disponível)
                 if (!$chave['status_disponivel']) {
                     $mov = $movRepo->buscarAtivaPorChave($chave_id);
 
