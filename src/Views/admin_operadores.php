@@ -16,7 +16,7 @@ $isMaster = ($_SESSION['admin_role'] ?? '') === 'admin_master';
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="<?= BASE_URL ?>/assets/css/quiosque.css">
+    <link rel="stylesheet" href="<?= BASE_URL ?>/api/admin_responsive.css?v=<?= time() ?>">
     <script src="https://cdn.tailwindcss.com"></script>
     <script>
       tailwind.config = {
@@ -195,5 +195,6 @@ $isMaster = ($_SESSION['admin_role'] ?? '') === 'admin_master';
             document.getElementById('opModal').classList.remove('active');
         }
     </script>
+    <script src="<?= BASE_URL ?>/api/admin_responsive.js"></script>
 </body>
 </html>
