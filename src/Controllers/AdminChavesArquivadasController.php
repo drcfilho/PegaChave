@@ -68,6 +68,6 @@ class AdminChavesArquivadasController extends AdminBaseController {
         }
         
         global $nome_escola, $cor_primaria, $cor_secundaria;
-        require_once __DIR__ . '/../Views/admin_chaves_arquivadas.php';
+        $this->render('admin_chaves_arquivadas', get_defined_vars());
     }
 }

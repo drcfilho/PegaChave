@@ -1,7 +1,7 @@
 <?php
 namespace App\Controllers;
 
-class RegrasController {
+class RegrasController extends BaseController {
     protected $pdo;
     protected $config;
 
@@ -13,6 +13,6 @@ class RegrasController {
     public function index() {
         $pdo = $this->pdo;
         extract($this->config);
-        require_once __DIR__ . '/../Views/regras.php';
+        $this->render('regras', get_defined_vars());
     }
 }

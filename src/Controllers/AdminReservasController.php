@@ -99,6 +99,6 @@ try {
     exit;
 }
 
-        require_once __DIR__ . '/../Views/admin_reservas.php';
+        $this->render('admin_reservas', get_defined_vars());
     }
 }

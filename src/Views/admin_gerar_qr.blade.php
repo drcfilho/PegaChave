@@ -58,7 +58,7 @@
 </head>
 <body class="bg-slate-50 text-slate-800 font-sans flex min-h-screen">
 
-    <?php include __DIR__ . '/partials/sidebar.php'; ?>
+    @include('partials.sidebar')
 
     <!-- Main Content -->
     <main class="flex-1 ml-0 lg:ml-[260px] p-6 md:p-10 transition-all duration-300" id="admin-main">

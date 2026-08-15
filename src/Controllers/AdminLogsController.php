@@ -49,6 +49,6 @@ try {
     exit;
 }
 
-        require_once __DIR__ . '/../Views/admin_logs.php';
+        $this->render('admin_logs', get_defined_vars());
     }
 }

@@ -1,10 +1,9 @@
 <?php
 namespace App\Controllers;
 
-class AdminBaseController {
+class BaseController {
     protected $pdo;
     protected $config;
-
     protected $blade;
 
     public function __construct($pdo, $config, $blade = null) {
@@ -23,9 +22,6 @@ class AdminBaseController {
             'nome_escola' => $this->config['nome_escola'] ?? '',
             'cor_primaria' => $this->config['cor_primaria'] ?? '',
             'cor_secundaria' => $this->config['cor_secundaria'] ?? '',
-            'admin_nome' => $_SESSION['admin_nome'] ?? '',
-            'admin_role' => $_SESSION['admin_role'] ?? '',
-            'admin_permissoes' => $_SESSION['admin_permissoes'] ?? []
         ];
         
         echo $this->blade->run($view, array_merge($globalData, $data));

@@ -134,6 +134,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
   }
 }
 
-        require_once __DIR__ . '/../Views/admin_config.php';
+        $this->render('admin_config', get_defined_vars());
     }
 }

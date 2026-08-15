@@ -83,6 +83,6 @@ try {
             exit;
         }
 
-        require_once __DIR__ . '/../Views/admin_gerar_qr.php';
+        $this->render('admin_gerar_qr', get_defined_vars());
     }
 }

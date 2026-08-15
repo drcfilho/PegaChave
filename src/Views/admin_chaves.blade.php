@@ -46,7 +46,7 @@
     <?php endif; ?>
 
     <!-- Sidebar -->
-    <?php include __DIR__ . '/partials/sidebar.php'; ?>
+    @include('partials.sidebar')
 
     <!-- Main Content -->
     <main class="flex-1 ml-0 lg:ml-[260px] p-6 md:p-10 transition-all duration-300">
@@ -127,7 +127,7 @@
         <div class="bg-white rounded-2xl p-6 w-[95%] max-w-[480px] shadow-2xl transform scale-95 transition-all duration-250 [.active_&]:scale-100">
             <h3 class="text-xl font-bold mb-5" id="key-modal-title">Cadastrar Nova Chave</h3>
             <form method="POST" action="<?= BASE_URL ?>/admin/chaves">
-                <?php renderizar_csrf_input(); ?>
+                @csrf
                 <input type="hidden" name="action" id="key-action" value="add_chave">
                 <input type="hidden" name="id" id="key-id">
                 
@@ -196,7 +196,7 @@
     </div>
 
     <form id="delete-form" method="POST" action="<?= BASE_URL ?>/admin/chaves/delete" style="display: none;">
-        <?php renderizar_csrf_input(); ?>
+        @csrf
         <input type="hidden" name="action" value="delete_chave">
         <input type="hidden" name="id" id="delete-id">
     </form>

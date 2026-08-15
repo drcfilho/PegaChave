@@ -6,8 +6,8 @@ use App\Models\OperadorRepository;
 class AdminOperadoresController extends AdminBaseController {
     private $operadorRepo;
 
-    public function __construct($pdo, $config) {
-        parent::__construct($pdo, $config);
+    public function __construct($pdo, $config, $blade = null) {
+        parent::__construct($pdo, $config, $blade);
         $this->operadorRepo = new OperadorRepository($pdo);
     }
 
@@ -16,9 +16,7 @@ class AdminOperadoresController extends AdminBaseController {
         extract($this->config);
         $operadores = $this->operadorRepo->getAll();
         
-        // Passar variáveis globais necessárias para a view
-        global $nome_escola, $cor_primaria, $cor_secundaria;
-        require __DIR__ . '/../Views/admin_operadores.php';
+        $this->render('admin_operadores', get_defined_vars());
     }
 
     public function create() {

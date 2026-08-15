@@ -48,7 +48,7 @@ class Router {
             if ($route['method'] === strtoupper($requestMethod) && preg_match($route['path'], $uri, $matches)) {
                 $controllerClass = "App\\Controllers\\" . $route['controller'];
                 if (class_exists($controllerClass)) {
-                    $controllerInstance = new $controllerClass($this->dependencies['pdo'] ?? null, $this->dependencies['config'] ?? []);
+                    $controllerInstance = new $controllerClass($this->dependencies['pdo'] ?? null, $this->dependencies['config'] ?? [], $this->dependencies['blade'] ?? null);
                     $action = $route['action'];
                     if (method_exists($controllerInstance, $action)) {
                         $params = array_filter($matches, 'is_string', ARRAY_FILTER_USE_KEY);

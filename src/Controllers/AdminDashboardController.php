@@ -38,6 +38,6 @@ class AdminDashboardController extends AdminBaseController {
             exit;
         }
 
-        require_once __DIR__ . '/../Views/admin_dashboard.php';
+        $this->render('admin_dashboard', get_defined_vars());
     }
 }

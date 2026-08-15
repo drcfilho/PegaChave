@@ -2,7 +2,7 @@
 namespace App\Controllers;
 // src/Controllers/QuiosqueController.php
 
-class QuiosqueController {
+class QuiosqueController extends BaseController {
     protected $pdo;
     protected $config;
 
@@ -18,6 +18,6 @@ class QuiosqueController {
         
         
         // Renderiza a view
-        require_once __DIR__ . '/../Views/quiosque.php';
+        $this->render('quiosque', get_defined_vars());
     }
 }

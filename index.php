@@ -5,10 +5,24 @@ require_once __DIR__ . '/vendor/autoload.php';
 require_once __DIR__ . '/api/db.php';
 
 use App\Core\Router;
+use eftec\bladeone\BladeOne;
+
+$views = __DIR__ . '/src/Views';
+$cache = __DIR__ . '/cache';
+if (!is_dir($cache)) {
+    mkdir($cache, 0777, true);
+}
+
+$blade = new BladeOne($views, $cache, BladeOne::MODE_AUTO);
+// Adicionar diretiva personalizada de CSRF
+$blade->directive('csrf', function () {
+    return '<?php renderizar_csrf_input(); ?>';
+});
 
 $router = new Router();
 $router->setDependencies([
     'pdo' => $pdo,
+    'blade' => $blade,
     'config' => [
         'nome_escola' => $nome_escola,
         'cor_primaria' => $cor_primaria,

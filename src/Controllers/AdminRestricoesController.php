@@ -70,6 +70,6 @@ try {
     // Silencioso se tabela não existir
 }
 
-        require_once __DIR__ . '/../Views/admin_restricoes.php';
+        $this->render('admin_restricoes', get_defined_vars());
     }
 }

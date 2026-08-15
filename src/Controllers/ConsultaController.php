@@ -1,7 +1,7 @@
 <?php
 namespace App\Controllers;
 
-class ConsultaController {
+class ConsultaController extends BaseController {
     protected $pdo;
     protected $config;
 
@@ -28,6 +28,6 @@ class ConsultaController {
             exit;
         }
 
-        require_once __DIR__ . '/../Views/consulta.php';
+        $this->render('consulta', get_defined_vars());
     }
 }

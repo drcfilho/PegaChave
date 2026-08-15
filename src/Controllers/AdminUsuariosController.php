@@ -17,7 +17,7 @@ class AdminUsuariosController extends AdminBaseController {
             exit;
         }
 
-        require_once __DIR__ . '/../Views/admin_usuarios.php';
+        $this->render('admin_usuarios', get_defined_vars());
     }
 
     public function store() {

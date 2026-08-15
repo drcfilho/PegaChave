@@ -17,7 +17,7 @@ class AdminChavesController extends AdminBaseController {
             exit;
         }
 
-        require_once __DIR__ . '/../Views/admin_chaves.php';
+        $this->render('admin_chaves', get_defined_vars());
     }
 
     public function store() {

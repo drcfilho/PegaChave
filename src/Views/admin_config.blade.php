@@ -46,7 +46,7 @@
     <?php endif; ?>
 
     <!-- Sidebar -->
-    <?php include __DIR__ . '/partials/sidebar.php'; ?>
+    @include('partials.sidebar')
 
     <!-- Main Content -->
     <main class="flex-1 ml-0 lg:ml-[260px] p-6 md:p-10 transition-all duration-300">
@@ -59,7 +59,7 @@
 
         <div class="bg-white rounded-2xl border border-slate-200 shadow-sm px-7 py-7 max-w-2xl mb-8">
             <form method="POST" action="<?= BASE_URL ?>/admin/config">
-                <?php renderizar_csrf_input(); ?>
+                @csrf
                 <input type="hidden" name="action" value="update_config">
                 
                 <div class="mb-5">
@@ -109,7 +109,7 @@
                 Gere um arquivo de dump SQL (compactado em ZIP) com todas as tabelas e dados atuais do sistema para guardar com segurança.
             </p>
             <form method="POST" action="<?= BASE_URL ?>/admin/config" target="_blank" class="mb-5">
-                <?php renderizar_csrf_input(); ?>
+                @csrf
                 <input type="hidden" name="action" value="download_backup">
                 <button type="submit" class="bg-green-500 hover:bg-green-600 text-white font-bold py-3 px-6 rounded-lg transition-all shadow-sm flex items-center gap-2">
                     📥 Baixar Backup (.zip)
@@ -123,7 +123,7 @@
                 Atenção: Restaurar um backup irá apagar todos os dados atuais e substituí-los pelas informações do arquivo de backup. Faça isso apenas se tiver certeza!
             </p>
             <form method="POST" action="<?= BASE_URL ?>/admin/config" enctype="multipart/form-data" onsubmit="return confirm('Tem certeza absoluta que deseja sobreescrever o banco de dados atual? Esta ação é irreversível!');">
-                <?php renderizar_csrf_input(); ?>
+                @csrf
                 <input type="hidden" name="action" value="restore_backup">
                 
                 <div class="mb-5">

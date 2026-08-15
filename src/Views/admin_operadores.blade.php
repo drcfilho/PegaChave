@@ -37,7 +37,7 @@ $isMaster = ($_SESSION['admin_role'] ?? '') === 'admin_master';
 <body class="bg-slate-50 text-slate-800 font-sans flex min-h-screen">
 
     <!-- Sidebar Dinâmica -->
-    <?php include __DIR__ . '/partials/sidebar.php'; ?>
+    @include('partials.sidebar')
 
     <main class="flex-1 ml-0 lg:ml-[260px] p-6 md:p-10 transition-all duration-300">
         <div class="flex justify-between items-center mb-8 flex-wrap gap-4">
@@ -74,7 +74,7 @@ $isMaster = ($_SESSION['admin_role'] ?? '') === 'admin_master';
                                 <button class="bg-blue-600 hover:bg-blue-700 text-white font-bold py-1.5 px-3 rounded-md shadow-sm transition-colors text-xs" onclick="editOp(<?= $op['id'] ?>, '<?= htmlspecialchars($op['usuario']) ?>', '<?= htmlspecialchars($op['nome']) ?>', '<?= $op['role'] ?>', <?= htmlspecialchars($permsJson, ENT_QUOTES) ?>)">Editar</button>
                                 <?php if ($_SESSION['admin_user_id'] != $op['id']): ?>
                                 <form method="POST" action="<?= BASE_URL ?>/admin/operadores/delete" style="display:inline;">
-                                    <?php renderizar_csrf_input(); ?>
+                                    @csrf
                                     <input type="hidden" name="id" value="<?= $op['id'] ?>">
                                     <button class="bg-red-500 hover:bg-red-600 text-white font-bold py-1.5 px-3 rounded-md shadow-sm transition-colors text-xs" onclick="return confirm('Excluir este operador?');">Apagar</button>
                                 </form>
@@ -93,7 +93,7 @@ $isMaster = ($_SESSION['admin_role'] ?? '') === 'admin_master';
         <div class="bg-white rounded-2xl p-6 w-[95%] max-w-[500px] shadow-2xl">
             <h2 id="modalTitle" class="text-xl font-bold mb-5">Novo Operador</h2>
             <form id="opForm" method="POST" action="<?= BASE_URL ?>/admin/operadores/create">
-                <?php renderizar_csrf_input(); ?>
+                @csrf
                 <input type="hidden" name="id" id="op_id">
                 
                 <div class="mb-4">

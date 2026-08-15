@@ -92,6 +92,10 @@ class ComposerStaticInit971c87c42dea56212a3f2183f065131c
     );
 
     public static $prefixLengthsPsr4 = array (
+        'e' =>
+        array (
+            'eftec\\bladeone\\' => 15,
+        ),
         'S' =>
         array (
             'Svg\\' => 4,
@@ -116,6 +120,10 @@ class ComposerStaticInit971c87c42dea56212a3f2183f065131c
     );
 
     public static $prefixDirsPsr4 = array (
+        'eftec\\bladeone\\' =>
+        array (
+            0 => __DIR__ . '/..' . '/eftec/bladeone/lib',
+        ),
         'Svg\\' =>
         array (
             0 => __DIR__ . '/..' . '/dompdf/php-svg-lib/src/Svg',

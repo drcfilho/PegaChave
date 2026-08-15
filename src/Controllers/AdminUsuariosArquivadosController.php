@@ -76,6 +76,6 @@ if ($autenticado) {
     }
 }
 
-        require_once __DIR__ . '/../Views/admin_usuarios_arquivados.php';
+        $this->render('admin_usuarios_arquivados', get_defined_vars());
     }
 }
