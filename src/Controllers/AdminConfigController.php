@@ -20,19 +20,46 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $messageType = "error";
     } elseif (isset($_POST['action']) && $_POST['action'] === 'restore_backup') {
         if (isset($_FILES['backup_file']) && $_FILES['backup_file']['error'] === UPLOAD_ERR_OK) {
-            $sqlContent = file_get_contents($_FILES['backup_file']['tmp_name']);
+            $tmpName = $_FILES['backup_file']['tmp_name'];
+            $ext = strtolower(pathinfo($_FILES['backup_file']['name'], PATHINFO_EXTENSION));
+            
+            $sqlContent = '';
+            
+            if ($ext === 'zip') {
+                $zip = new \ZipArchive();
+                if ($zip->open($tmpName) === TRUE) {
+                    for ($i = 0; $i < $zip->numFiles; $i++) {
+                        $filename = $zip->getNameIndex($i);
+                        if (pathinfo($filename, PATHINFO_EXTENSION) === 'sql') {
+                            $sqlContent = $zip->getFromIndex($i);
+                            break;
+                        }
+                    }
+                    $zip->close();
+                    if (empty($sqlContent)) {
+                        $message = "Nenhum arquivo SQL encontrado dentro do arquivo ZIP.";
+                        $messageType = "error";
+                    }
+                } else {
+                    $message = "Erro ao abrir o arquivo ZIP.";
+                    $messageType = "error";
+                }
+            } else {
+                $sqlContent = file_get_contents($tmpName);
+            }
+
             if (!empty($sqlContent)) {
                 try {
                     // Executa todas as queries do arquivo SQL
                     $pdo->exec($sqlContent);
-                    registrar_log($pdo, 'Restauração de Backup', "O banco de dados foi restaurado com sucesso a partir de um arquivo SQL.");
+                    registrar_log($pdo, 'Restauração de Backup', "O banco de dados foi restaurado com sucesso a partir de um backup.");
                     $message = "Banco de dados restaurado com sucesso!";
                     $messageType = "success";
                 } catch (\PDOException $e) {
                     $message = "Erro ao restaurar o banco: " . $e->getMessage();
                     $messageType = "error";
                 }
-            } else {
+            } elseif (empty($message)) {
                 $message = "Arquivo SQL vazio ou inválido.";
                 $messageType = "error";
             }
@@ -45,14 +72,31 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         require_once __DIR__ . '/../../bin/backup_db.php';
         $dump = generate_mysql_dump($pdo);
         
-        if (ob_get_level()) {
-            ob_end_clean();
-        }
+        $zip = new \ZipArchive();
+        $zipFilename = sys_get_temp_dir() . '/backup_pegachave_' . date('Ymd_His') . '.zip';
         
-        header('Content-Type: application/sql; charset=UTF-8');
-        header('Content-Disposition: attachment; filename="backup_pegachave_' . date('Ymd_His') . '.sql"');
-        echo $dump;
-        exit;
+        if ($zip->open($zipFilename, \ZipArchive::CREATE) === TRUE) {
+            $zip->addFromString('backup_pegachave_' . date('Ymd_His') . '.sql', $dump);
+            $zip->close();
+            
+            if (ob_get_level()) {
+                ob_end_clean();
+            }
+            header('Content-Type: application/zip');
+            header('Content-Disposition: attachment; filename="backup_pegachave_' . date('Ymd_His') . '.zip"');
+            header('Content-Length: ' . filesize($zipFilename));
+            readfile($zipFilename);
+            unlink($zipFilename);
+            exit;
+        } else {
+            if (ob_get_level()) {
+                ob_end_clean();
+            }
+            header('Content-Type: application/sql; charset=UTF-8');
+            header('Content-Disposition: attachment; filename="backup_pegachave_' . date('Ymd_His') . '.sql"');
+            echo $dump;
+            exit;
+        }
     } elseif (isset($_POST['action']) && $_POST['action'] === 'update_config') {
     $nome_input = $_POST['nome_escola'] ?? 'Escola Lumiar';
     $cor_p_input = $_POST['cor_primaria'] ?? '#0284c7';

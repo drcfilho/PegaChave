@@ -303,13 +303,13 @@
         <div class="content-card" style="margin-top: 30px;">
             <h2 style="font-size: 18px; margin-bottom: 10px;">💾 Backup do Banco de Dados</h2>
             <p style="font-size: 14px; color: #64748b; margin-bottom: 20px;">
-                Gere um arquivo de dump SQL com todas as tabelas e dados atuais do sistema para guardar com segurança.
+                Gere um arquivo de dump SQL (compactado em ZIP) com todas as tabelas e dados atuais do sistema para guardar com segurança.
             </p>
             <form method="POST" action="<?= BASE_URL ?>/admin/config" target="_blank" style="margin-bottom: 20px;">
                 <?php renderizar_csrf_input(); ?>
                 <input type="hidden" name="action" value="download_backup">
                 <button type="submit" class="btn-save" style="background-color: #22c55e;">
-                    📥 Baixar Backup (.sql)
+                    📥 Baixar Backup (.zip)
                 </button>
             </form>
 
@@ -317,15 +317,15 @@
 
             <h2 style="font-size: 18px; margin-bottom: 10px;">♻️ Restaurar Backup</h2>
             <p style="font-size: 14px; color: #ef4444; margin-bottom: 20px; font-weight: 600;">
-                Atenção: Restaurar um backup irá apagar todos os dados atuais e substituí-los pelas informações do arquivo .sql. Faça isso apenas se tiver certeza!
+                Atenção: Restaurar um backup irá apagar todos os dados atuais e substituí-los pelas informações do arquivo de backup. Faça isso apenas se tiver certeza!
             </p>
             <form method="POST" action="<?= BASE_URL ?>/admin/config" enctype="multipart/form-data" onsubmit="return confirm('Tem certeza absoluta que deseja sobreescrever o banco de dados atual? Esta ação é irreversível!');">
                 <?php renderizar_csrf_input(); ?>
                 <input type="hidden" name="action" value="restore_backup">
                 
                 <div class="form-group">
-                    <label for="backup_file">Arquivo de Backup (.sql)</label>
-                    <input type="file" name="backup_file" id="backup_file" class="form-control" accept=".sql" required>
+                    <label for="backup_file">Arquivo de Backup (.sql ou .zip)</label>
+                    <input type="file" name="backup_file" id="backup_file" class="form-control" accept=".sql,.zip" required>
                 </div>
 
                 <button type="submit" class="btn-save" style="background-color: #ef4444;">
