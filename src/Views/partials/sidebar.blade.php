@@ -34,11 +34,7 @@ $isActive = function($path) use ($currentUri) {
                 🔑 Chaves/Salas
             </a>
         </li>
-        <li>
-            <a href="<?= BASE_URL ?>/admin/chaves_arquivadas" class="flex items-center gap-3 px-6 py-3.5 text-[15px] font-semibold transition-all duration-200 border-l-4 <?= $isActive('/admin/chaves_arquivadas') ?>">
-                🗄️ Chaves Arquivadas
-            </a>
-        </li>
+
         <?php endif; ?>
         
         <?php if(has_permission('gerenciar_usuarios')): ?>
@@ -47,11 +43,7 @@ $isActive = function($path) use ($currentUri) {
                 👤 Usuários
             </a>
         </li>
-        <li>
-            <a href="<?= BASE_URL ?>/admin/usuarios_arquivados" class="flex items-center gap-3 px-6 py-3.5 text-[15px] font-semibold transition-all duration-200 border-l-4 <?= $isActive('/admin/usuarios_arquivados') ?>">
-                🗄️ Usuários Arq.
-            </a>
-        </li>
+
         <?php endif; ?>
         
         <?php if(has_permission('gerenciar_chaves')): ?>
@@ -93,15 +85,47 @@ $isActive = function($path) use ($currentUri) {
         </li>
         
         <?php if(has_permission('ver_relatorios')): ?>
+        <?php 
+        $isAuditoriaOpen = strpos($currentUri, '/admin/relatorio') !== false || 
+                           strpos($currentUri, '/admin/logs') !== false || 
+                           strpos($currentUri, '/admin/chaves_arquivadas') !== false || 
+                           strpos($currentUri, '/admin/usuarios_arquivados') !== false;
+        ?>
         <li>
-            <a href="<?= BASE_URL ?>/admin/relatorio" class="flex items-center gap-3 px-6 py-3.5 text-[15px] font-semibold transition-all duration-200 border-l-4 <?= $isActive('/admin/relatorio') ?>">
-                📝 Relatório Geral
-            </a>
-        </li>
-        <li>
-            <a href="<?= BASE_URL ?>/admin/logs" class="flex items-center gap-3 px-6 py-3.5 text-[15px] font-semibold transition-all duration-200 border-l-4 <?= $isActive('/admin/logs') ?>">
-                📋 Logs de Auditoria
-            </a>
+            <details class="group" <?= $isAuditoriaOpen ? 'open' : '' ?>>
+                <summary class="flex items-center justify-between px-6 py-3.5 text-[15px] font-semibold text-slate-400 hover:text-white hover:bg-white/5 cursor-pointer list-none transition-colors border-l-4 border-transparent">
+                    <div class="flex items-center gap-3">
+                        🛡️ Auditoria & Dados
+                    </div>
+                    <span class="transition-transform duration-300 group-open:rotate-180 opacity-50 text-xs">▼</span>
+                </summary>
+                <ul class="bg-white/5 flex flex-col border-l-4 border-transparent">
+                    <li>
+                        <a href="<?= BASE_URL ?>/admin/relatorio" class="flex items-center gap-3 pl-12 pr-6 py-3 text-sm font-medium transition-all duration-200 <?= strpos($currentUri, '/admin/relatorio') !== false ? 'text-white font-bold' : 'text-slate-400 hover:text-white hover:bg-white/5' ?>">
+                            📝 Histórico de Uso
+                        </a>
+                    </li>
+                    <li>
+                        <a href="<?= BASE_URL ?>/admin/logs" class="flex items-center gap-3 pl-12 pr-6 py-3 text-sm font-medium transition-all duration-200 <?= strpos($currentUri, '/admin/logs') !== false ? 'text-white font-bold' : 'text-slate-400 hover:text-white hover:bg-white/5' ?>">
+                            📋 Logs do Sistema
+                        </a>
+                    </li>
+                    <?php if(has_permission('gerenciar_chaves')): ?>
+                    <li>
+                        <a href="<?= BASE_URL ?>/admin/chaves_arquivadas" class="flex items-center gap-3 pl-12 pr-6 py-3 text-sm font-medium transition-all duration-200 <?= strpos($currentUri, '/admin/chaves_arquivadas') !== false ? 'text-white font-bold' : 'text-slate-400 hover:text-white hover:bg-white/5' ?>">
+                            🗄️ Chaves Arquivadas
+                        </a>
+                    </li>
+                    <?php endif; ?>
+                    <?php if(has_permission('gerenciar_usuarios')): ?>
+                    <li>
+                        <a href="<?= BASE_URL ?>/admin/usuarios_arquivados" class="flex items-center gap-3 pl-12 pr-6 py-3 text-sm font-medium transition-all duration-200 <?= strpos($currentUri, '/admin/usuarios_arquivados') !== false ? 'text-white font-bold' : 'text-slate-400 hover:text-white hover:bg-white/5' ?>">
+                            🗄️ Usuários Arquivados
+                        </a>
+                    </li>
+                    <?php endif; ?>
+                </ul>
+            </details>
         </li>
         <?php endif; ?>
         
