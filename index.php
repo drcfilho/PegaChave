@@ -23,32 +23,39 @@ $router->get('/consulta', 'ConsultaController', 'index');
 $router->get('/regras', 'RegrasController', 'index');
 $router->post('/api/processar_scan', 'ScanController', 'processar');
 
+// === Middlewares ===
+$auth = ['AuthMiddleware'];
+$authCsrf = ['AuthMiddleware', 'CsrfMiddleware'];
+
 // === Rotas Administrativas ===
-$router->get('/admin', 'AdminDashboardController', 'index');
-$router->get('/admin/chaves', 'AdminChavesController', 'index');
-$router->post('/admin/chaves/create', 'AdminChavesController', 'store');
-$router->post('/admin/chaves/update', 'AdminChavesController', 'update');
-$router->post('/admin/chaves/delete', 'AdminChavesController', 'destroy');
-$router->get('/admin/usuarios', 'AdminUsuariosController', 'index');
-$router->post('/admin/usuarios/create', 'AdminUsuariosController', 'store');
-$router->post('/admin/usuarios/update', 'AdminUsuariosController', 'update');
-$router->post('/admin/usuarios/delete', 'AdminUsuariosController', 'destroy');
-$router->get('/admin/usuarios_arquivados', 'AdminUsuariosArquivadosController', 'index');
-$router->post('/admin/usuarios_arquivados', 'AdminUsuariosArquivadosController', 'index');
-$router->get('/admin/reservas', 'AdminReservasController', 'index');
-$router->post('/admin/reservas', 'AdminReservasController', 'index');
-$router->get('/admin/restricoes', 'AdminRestricoesController', 'index');
-$router->post('/admin/restricoes', 'AdminRestricoesController', 'index');
-$router->get('/admin/relatorio', 'AdminRelatorioController', 'index');
-$router->get('/admin/config', 'AdminConfigController', 'index');
-$router->post('/admin/config', 'AdminConfigController', 'index');
-$router->get('/admin/logs', 'AdminLogsController', 'index');
-$router->get('/admin/gerar_qr', 'AdminGerarQrController', 'index');
-$router->get('/admin/consulta', 'AdminConsultaController', 'index');
-$router->get('/admin/operadores', 'AdminOperadoresController', 'index');
-$router->post('/admin/operadores/create', 'AdminOperadoresController', 'create');
-$router->post('/admin/operadores/update', 'AdminOperadoresController', 'update');
-$router->post('/admin/operadores/delete', 'AdminOperadoresController', 'delete');
+$router->get('/admin', 'AdminDashboardController', 'index', $auth);
+$router->get('/admin/chaves', 'AdminChavesController', 'index', $auth);
+$router->post('/admin/chaves/create', 'AdminChavesController', 'store', $authCsrf);
+$router->post('/admin/chaves/update', 'AdminChavesController', 'update', $authCsrf);
+$router->post('/admin/chaves/delete', 'AdminChavesController', 'destroy', $authCsrf);
+$router->get('/admin/usuarios', 'AdminUsuariosController', 'index', $auth);
+$router->post('/admin/usuarios/create', 'AdminUsuariosController', 'store', $authCsrf);
+$router->post('/admin/usuarios/update', 'AdminUsuariosController', 'update', $authCsrf);
+$router->post('/admin/usuarios/delete', 'AdminUsuariosController', 'destroy', $authCsrf);
+$router->get('/admin/usuarios_arquivados', 'AdminUsuariosArquivadosController', 'index', $auth);
+$router->post('/admin/usuarios_arquivados', 'AdminUsuariosArquivadosController', 'index', $authCsrf);
+$router->get('/admin/reservas', 'AdminReservasController', 'index', $auth);
+$router->post('/admin/reservas', 'AdminReservasController', 'index', $authCsrf);
+$router->get('/admin/restricoes', 'AdminRestricoesController', 'index', $auth);
+$router->post('/admin/restricoes', 'AdminRestricoesController', 'index', $authCsrf);
+$router->get('/admin/relatorio', 'AdminRelatorioController', 'index', $auth);
+$router->get('/admin/config', 'AdminConfigController', 'index', $auth);
+$router->post('/admin/config', 'AdminConfigController', 'index', $authCsrf);
+$router->get('/admin/logs', 'AdminLogsController', 'index', $auth);
+$router->get('/admin/gerar_qr', 'AdminGerarQrController', 'index', $auth);
+$router->get('/admin/consulta', 'AdminConsultaController', 'index', $auth);
+$authOperadores = ['AuthMiddleware:gerenciar_operadores'];
+$authCsrfOperadores = ['AuthMiddleware:gerenciar_operadores', 'CsrfMiddleware'];
+
+$router->get('/admin/operadores', 'AdminOperadoresController', 'index', $authOperadores);
+$router->post('/admin/operadores/create', 'AdminOperadoresController', 'create', $authCsrfOperadores);
+$router->post('/admin/operadores/update', 'AdminOperadoresController', 'update', $authCsrfOperadores);
+$router->post('/admin/operadores/delete', 'AdminOperadoresController', 'delete', $authCsrfOperadores);
 
 // Despacha a requisição baseada na URL
 $router->dispatch($_SERVER['REQUEST_URI'], $_SERVER['REQUEST_METHOD']);

@@ -9,22 +9,23 @@ class Router {
         $this->dependencies = $deps;
     }
 
-    public function add($method, $path, $controller, $action) {
+    public function add($method, $path, $controller, $action, $middlewares = []) {
         $path = preg_replace('/\{([a-zA-Z0-9_]+)\}/', '(?P<\1>[a-zA-Z0-9_-]+)', $path);
         $this->routes[] = [
             'method' => strtoupper($method),
             'path' => "#^" . $path . "$#",
             'controller' => $controller,
-            'action' => $action
+            'action' => $action,
+            'middlewares' => $middlewares
         ];
     }
 
-    public function get($path, $controller, $action = 'index') {
-        $this->add('GET', $path, $controller, $action);
+    public function get($path, $controller, $action = 'index', $middlewares = []) {
+        $this->add('GET', $path, $controller, $action, $middlewares);
     }
 
-    public function post($path, $controller, $action = 'index') {
-        $this->add('POST', $path, $controller, $action);
+    public function post($path, $controller, $action = 'index', $middlewares = []) {
+        $this->add('POST', $path, $controller, $action, $middlewares);
     }
 
     public function dispatch($requestUri, $requestMethod) {
@@ -51,6 +52,22 @@ class Router {
                     $action = $route['action'];
                     if (method_exists($controllerInstance, $action)) {
                         $params = array_filter($matches, 'is_string', ARRAY_FILTER_USE_KEY);
+                        
+                        // Execute middlewares
+                        foreach ($route['middlewares'] as $middlewareDef) {
+                            $parts = explode(':', $middlewareDef);
+                            $middleware = $parts[0];
+                            $arg = $parts[1] ?? null;
+
+                            $middlewareClass = "App\\Core\\Middlewares\\" . $middleware;
+                            if (class_exists($middlewareClass)) {
+                                $middlewareInstance = new $middlewareClass();
+                                if (!$middlewareInstance->handle($arg)) {
+                                    return; // Aborted by middleware
+                                }
+                            }
+                        }
+
                         call_user_func_array([$controllerInstance, $action], $params);
                         return;
                     }

@@ -6,13 +6,8 @@ use App\Models\OperadorRepository;
 class AdminOperadoresController extends AdminBaseController {
     private $operadorRepo;
 
-    public function __construct() {
-        $pdo = $this->pdo;
-        extract($this->config);
-        parent::__construct();
-        // Apenas Master ou quem tem a permissão específica pode gerenciar operadores
-        $this->requirePermission('gerenciar_operadores');
-        
+    public function __construct($pdo, $config) {
+        parent::__construct($pdo, $config);
         $this->operadorRepo = new OperadorRepository($pdo);
     }
 
@@ -30,9 +25,7 @@ class AdminOperadoresController extends AdminBaseController {
         $pdo = $this->pdo;
         extract($this->config);
         if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-            if (!validar_csrf_token($_POST['csrf_token'] ?? '')) {
-                die("Token CSRF inválido.");
-            }
+
 
             $usuario = trim($_POST['usuario']);
             $senha = $_POST['senha'];
@@ -55,9 +48,7 @@ class AdminOperadoresController extends AdminBaseController {
         $pdo = $this->pdo;
         extract($this->config);
         if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-            if (!validar_csrf_token($_POST['csrf_token'] ?? '')) {
-                die("Token CSRF inválido.");
-            }
+
 
             $id = (int)$_POST['id'];
             $usuario = trim($_POST['usuario']);
@@ -86,9 +77,7 @@ class AdminOperadoresController extends AdminBaseController {
         $pdo = $this->pdo;
         extract($this->config);
         if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-            if (!validar_csrf_token($_POST['csrf_token'] ?? '')) {
-                die("Token CSRF inválido.");
-            }
+
 
             $id = (int)$_POST['id'];
 

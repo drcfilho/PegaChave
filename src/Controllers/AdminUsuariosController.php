@@ -21,9 +21,6 @@ class AdminUsuariosController extends AdminBaseController {
     }
 
     public function store() {
-        if (!validar_csrf_token($_POST['csrf_token'] ?? '')) {
-            return $this->index("Token de segurança inválido. Tente novamente.", "error");
-        }
 
         $pdo = $this->pdo;
         $usuarioRepo = new \App\Models\UsuarioRepository($pdo);
@@ -39,9 +36,6 @@ class AdminUsuariosController extends AdminBaseController {
     }
 
     public function update() {
-        if (!validar_csrf_token($_POST['csrf_token'] ?? '')) {
-            return $this->index("Token de segurança inválido. Tente novamente.", "error");
-        }
 
         $pdo = $this->pdo;
         $usuarioRepo = new \App\Models\UsuarioRepository($pdo);
@@ -57,9 +51,6 @@ class AdminUsuariosController extends AdminBaseController {
     }
 
     public function destroy() {
-        if (!validar_csrf_token($_POST['csrf_token'] ?? '')) {
-            return $this->index("Token de segurança inválido. Tente novamente.", "error");
-        }
 
         $pdo = $this->pdo;
         $usuarioRepo = new \App\Models\UsuarioRepository($pdo);

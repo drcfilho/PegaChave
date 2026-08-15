@@ -6,10 +6,11 @@ Este arquivo registra todo o histórico de desenvolvimento e as melhorias aplica
 
 ## 🚀 Versão Atual (Melhorias e Ajustes Recentes)
 
-### Refatoração Estrutural (Task 1, 2 e 3)
+### Refatoração Estrutural (Task 1, 2, 3)
 * **Injeção de Dependência**: Remoção de variáveis globais (`$pdo`, `$config`) dos controladores e implementação via construtor (Task 1).
 * **Controladores RESTful**: Separação clara das requisições GET e POST nos controladores `AdminChavesController` e `AdminUsuariosController`. Rotas em `index.php` agora direcionam para métodos específicos (`index`, `store`, `update`, `destroy`) ao invés de um único `index()` (Task 2).
-* **Tratamento de Erros Limpo (Encapsulamento de Regra de Negócio)**: Validações extensas, `htmlspecialchars`, e tratamentos de erro de formulário foram movidos dos controladores para os Models (`UsuarioRepository` e `ChaveRepository`). Os controllers agora têm blocos `try-catch` muito curtos e apenas invocam a criação da lógica (Task 3).
+* **Tratamento de Erros Limpo (Encapsulamento de Regra de Negócio)**: Validações extensas, `htmlspecialchars`, e tratamentos de erro de formulário foram movidos dos controladores para os Models (`UsuarioRepository` e `ChaveRepository`).
+* **Middlewares (Auth e CSRF)**: Extraídas verificações repetitivas de permissão (RBAC), controle de sessão e tokens de segurança (`CSRF`) dos controladores base para middlewares independentes. O método `dispatch` do roteador agora os processa antes da ação principal (Task 3).
 
 ### 🏗️ 1. Refatoração Arquitetural (MVC, Repositories e Roteador)
 * **Padrão MVC**: Os arquivos de frontend e backend, antes misturados na raiz, foram completamente divididos na nova estrutura `src/Controllers`, `src/Models` e `src/Views`, seguindo os mais altos padrões de arquitetura de software de forma limpa.

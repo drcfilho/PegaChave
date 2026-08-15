@@ -21,9 +21,6 @@ class AdminChavesController extends AdminBaseController {
     }
 
     public function store() {
-        if (!validar_csrf_token($_POST['csrf_token'] ?? '')) {
-            return $this->index("Token de segurança inválido. Tente novamente.", "error");
-        }
 
         $pdo = $this->pdo;
         $chaveRepository = new ChaveRepository($pdo);
@@ -41,9 +38,6 @@ class AdminChavesController extends AdminBaseController {
     }
 
     public function update() {
-        if (!validar_csrf_token($_POST['csrf_token'] ?? '')) {
-            return $this->index("Token de segurança inválido. Tente novamente.", "error");
-        }
 
         $pdo = $this->pdo;
         $chaveRepository = new ChaveRepository($pdo);
