@@ -52,10 +52,13 @@
 
     <script>
         window.BASE_URL = '<?= BASE_URL ?>';
-        // Registrar Service Worker
+        // Registrar Service Worker e Forçar Atualização
         if ('serviceWorker' in navigator) {
             window.addEventListener('load', () => {
                 navigator.serviceWorker.register(`${window.BASE_URL}/service-worker.js`)
+                    .then(reg => {
+                        reg.update(); // Força o browser a verificar se há novo SW
+                    })
                     .catch(err => console.warn('Erro ao registrar Service Worker:', err));
             });
         }
@@ -259,7 +262,7 @@
         <span>⚙️</span> Admin
     </a>
 
-    <!-- Lógica Modularizada AlpineJS -->
-    <script src="<?= BASE_URL ?>/assets/js/quiosque.js"></script>
+    <!-- Lógica Modularizada AlpineJS com Cache Busting -->
+    <script src="<?= BASE_URL ?>/assets/js/quiosque.js?v=<?= time() ?>"></script>
 </body>
 </html>
