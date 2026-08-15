@@ -119,10 +119,10 @@
     </header>
 
     <!-- Container Principal -->
-    <main class="flex-1 flex flex-col justify-center items-center p-4 sm:p-8 w-full max-w-3xl mx-auto relative z-10">
+    <main class="flex-1 flex flex-col justify-center items-center p-3 sm:p-6 w-full max-w-3xl mx-auto relative z-10">
         
         <!-- Quiosque Card Principal -->
-        <div class="w-full bg-white dark:bg-slate-800 rounded-3xl shadow-2xl p-6 sm:p-8 border border-slate-200 dark:border-slate-700 flex flex-col gap-6 transform transition-all relative overflow-visible">
+        <div class="w-full bg-white dark:bg-slate-800 rounded-3xl shadow-2xl p-5 sm:p-6 border border-slate-200 dark:border-slate-700 flex flex-col gap-4 sm:gap-5 transform transition-all relative overflow-visible">
             
             <!-- Banner de Alertas -->
             <div class="absolute -top-12 left-0 right-0 z-50 flex justify-center transition-all duration-300"
@@ -146,26 +146,26 @@
             <div class="text-center font-semibold text-slate-500 dark:text-slate-400 text-sm tracking-wide uppercase" x-text="titleMessage"></div>
 
             <!-- Área da Câmera -->
-            <div class="relative bg-slate-100 dark:bg-slate-900 rounded-2xl aspect-video sm:aspect-[4/3] max-h-[400px] w-full flex justify-center items-center overflow-hidden border border-slate-200 dark:border-slate-700 shadow-inner group">
+            <div class="relative bg-slate-100 dark:bg-slate-900 rounded-2xl aspect-video max-h-[200px] sm:max-h-[280px] w-full flex justify-center items-center overflow-hidden border border-slate-200 dark:border-slate-700 shadow-inner group">
                 
                 <!-- Placeholder / Loading indicator -->
                 <div class="absolute inset-0 flex flex-col items-center justify-center text-slate-400 dark:text-slate-600 gap-3 z-0" wire:ignore.self>
-                    <svg class="w-16 h-16 opacity-50" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 13a3 3 0 11-6 0 3 3 0 016 0z"></path></svg>
-                    <span class="text-sm font-medium">Iniciando câmera...</span>
+                    <svg class="w-12 h-12 opacity-50" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 13a3 3 0 11-6 0 3 3 0 016 0z"></path></svg>
+                    <span class="text-xs font-medium">Iniciando câmera...</span>
                 </div>
 
                 <!-- Elementos Decorativos Scanner -->
-                <div class="absolute top-4 left-4 text-brand-500 animate-pulse font-bold text-xs flex items-center gap-1.5 z-10 pointer-events-none">
-                    <span class="w-2 h-2 rounded-full bg-brand-500"></span> LIVE
+                <div class="absolute top-3 left-3 text-brand-500 animate-pulse font-bold text-[10px] flex items-center gap-1.5 z-10 pointer-events-none">
+                    <span class="w-1.5 h-1.5 rounded-full bg-brand-500"></span> LIVE
                 </div>
                 
                 <!-- Target Box Scanner -->
-                <div class="absolute border border-brand-500/30 w-[70%] h-[70%] max-w-[280px] max-h-[280px] rounded-2xl z-10 pointer-events-none
-                            before:content-[''] before:absolute before:w-8 before:h-8 before:border-t-4 before:border-l-4 before:border-brand-500 before:-top-1 before:-left-1 before:rounded-tl-xl
-                            after:content-[''] after:absolute after:w-8 after:h-8 after:border-t-4 after:border-r-4 after:border-brand-500 after:-top-1 after:-right-1 after:rounded-tr-xl">
+                <div class="absolute border border-brand-500/30 w-[60%] h-[60%] max-w-[200px] max-h-[200px] rounded-xl z-10 pointer-events-none
+                            before:content-[''] before:absolute before:w-6 before:h-6 before:border-t-4 before:border-l-4 before:border-brand-500 before:-top-1 before:-left-1 before:rounded-tl-lg
+                            after:content-[''] after:absolute after:w-6 after:h-6 after:border-t-4 after:border-r-4 after:border-brand-500 after:-top-1 after:-right-1 after:rounded-tr-lg">
                     <div class="absolute inset-0 pointer-events-none
-                                before:content-[''] before:absolute before:w-8 before:h-8 before:border-b-4 before:border-l-4 before:border-brand-500 before:-bottom-1 before:-left-1 before:rounded-bl-xl
-                                after:content-[''] after:absolute after:w-8 after:h-8 after:border-b-4 after:border-r-4 after:border-brand-500 after:-bottom-1 after:-right-1 after:rounded-br-xl"></div>
+                                before:content-[''] before:absolute before:w-6 before:h-6 before:border-b-4 before:border-l-4 before:border-brand-500 before:-bottom-1 before:-left-1 before:rounded-bl-lg
+                                after:content-[''] after:absolute after:w-6 after:h-6 after:border-b-4 after:border-r-4 after:border-brand-500 after:-bottom-1 after:-right-1 after:rounded-br-lg"></div>
                 </div>
 
                 <!-- Div do leitor onde a lib injeta a câmera -->
