@@ -19,6 +19,25 @@ class ReservaRepository extends BaseRepository {
         return $stmt->fetch();
     }
 
+    public function buscarReservaAtiva($chave_id, $usuario_id) {
+        $stmt = $this->pdo->prepare("
+            SELECT r.*, u.nome AS reservado_nome 
+            FROM reservas r
+            JOIN usuarios u ON r.usuario_id = u.id
+            WHERE r.chave_id = ?
+              AND r.usuario_id != ?
+              AND r.data_reserva = CURDATE()
+              AND (
+                  CURTIME() BETWEEN r.hora_inicio AND r.hora_fim
+                  OR (r.hora_inicio BETWEEN CURTIME() AND ADDTIME(CURTIME(), '00:15:00'))
+              )
+            LIMIT 1
+        ");
+        $stmt->execute([$chave_id, $usuario_id]);
+        return $stmt->fetch();
+    }
+
+
     public function addReserva($chave_id, $usuario_id, $data_reserva, $hora_inicio, $hora_fim) {
         $stmt = $this->pdo->prepare("
             INSERT INTO reservas (chave_id, usuario_id, data_reserva, hora_inicio, hora_fim) 
