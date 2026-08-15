@@ -106,6 +106,12 @@ require_once __DIR__ . '/../../api/db.php';
             line-height: 1.6;
         }
 
+        body.dark-theme p,
+        body.dark-theme ol,
+        body.dark-theme ul {
+            color: #f8fafc;
+        }
+
         li {
             margin-bottom: 8px;
         }
