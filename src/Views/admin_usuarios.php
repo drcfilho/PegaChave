@@ -438,10 +438,10 @@
                 </div>
 
                 <div class="form-group">
-                    <label for="matricula">Matrícula (ID)</label>
+                    <label for="matricula">Matrícula / CPF (ID)</label>
                     <div class="tooltip-container" style="display: block;">
                         <input type="text" name="matricula" id="matricula" class="form-control" placeholder="Ex: 101" required>
-                        <span class="tooltip-text">Número de matrícula ou RG. Usado para gerar o crachá/QR Code único do usuário.</span>
+                        <span class="tooltip-text">Matrícula (aluno/servidor) ou CPF (colaborador). Usado para gerar o crachá único.</span>
                     </div>
                 </div>
 
