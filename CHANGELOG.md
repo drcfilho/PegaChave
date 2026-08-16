@@ -24,8 +24,10 @@ Este arquivo registra todo o histórico de desenvolvimento e as melhorias aplica
 * **Componentização com Alpine.js**: A View principal do Quiosque (`quiosque.php`) foi completamente refatorada utilizando o *framework* Alpine.js. O arquivo foi reduzido de quase 900 linhas para apenas cerca de 130 linhas declarativas. Toda a lógica de interatividade, câmera, alertas e offline foi separada para o script dedicado `assets/js/quiosque.js` e o layout movido para `assets/css/quiosque.css`.
 
 ### 🐳 2. Portabilidade e Ambientes de Execução
-* **Ambiente Docker**: Criação dos arquivos `Dockerfile`, `.dockerignore` e `docker-compose.yml` para rodar o PHP 8.3 (Apache) e o MySQL 8.4 integrados com um único comando.
+* **Ambiente Docker**: Criação dos arquivos `Dockerfile`, `.dockerignore` e `docker-compose.yml` para rodar o PHP 8.3 (Apache) e o MySQL 8.4 integrados com um único comando. A nova instrução do `Dockerfile` agora garante a execução isolada de `composer install --no-dev` para garantir a geração limpa de dependências em qualquer máquina, independente de versionamento de código externo no Github.
+* **Limpeza do GitHub e Vendor Tracking**: O arquivo `.gitignore` foi higienizado. Problemas de codificação e bytes nulos que permitiam que dependências pesadas (`/vendor`, `composer.phar` e binários) vazassem para o repositório em nuvem foram erradicados. O projeto base se tornou muito mais leve e seguro.
 * **Instalação Automatizada no Docker**: O contêiner de backend executa automaticamente o script de instalação no primeiro carregamento, aguardando a inicialização do MySQL para configurar as tabelas e dados iniciais.
+* **Instalador Web Autossuficiente (`/install/run`)**: Como o sistema utiliza banco de dados dinâmico por chave-valor na tabela `configuracoes`, o sistema se tornou 100% resiliente a novos campos sem necessidade de recriar as migrações SQL.
 * **Script `iniciar.bat`**: Atalho simples de dois cliques para carregar localmente os servidores PHP e MySQL sem necessidade do Docker.
 
 ### 🎨 2. Experiência do Usuário (UX/UI)
