@@ -3,11 +3,11 @@
 ## ⏳ Backlog Atual
 
 ### 1. Configuração de Alertas e Atrasos (Notificações)
-- [ ] Adicionar na tabela `configuracoes` o limite de tempo em horas para considerar uma chave como "Atrasada" (ex: 4 horas).
-- [ ] Criar interface na tela de Configurações para o Admin alterar esse limite.
-- [ ] Criar rotina (Cron Job ou Controller de background) que varre movimentações ativas que excederam o limite.
-- [ ] Disparar e-mail de alerta para o e-mail cadastrado do usuário (ou para o Admin) informando sobre o atraso.
-- [ ] Destacar chaves atrasadas visualmente no Dashboard.
+- [x] Adicionar na tabela `configuracoes` o limite de tempo em horas para considerar uma chave como "Atrasada" (ex: 4 horas).
+- [x] Criar interface na tela de Configurações para o Admin alterar esse limite.
+- [x] Criar rotina (Cron Job ou Controller de background) que varre movimentações ativas que excederam o limite.
+- [x] Disparar e-mail de alerta para o e-mail cadastrado do usuário (ou para o Admin) informando sobre o atraso.
+- [x] Destacar chaves atrasadas visualmente no Dashboard.
 
 ### 2. Módulo de Impressão Térmica (Zebra/Argox)
 - [ ] Criar layout de HTML e CSS com medidas exatas para bobinas térmicas contínuas.
