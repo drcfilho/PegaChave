@@ -117,31 +117,28 @@ Este arquivo registra todo o histórico de desenvolvimento e as melhorias aplica
 
 Abaixo estão listados os commits oficiais do projeto em ordem cronológica reversa, traduzidos e padronizados para **Português (PT-BR)**:
 
-1. **`fix: substitui sidebar fixo pelo componente dinamico na view gerar_qr`**
-   * Resolve falha de renderização do menu na tela de QR codes.
-2. **`fix: restaura ordem do menu e adiciona fallback de sessao para usuarios antigos`**
-   * Restaura visual exato dos menus e arruma desaparecimento para quem estava logado antes do update.
-3. **`refactor: extrai sidebar estatica para componente dinamico com RBAC e inclui em todas as telas`**
-   * Limpeza de redundância. O menu agora é renderizado inteligentemente usando um único arquivo.
-4. **`fix: corrige acesso indevido a propriedade protegida do pdo no AdminOperadoresController`**
-   * Resolve crash Fatal Error ao tentar auditar log no momento da criação.
-5. **`fix: corrige erro de sintaxe e codigo duplicado no AdminChavesController`**
-   * Restaura funcionamento da página de chaves que estava quebrada.
-6. **`feat: sistema de controle de acesso (RBAC) e gestao de operadores`**
-   * Adiciona CRUD de usuários administrativos com caixas de seleção de permissão. 
-7. **`docs: atualiza README.md com instruções de Docker, iniciar.bat e segurança`**
-   * Atualização completa da documentação para novos usuários do projeto.
-8. **`feat: adiciona suporte a contêineres Docker e script iniciar.bat`**
-   * Configuração de ambiente portátil e instalável de forma isolada.
-9. **`feat: implementa instalador de banco de dados, soft delete de usuários e tema escuro`**
-   * Refatoração do modelo de dados e melhorias visuais e de UX.
-   * Criação do arquivo de documentação original.
-5. **`docs: atualiza checklist de tarefas de refatoração no task.md`**
-   * Controle de fases do desenvolvimento.
-6. **`refactor: remove variável de estado currentMode obsoleta no quiosque`**
-   * Limpeza de código e tratamento de lógica JS.
-7. **`feat: adiciona alertas de chaves atrasadas no dashboard do administrador`**
-   * Implementação de painel com alertas de tempo excedido de uso de chaves.
+1. **`docs: anota ajustes de portabilidade, docker e gitignore no changelog`**
+   * Registro do fechamento da Task 1 e atualizações no documento histórico.
+2. **`chore: limpa formatacao corrompida do gitignore e marca task 1 como feita`**
+   * Correção no arquivo `.gitignore` que possuía bytes invisíveis, fazendo com que pacotes de terceiros pesados fossem comitados.
+3. **`fix: atualiza script de cron job para usar configuracao do painel`**
+   * Script de alertas em background agora utiliza corretamente a variável salva em banco ao invés do `.env`.
+4. **`fix: atualiza Dockerfile para executar composer install`**
+   * Ajuste fino no contêiner para reconstrução autônoma das bibliotecas, possibilitando repositório GitHub enxuto.
+5. **`chore: remove vendor and artifacts from git tracking`**
+   * Remoção permanente da pasta `vendor/` e artefatos binários do cache da nuvem.
+6. **`docs: salvar backlog de tarefas (Task 2 e 3)`**
+   * Organização do arquivo de documentação com planejamento de tarefas.
+7. **`feat: configuracao global para alertas de atraso e correcoes no dashboard`**
+   * Unificação dos endpoints via Router e controle administrativo de horas pelo painel (Fechamento Task 1).
+8. **`feat: suporte a multitenancy com portarias multiplas separadas por bloco`**
+   * Isolamento de chaves e quiosques por base de localização física e abas interativas no modo avançado.
+9. **`feat: adiciona captura e visualizacao de ocorrencias na devolucao de chaves`**
+   * Implementação de prompt no dashboard com marcações visuais avermelhadas no histórico de sistema.
+10. **`feat: reorganiza menu administrativo criando dropdown unificado de auditoria`**
+    * Limpeza visual para o gestor com menu recolhível.
+11. **`feat: adiciona grafico de pizza de status ao dashboard`**
+    * Visão panorâmica em tempo real entre Disponível vs Ocupada vs Atrasada.
 8. **`feat: implementa logs de auditoria no MySQL e tela de relatórios administrativos`**
    * Auditoria de ações tomadas dentro do painel admin.
 9. **`feat: adiciona busca e seleção por checkbox no gerador de etiquetas QR`**
