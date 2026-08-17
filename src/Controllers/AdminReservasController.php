@@ -13,9 +13,6 @@ $message = "";
 $messageType = "";
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    if (false) {
-        // Redundant block removed since CSRF is handled via middleware
-    } else {
         $action = $_POST['action'] ?? '';
 
         try {
@@ -81,7 +78,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $message = $e->getMessage();
             $messageType = "error";
         }
-    }
 }
 
 // Carregar chaves, usuários e reservas

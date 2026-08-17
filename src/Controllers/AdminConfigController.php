@@ -11,9 +11,7 @@ class AdminConfigController extends AdminBaseController {
 $messageType = '';
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    if (false) {
-        // Redundant block removed since CSRF is handled via middleware
-    } elseif (isset($_POST['action']) && $_POST['action'] === 'restore_backup') {
+    if (isset($_POST['action']) && $_POST['action'] === 'restore_backup') {
         if (isset($_FILES['backup_file']) && $_FILES['backup_file']['error'] === UPLOAD_ERR_OK) {
             $tmpName = $_FILES['backup_file']['tmp_name'];
             $ext = strtolower(pathinfo($_FILES['backup_file']['name'], PATHINFO_EXTENSION));
@@ -44,8 +42,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     $message = "A extensão ZipArchive não está habilitada no servidor. Por favor, extraia o arquivo e envie o arquivo .sql diretamente.";
                     $messageType = "error";
                 }
-            } else {
+            } elseif ($ext === 'sql') {
                 $sqlContent = file_get_contents($tmpName);
+            } else {
+                $message = "Apenas arquivos com extensão .sql ou .zip são permitidos.";
+                $messageType = "error";
             }
 
             if (!empty($sqlContent)) {
