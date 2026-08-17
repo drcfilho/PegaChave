@@ -93,13 +93,13 @@ $isActive = function($path) use ($currentUri) {
         ?>
         <li>
             <details class="group" <?= $isAuditoriaOpen ? 'open' : '' ?>>
-                <summary class="flex items-center justify-between px-6 py-3.5 text-[15px] font-semibold cursor-pointer list-none transition-colors border-l-4 border-transparent <?= $hasAuditoriaPerm ? 'text-slate-400 hover:text-white hover:bg-white/5' : 'border-red-600 text-red-500 opacity-60 cursor-not-allowed hover:bg-red-500/5' ?>" title="<?= !$hasAuditoriaPerm ? 'Acesso Bloqueado' : '' ?>">
+                <summary class="flex items-center justify-between px-6 py-3.5 text-[15px] font-semibold cursor-pointer list-none [&::-webkit-details-marker]:hidden transition-colors border-l-4 border-transparent <?= $hasAuditoriaPerm ? 'text-slate-400 hover:text-white hover:bg-white/5' : 'border-red-600 text-red-500 opacity-60 cursor-not-allowed hover:bg-red-500/5' ?>" title="<?= !$hasAuditoriaPerm ? 'Acesso Bloqueado' : '' ?>">
                     <div class="flex items-center gap-3">
                         🛡️ Auditoria & Dados
                     </div>
                     <span class="transition-transform duration-300 group-open:rotate-180 opacity-50 text-xs">▼</span>
                 </summary>
-                <ul class="bg-black/15 flex flex-col pl-6 border-l border-white/10 ml-8 my-1 gap-1">
+                <ul class="bg-black/15 flex flex-col pl-4 border-l border-white/10 ml-14 my-1 gap-1">
                     <?php 
                     render_submenu_item('ver_relatorios', '/admin/relatorio', 'Histórico de Uso', '📝', $currentUri);
                     render_submenu_item('ver_relatorios', '/admin/logs', 'Logs do Sistema', '📋', $currentUri);
