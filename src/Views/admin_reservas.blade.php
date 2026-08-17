@@ -67,7 +67,7 @@
                                     <td class="px-4 py-3 border-b border-slate-100 text-sm"><?php echo htmlspecialchars($r['usuario_nome']); ?></td>
                                     <td class="px-4 py-3 border-b border-slate-100 text-sm">
                                         <form method="POST" action="<?= BASE_URL ?>/admin/reservas" onsubmit="return confirm('Deseja cancelar este agendamento?');" style="display:inline;">
-                                            <input type="hidden" name="csrf_token" value="<?php echo gerador_csrf_token(); ?>">
+                                            @csrf
                                             <input type="hidden" name="action" value="delete_reserva">
                                             <input type="hidden" name="id" value="<?php echo $r['id']; ?>">
                                             <button type="submit" class="text-red-500 font-bold cursor-pointer hover:underline bg-transparent border-none p-0 text-sm">Cancelar</button>
@@ -127,7 +127,7 @@
                 <button class="bg-transparent border-none text-2xl text-slate-500 cursor-pointer hover:text-slate-700" onclick="fecharModal()">&times;</button>
             </div>
             <form method="POST" action="<?= BASE_URL ?>/admin/reservas">
-                <input type="hidden" name="csrf_token" value="<?php echo gerador_csrf_token(); ?>">
+                @csrf
                 <input type="hidden" name="action" value="add_reserva">
 
                 <div class="mb-5">

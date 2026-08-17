@@ -70,6 +70,7 @@ $router->post('/admin/reservas', 'AdminReservasController', 'index', $authCsrf);
 $router->get('/admin/restricoes', 'AdminRestricoesController', 'index', $auth);
 $router->post('/admin/restricoes', 'AdminRestricoesController', 'index', $authCsrf);
 $router->get('/admin/relatorio', 'AdminRelatorioController', 'index', $auth);
+$router->get('/admin/ocorrencias', 'AdminOcorrenciasController', 'index', $auth);
 $router->get('/admin/config', 'AdminConfigController', 'index', $auth);
 $router->post('/admin/config', 'AdminConfigController', 'index', $authCsrf);
 $router->get('/admin/logs', 'AdminLogsController', 'index', $auth);

@@ -1,10 +1,5 @@
 <?php
 // src/Views/admin_operadores.php
-function has_permission($perm) {
-    if (($_SESSION['admin_role'] ?? '') === 'admin_master') return true;
-    $perms = $_SESSION['admin_permissoes'] ?? [];
-    return is_array($perms) && (in_array($perm, $perms) || in_array('all', $perms));
-}
 $isMaster = ($_SESSION['admin_role'] ?? '') === 'admin_master';
 ?>
 <!DOCTYPE html>
@@ -48,8 +43,16 @@ $isMaster = ($_SESSION['admin_role'] ?? '') === 'admin_master';
                     <tbody>
                         <?php foreach ($operadores as $op): 
                             $isThisMaster = $op['role'] === 'admin_master';
-                            $badgeClass = $isThisMaster ? 'bg-yellow-200 text-yellow-800' : 'bg-sky-100 text-sky-800';
-                            $roleName = $isThisMaster ? 'Master' : 'Operador';
+                            if ($isThisMaster) {
+                                $badgeClass = 'bg-yellow-200 text-yellow-800';
+                                $roleName = 'Master';
+                            } elseif ($op['role'] === 'recepcao') {
+                                $badgeClass = 'bg-purple-200 text-purple-800';
+                                $roleName = 'Recepção';
+                            } else {
+                                $badgeClass = 'bg-sky-100 text-sky-800';
+                                $roleName = 'Operador';
+                            }
                             $permsJson = htmlspecialchars($op['permissoes'] ?? '[]');
                         ?>
                         <tr class="hover:bg-slate-50 transition-colors">
@@ -108,14 +111,15 @@ $isMaster = ($_SESSION['admin_role'] ?? '') === 'admin_master';
                     <div class="tooltip-container" style="display: block;">
                         <select name="role" id="op_role" class="w-full border border-slate-300 rounded-lg px-4 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-green-500" onchange="togglePerms()">
                             <option value="operador">Operador (Restrito)</option>
+                            <option value="recepcao">Recepção (Restrito)</option>
                             <option value="admin_master">Administrador Master (Poder Total)</option>
                         </select>
-                        <span class="tooltip-text">Master pode tudo. Operador precisa de permissões específicas marcadas abaixo.</span>
+                        <span class="tooltip-text">Master possui acesso total. Operador e Recepção precisam de permissões específicas marcadas abaixo.</span>
                     </div>
                 </div>
 
                 <div class="mb-4" id="permsSection">
-                    <label class="block text-[13px] font-semibold text-slate-600 mb-1.5">Permissões (Apenas para Operador)</label>
+                    <label class="block text-[13px] font-semibold text-slate-600 mb-1.5">Permissões (Para Operador / Recepção)</label>
                     <div class="tooltip-container" style="display: block;">
                         <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 mt-2">
                             <label class="flex items-center gap-2 text-sm"><input type="checkbox" name="permissoes[]" value="gerenciar_chaves" class="perm-cb"> Gerenciar Chaves e Reservas</label>

@@ -29,14 +29,20 @@ class Router {
     }
 
     public function dispatch($requestUri, $requestMethod) {
-        $basePath = rtrim(dirname($_SERVER['SCRIPT_NAME']), '/\\');
+        $scriptName = $_SERVER['SCRIPT_NAME'] ?? '';
+        if (strpos($scriptName, '.php') === false) {
+            $basePath = '';
+        } else {
+            $basePath = rtrim(dirname($scriptName), '/\\');
+        }
+        
         if (!defined('BASE_URL')) {
             define('BASE_URL', $basePath);
         }
         
         $uri = parse_url($requestUri, PHP_URL_PATH);
         
-        if (strpos($uri, $basePath) === 0) {
+        if ($basePath !== '' && strpos($uri, $basePath) === 0) {
             $uri = substr($uri, strlen($basePath));
         }
         

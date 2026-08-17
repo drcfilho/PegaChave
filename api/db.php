@@ -112,3 +112,21 @@ if (!function_exists('validar_csrf_token')) {
         return hash_equals($_SESSION['csrf_token'], $token);
     }
 }
+
+if (!function_exists('has_permission')) {
+    function has_permission($perm) {
+        if (session_status() === PHP_SESSION_NONE) {
+            session_start();
+        }
+        $role = $_SESSION['admin_role'] ?? '';
+        if (empty($role)) {
+            $role = 'admin_master';
+        }
+        if ($role === 'admin_master') {
+            return true;
+        }
+        
+        $perms = $_SESSION['admin_permissoes'] ?? [];
+        return is_array($perms) && (in_array($perm, $perms) || in_array('all', $perms));
+    }
+}

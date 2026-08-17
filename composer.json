@@ -16,6 +16,7 @@
     },
     "config": {
         "disable-tls": true,
-        "platform-check": false
+        "platform-check": false,
+        "secure-http": false
     }
 }

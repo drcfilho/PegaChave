@@ -42,6 +42,15 @@ A aplicação evoluiu para os mais rígidos padrões de mercado, estruturada 100
 
 ---
 
+## 📈 Últimas Atualizações e Melhorias Recentes
+
+* **⚠️ Menu de Ocorrências e Avarias**: Criação de um painel de auditoria centralizado para registrar, visualizar e filtrar danos, chaves retidas ou salas deixadas abertas. Exibe por padrão os últimos 30 logs e permite busca refinada por período, sala ou usuário.
+* **🛡️ Perfil de Operadores - Recepção**: Inclusão de um novo nível de acesso restrito (`recepcao`) com badge visual colorido, configurável através da interface de gerenciamento de operadores.
+* **👥 Novos Perfis de Usuários**: Expansão do catálogo de funções de usuários, adicionando os perfis de **Recepção**, **Terceirizados** e **Manutenção** para cobrir todos os fluxos operacionais da instituição.
+* **🛠️ Correções de Sessão e CSRF**: Resolução de bugs de token de segurança na área de Agendamentos e normalização das validações de sessão (`admin_role` fallback) para evitar bloqueios acidentais no menu administrativo.
+
+---
+
 ## 🚀 Como Executar o Projeto
 
 ### Opção A: Execução via Docker (Recomendado)

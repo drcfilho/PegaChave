@@ -1,20 +1,57 @@
 <?php
 // src/Views/partials/sidebar.php
 
-if (!function_exists('has_permission')) {
-    function has_permission($perm) {
-        $role = $_SESSION['admin_role'] ?? 'admin_master';
-        if ($role === 'admin_master') return true;
+// Helper para renderizar item de menu principal com base na permissão
+if (!function_exists('render_menu_item')) {
+    function render_menu_item($perm, $url, $label, $icon, $isActiveClass) {
+        $hasPerm = has_permission($perm);
+        if ($hasPerm) {
+            $href = BASE_URL . $url;
+            $class = "flex items-center gap-3 px-6 py-3.5 text-[15px] font-semibold transition-all duration-200 border-l-4 " . $isActiveClass;
+            $title = "";
+        } else {
+            $href = "javascript:void(0)";
+            $class = "flex items-center gap-3 px-6 py-3.5 text-[15px] font-semibold border-l-4 border-red-600 text-red-500 opacity-60 cursor-not-allowed hover:bg-red-500/5";
+            $title = "Acesso Bloqueado";
+        }
         
-        $perms = $_SESSION['admin_permissoes'] ?? [];
-        return is_array($perms) && (in_array($perm, $perms) || in_array('all', $perms));
+        echo "<li>
+            <a href=\"$href\" class=\"$class\" title=\"$title\">
+                <span>$icon</span> $label
+            </a>
+        </li>";
+    }
+}
+
+// Helper para renderizar subitem de menu com base na permissão
+if (!function_exists('render_submenu_item')) {
+    function render_submenu_item($perm, $url, $label, $icon, $currentUri) {
+        $hasPerm = has_permission($perm);
+        $fullUrl = BASE_URL . $url;
+        $isCurrent = strpos($currentUri, $url) !== false;
+        
+        if ($hasPerm) {
+            $href = $fullUrl;
+            $class = "flex items-center gap-3 pl-4 pr-6 py-2 text-sm font-medium transition-all duration-200 " . ($isCurrent ? 'text-white font-bold bg-white/5' : 'text-slate-400 hover:text-white hover:bg-white/5');
+            $title = "";
+        } else {
+            $href = "javascript:void(0)";
+            $class = "flex items-center gap-3 pl-4 pr-6 py-2 text-sm font-medium border-l-4 border-red-600 text-red-500 opacity-60 cursor-not-allowed hover:bg-red-500/5";
+            $title = "Acesso Bloqueado";
+        }
+        
+        echo "<li>
+            <a href=\"$href\" class=\"$class\" title=\"$title\">
+                <span>$icon</span> $label
+            </a>
+        </li>";
     }
 }
 
 // Determinar a página ativa baseada na URL
 $currentUri = $_SERVER['REQUEST_URI'];
 $isActive = function($path) use ($currentUri) {
-    return strpos($currentUri, $path) !== false ? 'bg-primary/10 border-primary text-white' : 'border-transparent text-slate-400 hover:text-white hover:bg-white/5';
+    return strpos($currentUri, $path) !== false ? 'bg-primary/10 border-primary text-white font-bold' : 'border-transparent text-slate-400 hover:text-white hover:bg-white/5';
 };
 ?>
 <aside class="sidebar w-[260px] bg-secondary/95 backdrop-blur-md text-white flex flex-col fixed top-0 bottom-0 left-0 z-50 border-r border-white/10 transition-all duration-300 overflow-y-auto">
@@ -23,60 +60,19 @@ $isActive = function($path) use ($currentUri) {
     </div>
     <ul class="flex-1 py-5 list-none m-0">
         <li>
-            <a href="<?= BASE_URL ?>/admin" class="flex items-center gap-3 px-6 py-3.5 text-[15px] font-semibold transition-all duration-200 border-l-4 <?= $currentUri === BASE_URL . '/admin' || $currentUri === BASE_URL . '/admin/' ? 'bg-primary/10 border-primary text-white' : 'border-transparent text-slate-400 hover:text-white hover:bg-white/5' ?>">
+            <a href="<?= BASE_URL ?>/admin" class="flex items-center gap-3 px-6 py-3.5 text-[15px] font-semibold transition-all duration-200 border-l-4 <?= $currentUri === BASE_URL . '/admin' || $currentUri === BASE_URL . '/admin/' ? 'bg-primary/10 border-primary text-white font-bold' : 'border-transparent text-slate-400 hover:text-white hover:bg-white/5' ?>">
                 📊 Dashboard
             </a>
         </li>
         
-        <?php if(has_permission('gerenciar_chaves')): ?>
-        <li>
-            <a href="<?= BASE_URL ?>/admin/chaves" class="flex items-center gap-3 px-6 py-3.5 text-[15px] font-semibold transition-all duration-200 border-l-4 <?= $isActive('/admin/chaves') ?>">
-                🔑 Chaves/Salas
-            </a>
-        </li>
-
-        <?php endif; ?>
-        
-        <?php if(has_permission('gerenciar_usuarios')): ?>
-        <li>
-            <a href="<?= BASE_URL ?>/admin/usuarios" class="flex items-center gap-3 px-6 py-3.5 text-[15px] font-semibold transition-all duration-200 border-l-4 <?= $isActive('/admin/usuarios') ?>">
-                👤 Usuários
-            </a>
-        </li>
-
-        <?php endif; ?>
-        
-        <?php if(has_permission('gerenciar_chaves')): ?>
-        <li>
-            <a href="<?= BASE_URL ?>/admin/reservas" class="flex items-center gap-3 px-6 py-3.5 text-[15px] font-semibold transition-all duration-200 border-l-4 <?= $isActive('/admin/reservas') ?>">
-                📅 Agendamentos
-            </a>
-        </li>
-        <?php endif; ?>
-        
-        <?php if(has_permission('gerenciar_usuarios')): ?>
-        <li>
-            <a href="<?= BASE_URL ?>/admin/restricoes" class="flex items-center gap-3 px-6 py-3.5 text-[15px] font-semibold transition-all duration-200 border-l-4 <?= $isActive('/admin/restricoes') ?>">
-                🔒 Restrições
-            </a>
-        </li>
-        <?php endif; ?>
-
-        <?php if(has_permission('gerenciar_operadores')): ?>
-        <li>
-            <a href="<?= BASE_URL ?>/admin/operadores" class="flex items-center gap-3 px-6 py-3.5 text-[15px] font-semibold transition-all duration-200 border-l-4 <?= $isActive('/admin/operadores') ?>">
-                🛡️ Operadores
-            </a>
-        </li>
-        <?php endif; ?>
-        
-        <?php if(has_permission('gerenciar_configuracoes')): ?>
-        <li>
-            <a href="<?= BASE_URL ?>/admin/gerar_qr" class="flex items-center gap-3 px-6 py-3.5 text-[15px] font-semibold transition-all duration-200 border-l-4 <?= $isActive('/admin/gerar_qr') ?>">
-                🖨️ Gerar QR Codes
-            </a>
-        </li>
-        <?php endif; ?>
+        <?php 
+        render_menu_item('gerenciar_chaves', '/admin/chaves', 'Chaves/Salas', '🔑', $isActive('/admin/chaves'));
+        render_menu_item('gerenciar_usuarios', '/admin/usuarios', 'Usuários', '👤', $isActive('/admin/usuarios'));
+        render_menu_item('gerenciar_chaves', '/admin/reservas', 'Agendamentos', '📅', $isActive('/admin/reservas'));
+        render_menu_item('gerenciar_usuarios', '/admin/restricoes', 'Restrições', '🔒', $isActive('/admin/restricoes'));
+        render_menu_item('gerenciar_operadores', '/admin/operadores', 'Operadores', '🛡️', $isActive('/admin/operadores'));
+        render_menu_item('gerenciar_configuracoes', '/admin/gerar_qr', 'Gerar QR Codes', '🖨️', $isActive('/admin/gerar_qr'));
+        ?>
         
         <li>
             <a href="<?= BASE_URL ?>/admin/consulta" class="flex items-center gap-3 px-6 py-3.5 text-[15px] font-semibold transition-all duration-200 border-l-4 <?= $isActive('/admin/consulta') ?>">
@@ -84,8 +80,12 @@ $isActive = function($path) use ($currentUri) {
             </a>
         </li>
         
-        <?php if(has_permission('ver_relatorios')): ?>
         <?php 
+        render_menu_item('ver_relatorios', '/admin/ocorrencias', 'Ocorrências', '⚠️', $isActive('/admin/ocorrencias'));
+        ?>
+        
+        <?php 
+        $hasAuditoriaPerm = has_permission('ver_relatorios');
         $isAuditoriaOpen = strpos($currentUri, '/admin/relatorio') !== false || 
                            strpos($currentUri, '/admin/logs') !== false || 
                            strpos($currentUri, '/admin/chaves_arquivadas') !== false || 
@@ -93,49 +93,26 @@ $isActive = function($path) use ($currentUri) {
         ?>
         <li>
             <details class="group" <?= $isAuditoriaOpen ? 'open' : '' ?>>
-                <summary class="flex items-center justify-between px-6 py-3.5 text-[15px] font-semibold text-slate-400 hover:text-white hover:bg-white/5 cursor-pointer list-none transition-colors border-l-4 border-transparent">
+                <summary class="flex items-center justify-between px-6 py-3.5 text-[15px] font-semibold cursor-pointer list-none transition-colors border-l-4 border-transparent <?= $hasAuditoriaPerm ? 'text-slate-400 hover:text-white hover:bg-white/5' : 'border-red-600 text-red-500 opacity-60 cursor-not-allowed hover:bg-red-500/5' ?>" title="<?= !$hasAuditoriaPerm ? 'Acesso Bloqueado' : '' ?>">
                     <div class="flex items-center gap-3">
                         🛡️ Auditoria & Dados
                     </div>
                     <span class="transition-transform duration-300 group-open:rotate-180 opacity-50 text-xs">▼</span>
                 </summary>
-                <ul class="bg-white/5 flex flex-col border-l-4 border-transparent">
-                    <li>
-                        <a href="<?= BASE_URL ?>/admin/relatorio" class="flex items-center gap-3 pl-12 pr-6 py-3 text-sm font-medium transition-all duration-200 <?= strpos($currentUri, '/admin/relatorio') !== false ? 'text-white font-bold' : 'text-slate-400 hover:text-white hover:bg-white/5' ?>">
-                            📝 Histórico de Uso
-                        </a>
-                    </li>
-                    <li>
-                        <a href="<?= BASE_URL ?>/admin/logs" class="flex items-center gap-3 pl-12 pr-6 py-3 text-sm font-medium transition-all duration-200 <?= strpos($currentUri, '/admin/logs') !== false ? 'text-white font-bold' : 'text-slate-400 hover:text-white hover:bg-white/5' ?>">
-                            📋 Logs do Sistema
-                        </a>
-                    </li>
-                    <?php if(has_permission('gerenciar_chaves')): ?>
-                    <li>
-                        <a href="<?= BASE_URL ?>/admin/chaves_arquivadas" class="flex items-center gap-3 pl-12 pr-6 py-3 text-sm font-medium transition-all duration-200 <?= strpos($currentUri, '/admin/chaves_arquivadas') !== false ? 'text-white font-bold' : 'text-slate-400 hover:text-white hover:bg-white/5' ?>">
-                            🗄️ Chaves Arquivadas
-                        </a>
-                    </li>
-                    <?php endif; ?>
-                    <?php if(has_permission('gerenciar_usuarios')): ?>
-                    <li>
-                        <a href="<?= BASE_URL ?>/admin/usuarios_arquivados" class="flex items-center gap-3 pl-12 pr-6 py-3 text-sm font-medium transition-all duration-200 <?= strpos($currentUri, '/admin/usuarios_arquivados') !== false ? 'text-white font-bold' : 'text-slate-400 hover:text-white hover:bg-white/5' ?>">
-                            🗄️ Usuários Arquivados
-                        </a>
-                    </li>
-                    <?php endif; ?>
+                <ul class="bg-black/15 flex flex-col pl-6 border-l border-white/10 ml-8 my-1 gap-1">
+                    <?php 
+                    render_submenu_item('ver_relatorios', '/admin/relatorio', 'Histórico de Uso', '📝', $currentUri);
+                    render_submenu_item('ver_relatorios', '/admin/logs', 'Logs do Sistema', '📋', $currentUri);
+                    render_submenu_item('gerenciar_chaves', '/admin/chaves_arquivadas', 'Chaves Arquivadas', '🗄️', $currentUri);
+                    render_submenu_item('gerenciar_usuarios', '/admin/usuarios_arquivados', 'Usuários Arquivados', '🗄️', $currentUri);
+                    ?>
                 </ul>
             </details>
         </li>
-        <?php endif; ?>
         
-        <?php if(has_permission('gerenciar_configuracoes')): ?>
-        <li>
-            <a href="<?= BASE_URL ?>/admin/config" class="flex items-center gap-3 px-6 py-3.5 text-[15px] font-semibold transition-all duration-200 border-l-4 <?= $isActive('/admin/config') ?>">
-                ⚙️ Configurações
-            </a>
-        </li>
-        <?php endif; ?>
+        <?php 
+        render_menu_item('gerenciar_configuracoes', '/admin/config', 'Configurações', '⚙️', $isActive('/admin/config'));
+        ?>
         
         <li>
             <a href="<?= BASE_URL ?>/admin_logout.php" class="flex items-center gap-3 px-6 py-3.5 text-[15px] font-semibold transition-all duration-200 border-l-4 border-transparent text-red-400 hover:text-red-300 hover:bg-white/5">
